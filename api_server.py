@@ -150,16 +150,37 @@ def api_scan():
     if no_push:
         cmd.append('--no-push')
     
+    # Charger les variables du .env pour le subprocess
+    env = os.environ.copy()
+    env['PYTHONIOENCODING'] = 'utf-8'
+    env['PYTHONUTF8'] = '1'
+    env_file = BASE_DIR / '.env'
+    if env_file.exists():
+        with open(env_file, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith('#') and '=' in line:
+                    key, _, value = line.partition('=')
+                    env[key.strip()] = value.strip()
+    
     def run_scan():
         scan_state['running'] = True
         scan_state['started_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         scan_state['last_result'] = None
         try:
             result = subprocess.run(
-                cmd, cwd=str(BASE_DIR),
+                cmd, cwd=str(BASE_DIR), env=env,
                 capture_output=True, text=True, timeout=7200  # 2h max
             )
-            scan_state['last_result'] = 'success' if result.returncode == 0 else 'error'
+            if result.returncode == 0:
+                scan_state['last_result'] = 'success'
+            else:
+                # Capturer l'erreur pour debug
+                err = (result.stderr or '')[-500:]
+                scan_state['last_result'] = f'error: code {result.returncode}'
+                print(f"[SCAN ERROR] returncode={result.returncode}")
+                if err:
+                    print(f"[SCAN STDERR] {err}")
         except subprocess.TimeoutExpired:
             scan_state['last_result'] = 'timeout'
         except Exception as e:
