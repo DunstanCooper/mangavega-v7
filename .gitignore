@@ -5,9 +5,7 @@
 
 # Logs
 manga_tracker.log
-
-# Fichiers générés par le scan (le viewer les lit depuis le Gist ou localement)
-manga_collection.json
+logs/
 
 # Python
 __pycache__/
