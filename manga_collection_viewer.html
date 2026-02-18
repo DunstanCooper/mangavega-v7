@@ -1,0 +1,3436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 Manga Collection Viewer V7</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #eee; min-height: 100vh;
+        }
+        .container { max-width: 1800px; margin: 0 auto; padding: 20px; }
+        header { text-align: center; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
+        header h1 {
+            font-size: 2rem;
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        header p { color: #888; font-size: 0.85rem; margin-top: 6px; }
+
+        /* Tabs */
+        .tabs { display: flex; gap: 5px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .tab {
+            padding: 10px 20px; border-radius: 8px 8px 0 0; cursor: pointer;
+            background: rgba(255,255,255,0.05); color: #888; font-weight: 500; transition: all 0.2s;
+        }
+        .tab:hover { background: rgba(255,255,255,0.1); color: #ccc; }
+        .tab.active { background: linear-gradient(135deg, #48dbfb, #6c5ce7); color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .drop-zone {
+            border: 2px dashed #444; border-radius: 14px; padding: 30px;
+            text-align: center; margin-bottom: 20px; background: rgba(255,255,255,0.02);
+        }
+        .drop-zone:hover, .drop-zone.dragover { border-color: #48dbfb; background: rgba(72, 219, 251, 0.05); }
+        .drop-zone h3 { color: #48dbfb; margin-bottom: 6px; }
+        .drop-zone p { color: #888; font-size: 0.8rem; }
+        .drop-zone input[type="file"] { display: none; }
+        .drop-zone label {
+            display: inline-block; margin-top: 10px; padding: 8px 18px;
+            background: linear-gradient(135deg, #48dbfb, #6c5ce7);
+            border-radius: 18px; cursor: pointer; font-weight: 500; font-size: 0.9rem;
+        }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-bottom: 15px; }
+        .stat-card { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 12px 8px; text-align: center; }
+        .stat-card .number { font-size: 1.4rem; font-weight: bold; }
+        .stat-card .label { color: #888; font-size: 0.65rem; margin-top: 2px; }
+        .stat-card.series .number { color: #48dbfb; }
+        .stat-card.volumes .number { color: #2ecc71; }
+        .stat-card.ok .number { color: #feca57; }
+        .stat-card.rejected .number { color: #e74c3c; }
+        .stat-card.pending .number { color: #a29bfe; }
+
+        .banner {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.15), rgba(254, 202, 87, 0.1));
+            border: 1px solid rgba(231, 76, 60, 0.4); border-radius: 8px; padding: 10px 15px;
+            margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 10px;
+        }
+        .banner .info { display: flex; align-items: center; gap: 10px; }
+        .banner .count { font-size: 1.1rem; font-weight: bold; color: #e74c3c; }
+        .banner .text { color: #feca57; font-size: 0.85rem; }
+        .banner.info-banner { background: linear-gradient(135deg, rgba(72, 219, 251, 0.15), rgba(108, 92, 231, 0.1)); border-color: rgba(72, 219, 251, 0.4); }
+        .banner.info-banner .count { color: #48dbfb; }
+        .banner.info-banner .text { color: #a29bfe; }
+
+        .filters {
+            background: rgba(255,255,255,0.03); border-radius: 10px; padding: 15px;
+            margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.08);
+        }
+        .filters-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+        .filters-header h3 { color: #48dbfb; font-size: 0.9rem; }
+        .filters-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+        .filter-group { display: flex; flex-direction: column; gap: 3px; }
+        .filter-group label { font-size: 0.7rem; color: #aaa; }
+        .filter-group input, .filter-group select {
+            padding: 7px 9px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(0,0,0,0.3); color: #eee; font-size: 0.8rem;
+        }
+        .filter-group input:focus, .filter-group select:focus { outline: none; border-color: #48dbfb; }
+
+        .btn {
+            padding: 7px 12px; border-radius: 5px; border: none; cursor: pointer;
+            font-size: 0.75rem; font-weight: 500; display: inline-flex; align-items: center; gap: 4px;
+        }
+        .btn-primary { background: linear-gradient(135deg, #48dbfb, #6c5ce7); color: white; }
+        .btn-success { background: rgba(46, 204, 113, 0.2); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.3); }
+        .btn-danger { background: rgba(231, 76, 60, 0.2); color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.3); }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #ccc; }
+        .btn-warning { background: rgba(254, 202, 87, 0.2); color: #feca57; border: 1px solid rgba(254, 202, 87, 0.3); }
+        .btn-group { display: flex; gap: 5px; flex-wrap: wrap; }
+
+        .results-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+        .results-bar .count { color: #888; font-size: 0.85rem; }
+        .results-bar .count strong { color: #48dbfb; }
+
+        .table-container { overflow-x: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); }
+        table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.2); font-size: 0.8rem; }
+        th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        th {
+            background: rgba(72, 219, 251, 0.1); color: #48dbfb; font-weight: 600;
+            cursor: pointer; white-space: nowrap; font-size: 0.75rem;
+        }
+        th:hover { background: rgba(72, 219, 251, 0.2); }
+        th.sorted-asc::after { content: ' ▲'; font-size: 0.6rem; }
+        th.sorted-desc::after { content: ' ▼'; font-size: 0.6rem; }
+        tr:hover { background: rgba(255,255,255,0.03); }
+        tr.rejected { background: rgba(231, 76, 60, 0.08); }
+        tr.rejected td:not(.actions-cell) { text-decoration: line-through; color: #666; }
+        tr.valide { background: rgba(46, 204, 113, 0.05); }
+        tr.removed { background: rgba(231, 76, 60, 0.15); opacity: 0.6; }
+        td a { color: #48dbfb; text-decoration: none; }
+
+        .tome-badge { display: inline-block; padding: 2px 7px; border-radius: 8px; font-size: 0.7rem; background: rgba(255,255,255,0.1); }
+        .tome-badge.editable { cursor: pointer; transition: all 0.2s; }
+        .tome-badge.editable:hover { background: rgba(72, 219, 251, 0.3); box-shadow: 0 0 5px rgba(72, 219, 251, 0.5); }
+        .tome-badge.modified { background: rgba(46, 204, 113, 0.3); border: 1px solid rgba(46, 204, 113, 0.5); }
+        .publisher-badge { display: inline-block; padding: 2px 7px; border-radius: 8px; font-size: 0.65rem; background: rgba(254, 202, 87, 0.15); color: #feca57; }
+        .publisher-badge.official { background: rgba(46, 204, 113, 0.2); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.3); }
+        .publisher-badge.different { background: rgba(231, 76, 60, 0.2); color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.4); }
+        .serie-override { font-size: 0.6rem; color: #9b59b6; font-style: italic; }
+        .asin-code { font-family: monospace; font-size: 0.7rem; color: #888; }
+
+        .action-btns { display: flex; gap: 3px; }
+        .action-btn {
+            width: 24px; height: 24px; border-radius: 4px; border: none; cursor: pointer;
+            font-size: 0.8rem; display: flex; align-items: center; justify-content: center;
+        }
+        .action-btn.validate { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
+        .action-btn.validate:hover { background: rgba(46, 204, 113, 0.4); }
+        .action-btn.reject { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
+        .action-btn.reject:hover { background: rgba(231, 76, 60, 0.4); }
+        .action-btn.undo { background: rgba(255, 255, 255, 0.1); color: #aaa; }
+        .action-btn.delete { background: rgba(231, 76, 60, 0.2); color: #e74c3c; width: auto; padding: 0 8px; }
+
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .status-dot.valide { background: #2ecc71; }
+        .status-dot.rejete { background: #e74c3c; }
+        .status-dot.non_traite { background: #a29bfe; }
+
+        .pagination { display: flex; justify-content: center; gap: 5px; margin-top: 20px; flex-wrap: wrap; }
+        .pagination button {
+            padding: 6px 10px; border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.05); color: #ccc; border-radius: 4px; cursor: pointer; font-size: 0.75rem;
+        }
+        .pagination button:hover:not(:disabled) { background: rgba(72, 219, 251, 0.2); border-color: #48dbfb; color: #48dbfb; }
+        .pagination button.active { background: #48dbfb; color: #1a1a2e; border-color: #48dbfb; }
+        .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000;
+        }
+        .modal {
+            background: #1a1a2e; border-radius: 10px; padding: 20px;
+            max-width: 600px; width: 90%; border: 1px solid rgba(255,255,255,0.1); max-height: 80vh; overflow-y: auto;
+        }
+        .modal h3 { color: #48dbfb; margin-bottom: 12px; font-size: 1rem; }
+        .modal pre {
+            background: rgba(0,0,0,0.4); padding: 10px; border-radius: 5px;
+            overflow-x: auto; font-size: 0.75rem; color: #2ecc71; margin-bottom: 12px; max-height: 250px;
+        }
+        .modal p { color: #888; font-size: 0.75rem; margin-bottom: 10px; }
+        .modal .btn-group { justify-content: flex-end; }
+
+        /* Add Series Form */
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group label { font-size: 0.8rem; color: #aaa; }
+        .form-group input, .form-group select {
+            padding: 10px 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(0,0,0,0.3); color: #eee; font-size: 0.9rem;
+        }
+        .form-group input::placeholder { color: #666; }
+        .form-group small { color: #666; font-size: 0.7rem; }
+
+        /* Series cards */
+        .series-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 15px; }
+        .series-card {
+            background: rgba(255,255,255,0.03); border-radius: 10px; padding: 15px;
+            border: 1px solid rgba(255,255,255,0.08); transition: all 0.2s;
+        }
+        .series-card:hover { border-color: rgba(72, 219, 251, 0.3); }
+        .series-card.removed { opacity: 0.5; border-color: rgba(231, 76, 60, 0.5); }
+        .series-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .series-card-title { font-size: 1rem; font-weight: 600; color: #48dbfb; }
+        .series-card-subtitle { font-size: 0.8rem; color: #888; margin-top: 3px; }
+        .series-card-stats { display: flex; gap: 15px; margin-top: 10px; flex-wrap: wrap; }
+        .series-stat { text-align: center; }
+        .series-stat .value { font-size: 1.2rem; font-weight: bold; color: #2ecc71; }
+        .series-stat .label { font-size: 0.65rem; color: #888; }
+        .series-card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .series-card-link { font-size: 0.75rem; color: #48dbfb; }
+
+        /* Type badges (Manga/LN) */
+        .type-badge {
+            display: inline-block; padding: 2px 8px; border-radius: 10px;
+            font-size: 0.65rem; font-weight: 500; margin-top: 5px;
+        }
+        .type-badge.manga {
+            background: rgba(231, 76, 60, 0.2); color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.3);
+        }
+        .type-badge.ln {
+            background: rgba(155, 89, 182, 0.2); color: #9b59b6; border: 1px solid rgba(155, 89, 182, 0.3);
+        }
+        .series-card.has-type { border-left: 3px solid; }
+        .series-card.has-type:has(.type-badge.manga) { border-left-color: #e74c3c; }
+        .series-card.has-type:has(.type-badge.ln) { border-left-color: #9b59b6; }
+
+        /* Modal Détail Série */
+        .series-detail-modal {
+            max-width: 900px; width: 95%; max-height: 85vh; display: flex; flex-direction: column;
+        }
+        .series-detail-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            border-bottom: 1px solid #3a3a4a; padding-bottom: 15px; margin-bottom: 15px;
+        }
+        .series-detail-header h3 { margin: 0; font-size: 1.3rem; }
+        .series-detail-stats {
+            display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 15px;
+            padding: 15px; background: rgba(0,0,0,0.2); border-radius: 8px;
+        }
+        .series-detail-stat {
+            text-align: center; min-width: 80px;
+        }
+        .series-detail-stat .value { font-size: 1.5rem; font-weight: bold; }
+        .series-detail-stat .label { font-size: 0.75rem; color: #888; }
+        .series-detail-stat.ok .value { color: #2ecc71; }
+        .series-detail-stat.rejected .value { color: #e74c3c; }
+        .series-detail-stat.pending .value { color: #f39c12; }
+        .series-detail-actions {
+            display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;
+        }
+        .series-detail-volumes {
+            flex: 1; overflow-y: auto; max-height: 50vh;
+        }
+        .series-detail-volumes table {
+            width: 100%; border-collapse: collapse; font-size: 0.85rem;
+        }
+        .series-detail-volumes th {
+            text-align: left; padding: 10px 8px; background: #2a2a3a;
+            position: sticky; top: 0; z-index: 1;
+        }
+        .series-detail-volumes td {
+            padding: 8px; border-bottom: 1px solid #3a3a4a;
+        }
+        .series-detail-volumes tr:hover { background: rgba(255,255,255,0.05); }
+        .series-detail-volumes tr.valide { background: rgba(46, 204, 113, 0.1); }
+        .series-detail-volumes tr.rejete { background: rgba(231, 76, 60, 0.1); }
+        .volume-title { font-size: 0.75rem; color: #888; margin-top: 3px; }
+
+        /* Alerte tomes manquants */
+        .tomes-alert {
+            background: rgba(231, 76, 60, 0.15);
+            border: 1px solid rgba(231, 76, 60, 0.4);
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin: 10px 15px;
+            font-size: 0.75rem;
+            color: #e74c3c;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tomes-alert-icon {
+            font-size: 1.2rem;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .tomes-alert-details {
+            flex: 1;
+        }
+        .tomes-alert strong {
+            color: #ff6b6b;
+        }
+        .series-card.has-missing-tomes {
+            border: 2px solid rgba(231, 76, 60, 0.5);
+            box-shadow: 0 0 10px rgba(231, 76, 60, 0.2);
+        }
+        .series-stat.alert .value {
+            color: #e74c3c !important;
+            position: relative;
+        }
+        .series-stat.alert::after {
+            content: '⚠️';
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 0.7rem;
+        }
+        .series-stat {
+            position: relative;
+        }
+
+        .hidden { display: none !important; }
+        .info-box { background: rgba(72, 219, 251, 0.1); border: 1px solid rgba(72, 219, 251, 0.3); border-radius: 6px; padding: 10px; margin-bottom: 15px; font-size: 0.8rem; color: #48dbfb; }
+
+        /* Admin Bar */
+        .admin-bar {
+            background: linear-gradient(135deg, rgba(108, 92, 231, 0.2), rgba(72, 219, 251, 0.1));
+            border: 1px solid rgba(108, 92, 231, 0.4); border-radius: 8px; padding: 10px 15px;
+            margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+        }
+        .admin-bar.locked { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.1); }
+        .admin-bar .admin-status { display: flex; align-items: center; gap: 8px; }
+        .admin-bar .admin-icon { font-size: 1.2rem; }
+        .admin-bar .admin-text { font-size: 0.85rem; color: #888; }
+        .admin-bar:not(.locked) .admin-text { color: #2ecc71; }
+        .admin-bar input[type="password"] { padding: 6px 10px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: #eee; font-size: 0.85rem; width: 150px; }
+        .admin-bar input[type="password"]:focus { outline: none; border-color: #6c5ce7; }
+        
+        /* Sync Banner */
+        .sync-banner { background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(72, 219, 251, 0.1)); border: 1px solid rgba(46, 204, 113, 0.4); border-radius: 8px; padding: 10px 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .sync-banner .sync-info { display: flex; align-items: center; gap: 8px; }
+        .sync-banner .sync-count { font-size: 1.1rem; font-weight: bold; color: #2ecc71; }
+        .sync-banner .sync-text { color: #48dbfb; font-size: 0.85rem; }
+
+        /* Toast */
+        .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
+        .toast { background: rgba(0,0,0,0.9); color: white; padding: 12px 20px; border-radius: 8px; margin-top: 10px; animation: slideIn 0.3s ease; }
+        .toast.success { border-left: 4px solid #2ecc71; }
+        .toast.error { border-left: 4px solid #e74c3c; }
+        .toast.info { border-left: 4px solid #48dbfb; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* Recap Table */
+        .recap-table { width: 100%; border-collapse: collapse; }
+        .recap-table th, .recap-table td { padding: 12px 10px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .recap-table th { background: rgba(0,0,0,0.3); color: #48dbfb; font-weight: 600; font-size: 0.85rem; position: sticky; top: 0; }
+        .recap-table tr:hover { background: rgba(255,255,255,0.03); }
+        .recap-table tr.empty-row { background: rgba(231, 76, 60, 0.1); }
+        .recap-table tr.empty-row td { color: #e74c3c; }
+        .recap-table .tomes-cell { text-align: center; font-weight: bold; }
+        .recap-table .tomes-cell.zero { color: #e74c3c; }
+        .recap-table .tomes-cell.ok { color: #2ecc71; }
+        .recap-table .date-cell { text-align: center; color: #888; font-size: 0.85rem; }
+        .recap-table .actions-cell { text-align: center; }
+        .recap-table .title-jp { font-size: 0.75rem; color: #666; margin-top: 2px; }
+        .recap-table .warning-icon { color: #e74c3c; margin-right: 5px; }
+        
+        /* Admin sections */
+        .admin-section { opacity: 1; transition: opacity 0.2s; }
+        .admin-section.disabled { opacity: 0.5; pointer-events: none; }
+        /* Predictions */
+        #tab-predictions table { width: 100%; border-collapse: collapse; }
+
+        /* Script Runner */
+        #tab-runner table { width: 100%; border-collapse: collapse; }
+        #tab-runner th { background: rgba(255,255,255,0.08); padding: 10px 8px; text-align: left; font-size: 0.8rem; color: #48dbfb; }
+        #tab-runner td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
+        #tab-runner tr:hover { background: rgba(255,255,255,0.03); }
+        .run-status { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; }
+        .run-status.completed { background: rgba(46,204,113,0.2); color: #2ecc71; }
+        .run-status.in_progress { background: rgba(72,219,251,0.2); color: #48dbfb; animation: pulse 1.5s infinite; }
+        .run-status.queued { background: rgba(243,156,18,0.2); color: #f39c12; }
+        .run-status.failure { background: rgba(231,76,60,0.2); color: #e74c3c; }
+        .run-status.cancelled { background: rgba(150,150,150,0.2); color: #999; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+        #btnRunScript:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(72,219,251,0.3); }
+        #btnRunScript:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+        #tab-predictions th { 
+            background: rgba(255,255,255,0.08); padding: 10px 8px; text-align: left; 
+            font-size: 0.8rem; color: #48dbfb; white-space: nowrap; user-select: none;
+        }
+        #tab-predictions th:hover { background: rgba(72,219,251,0.15); }
+        #tab-predictions td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
+        #tab-predictions tr:hover { background: rgba(255,255,255,0.03); }
+        .pred-date { font-weight: 500; white-space: nowrap; }
+        .pred-date.past { color: #e74c3c; }
+        .pred-date.soon { color: #f39c12; }
+        .pred-date.future { color: #2ecc71; }
+        .pred-date.far { color: #95a5a6; }
+        .pred-unknown { color: #666; font-style: italic; }
+        .pred-confidence { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 500; }
+        .pred-confidence.high { background: rgba(46,204,113,0.2); color: #2ecc71; }
+        .pred-confidence.medium { background: rgba(243,156,18,0.2); color: #f39c12; }
+        .pred-confidence.low { background: rgba(231,76,60,0.2); color: #e74c3c; }
+        .pred-confidence.none { background: rgba(150,150,150,0.2); color: #999; }
+        .pred-tome-label { color: #888; font-size: 0.7rem; display: block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Manga Collection Viewer <span style="color:#48dbfb;font-size:0.5em;vertical-align:super;">V6</span></h1>
+            <p>Gérez vos séries, validez/rejetez les volumes</p>
+        </header>
+
+        <!-- Admin Bar -->
+        <div class="admin-bar locked" id="adminBar">
+            <div class="admin-status">
+                <span class="admin-icon" id="adminIcon">🔒</span>
+                <span class="admin-text" id="adminText">Mode lecture seule</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <input type="password" id="adminPassword" placeholder="Mot de passe">
+                <button class="btn btn-primary" id="adminLoginBtn" onclick="toggleAdmin()">🔑 Connexion</button>
+            </div>
+        </div>
+
+        <!-- Sync Banner (hidden by default) -->
+        <div class="sync-banner hidden" id="syncBanner">
+            <div class="sync-info">
+                <span class="sync-count" id="syncCount">0</span>
+                <span class="sync-text">modification(s) en attente</span>
+            </div>
+            <button class="btn btn-success" id="syncBtn" onclick="syncToGist()">☁️ Synchroniser avec GitHub</button>
+        </div>
+
+        <div class="drop-zone" id="dropZone">
+            <h3>⏳ Chargement depuis GitHub...</h3>
+            <p>Veuillez patienter...</p>
+        </div>
+
+        <div id="mainContent" class="hidden">
+            <!-- Tabs -->
+            <div class="tabs">
+                <div class="tab active" data-tab="volumes">📖 Volumes</div>
+                <div class="tab" data-tab="series">📚 Séries (<span id="seriesCount">0</span>)</div>
+                <div class="tab" data-tab="predictions">🔮 Prédictions</div>
+                <div class="tab" data-tab="recap">📊 Récapitulatif</div>
+                <div class="tab admin-only" data-tab="runner" id="tabRunner" style="display:none;">⚡ Script</div>
+            </div>
+
+            <!-- Tab: Volumes -->
+            <div class="tab-content active" id="tab-volumes">
+                <div class="stats-grid">
+                    <div class="stat-card series"><div class="number" id="statSeries">0</div><div class="label">Séries</div></div>
+                    <div class="stat-card volumes"><div class="number" id="statVolumes">0</div><div class="label">Volumes</div></div>
+                    <div class="stat-card ok"><div class="number" id="statOk">0</div><div class="label">Validés</div></div>
+                    <div class="stat-card rejected"><div class="number" id="statRejected">0</div><div class="label">Rejetés</div></div>
+                    <div class="stat-card pending"><div class="number" id="statPending">0</div><div class="label">À traiter</div></div>
+                </div>
+
+                <div class="filters">
+                    <div class="filters-header">
+                        <h3>🔍 Filtres</h3>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary" onclick="resetFilters()">Reset filtres</button>
+                        </div>
+                    </div>
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label>Recherche</label>
+                            <input type="text" id="searchInput" placeholder="Titre, ASIN...">
+                        </div>
+                        <div class="filter-group">
+                            <label>Éditeur</label>
+                            <select id="publisherFilter"><option value="">Tous</option></select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Année</label>
+                            <select id="dateFilter">
+                                <option value="">Toutes</option>
+                                <option value="2026">2026</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Statut</label>
+                            <select id="statusFilter">
+                                <option value="">Tous</option>
+                                <option value="non_traite">À traiter</option>
+                                <option value="valide">Validés</option>
+                                <option value="rejete">Rejetés</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Série</label>
+                            <select id="seriesFilter"><option value="">Toutes</option></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results-bar">
+                    <span class="count"><strong id="displayCount">0</strong> résultat(s)</span>
+                    <div class="btn-group">
+                        <button class="btn btn-success" onclick="validateVisible()">✓ Valider affichés</button>
+                        <button class="btn btn-danger" onclick="rejectVisible()">✗ Rejeter affichés</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:30px;"></th>
+                                <th data-sort="serie_fr">Titre</th>
+                                <th data-sort="tome" style="width:55px;">Tome</th>
+                                <th data-sort="date" style="width:85px;">Date</th>
+                                <th data-sort="editeur" style="width:90px;">Éditeur</th>
+                                <th style="width:90px;">ASIN</th>
+                                <th style="width:50px;">Lien</th>
+                                <th style="width:65px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="pagination"></div>
+            </div>
+
+            <!-- Tab: Series -->
+            <div class="tab-content" id="tab-series">
+
+                <!-- Search + Sort -->
+                <div class="filters" style="margin-bottom: 15px;">
+                    <div class="filters-grid" style="grid-template-columns: 1fr auto auto;">
+                        <div class="filter-group">
+                            <label>🔍 Rechercher une série</label>
+                            <input type="text" id="seriesSearchInput" placeholder="Titre japonais ou français..." oninput="renderSeriesCards()">
+                        </div>
+                        <div class="filter-group">
+                            <label>📊 Trier par</label>
+                            <select id="seriesSortSelect" onchange="renderSeriesCards()">
+                                <option value="name_asc">Nom (A→Z)</option>
+                                <option value="name_desc">Nom (Z→A)</option>
+                                <option value="detection_desc">Détection (récent)</option>
+                                <option value="detection_asc">Détection (ancien)</option>
+                                <option value="tomes_desc">Nb tomes (décroissant)</option>
+                                <option value="tomes_asc">Nb tomes (croissant)</option>
+                                <option value="date_desc">Date sortie (récent)</option>
+                                <option value="date_asc">Date sortie (ancien)</option>
+                                <option value="missing_desc">Tomes manquants ⚠️</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>🔖 Filtre</label>
+                            <select id="seriesFilterSelect" onchange="renderSeriesCards()">
+                                <option value="all">Toutes</option>
+                                <option value="missing">⚠️ Tomes manquants</option>
+                                <option value="complete">✅ Complètes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Series Grid -->
+                <div class="series-grid" id="seriesGrid"></div>
+            </div>
+
+            <!-- Tab: Récapitulatif -->
+            <!-- Tab: Script Runner (admin only) -->
+            <div class="tab-content" id="tab-runner">
+                <div style="max-width: 900px; margin: 0 auto;">
+                    <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
+                        <h3 style="color:#48dbfb; margin:0;">⚡ Lancement du script</h3>
+                        <span id="runnerStatus" style="font-size:0.8rem; color:#888;"></span>
+                    </div>
+                    
+                    <!-- Bouton de lancement -->
+                    <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:20px; margin-bottom:20px; border:1px solid rgba(72,219,251,0.2);">
+                        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:15px;">
+                            <div>
+                                <div style="font-size:1.1rem; font-weight:600; color:#eee;">MangaVega Tracker</div>
+                                <div style="color:#888; font-size:0.8rem; margin-top:4px;">Lance le scan complet de toutes les séries via GitHub Actions</div>
+                            </div>
+                            <button id="btnRunScript" onclick="triggerWorkflow()" 
+                                style="padding:12px 28px; background:linear-gradient(135deg,#48dbfb,#6c5ce7); border:none; border-radius:10px; color:white; font-size:1rem; font-weight:600; cursor:pointer; transition:all 0.2s; white-space:nowrap;">
+                                ▶️ Lancer le script
+                            </button>
+                        </div>
+                        <div id="runnerMessage" style="margin-top:12px; display:none;"></div>
+                    </div>
+                    
+                    <!-- Infos workflow -->
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:20px;">
+                        <div class="stat-card"><div class="number" id="runTotal">-</div><div class="label">Exécutions totales</div></div>
+                        <div class="stat-card ok"><div class="number" id="runSuccess">-</div><div class="label">Réussies</div></div>
+                        <div class="stat-card rejected"><div class="number" id="runFailed">-</div><div class="label">Échouées</div></div>
+                        <div class="stat-card series"><div class="number" id="runLast">-</div><div class="label">Dernier run</div></div>
+                    </div>
+                    
+                    <!-- Historique des runs -->
+                    <h4 style="color:#ccc; margin-bottom:10px;">📋 Historique des exécutions</h4>
+                    <div style="overflow-x:auto;">
+                        <table id="runsTable">
+                            <thead>
+                                <tr>
+                                    <th>Statut</th>
+                                    <th>Déclencheur</th>
+                                    <th>Date de lancement</th>
+                                    <th>Durée</th>
+                                    <th>Lien</th>
+                                </tr>
+                            </thead>
+                            <tbody id="runsBody">
+                                <tr><td colspan="5" style="text-align:center;color:#666;">Chargement...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Prédictions -->
+            <div class="tab-content" id="tab-predictions">
+                <div style="margin-bottom: 15px;">
+                    <h3 style="color:#48dbfb;">🔮 Prochaines sorties prédites</h3>
+                    <p style="color:#888;font-size:0.8rem;margin-top:5px;">Estimation basée sur l'intervalle moyen entre les tomes de chaque série. Les séries avec un seul tome ne peuvent pas être prédites.</p>
+                </div>
+                <div class="filters" style="margin-bottom:15px;">
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label>Filtrer</label>
+                            <select id="predFilterType" onchange="renderPredictions()">
+                                <option value="all">Toutes les séries</option>
+                                <option value="manga">Manga uniquement</option>
+                                <option value="ln">Light Novel uniquement</option>
+                                <option value="soon">⏰ Sorties proches (< 3 mois)</option>
+                                <option value="late">⚠️ En retard</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table id="predictionsTable">
+                        <thead>
+                            <tr>
+                                <th onclick="sortPredictions('serie')" style="cursor:pointer;">Série ↕</th>
+                                <th onclick="sortPredictions('type')" style="cursor:pointer;">Type ↕</th>
+                                <th onclick="sortPredictions('lastTome')" style="cursor:pointer;">Dernier tome ↕</th>
+                                <th onclick="sortPredictions('lastDate')" style="cursor:pointer;">Dernière sortie ↕</th>
+                                <th onclick="sortPredictions('avgInterval')" style="cursor:pointer;">Intervalle moy. ↕</th>
+                                <th onclick="sortPredictions('nextTome1')" style="cursor:pointer;" style="color:#2ecc71;">T+1 ↕</th>
+                                <th>T+2</th>
+                                <th>T+3</th>
+                                <th>T+4</th>
+                                <th onclick="sortPredictions('confidence')" style="cursor:pointer;">Fiabilité ↕</th>
+                            </tr>
+                        </thead>
+                        <tbody id="predictionsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-content" id="tab-recap">
+                <!-- Stats rapides -->
+                <div class="stats-grid" style="margin-bottom: 20px;">
+                    <div class="stat-card series"><div class="number" id="recapTotal">0</div><div class="label">Séries suivies</div></div>
+                    <div class="stat-card ok"><div class="number" id="recapOk">0</div><div class="label">Avec volumes</div></div>
+                    <div class="stat-card rejected"><div class="number" id="recapEmpty">0</div><div class="label">Sans volumes</div></div>
+                    <div class="stat-card volumes"><div class="number" id="recapVolumes">0</div><div class="label">Total volumes</div></div>
+                </div>
+
+                <!-- Filtres -->
+                <div class="filters">
+                    <div class="filters-header">
+                        <h3>🔍 Filtres</h3>
+                    </div>
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label>Recherche</label>
+                            <input type="text" id="recapSearchInput" placeholder="Titre FR, EN, JP..." oninput="renderRecapTable()">
+                        </div>
+                        <div class="filter-group">
+                            <label>Statut</label>
+                            <select id="recapStatusFilter" onchange="renderRecapTable()">
+                                <option value="">Tous</option>
+                                <option value="empty">⚠️ Sans volumes</option>
+                                <option value="ok">✅ Avec volumes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tableau récapitulatif -->
+                <div style="overflow-x: auto; margin-top: 15px;">
+                    <table class="recap-table" id="recapTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 40%; cursor:pointer;" onclick="sortRecap('name')">🇫🇷 Titre FR ↕</th>
+                                <th style="width: 15%; text-align: center; cursor:pointer;" onclick="sortRecap('tomes')">📚 Tomes ↕</th>
+                                <th style="width: 20%; text-align: center; cursor:pointer;" onclick="sortRecap('date')">📅 Dernier ↕</th>
+                                <th style="width: 25%; text-align: center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recapTableBody"></tbody>
+                    </table>
+                </div>
+
+                <!-- Section Admin: Ajouter série -->
+                <div class="admin-section" style="margin-top: 30px;">
+                    <div class="filters">
+                        <h3 style="color: #48dbfb; margin-bottom: 15px;">➕ Ajouter une série à surveiller</h3>
+                        <div class="filters-grid">
+                            <div class="filter-group">
+                                <label>Nom japonais *</label>
+                                <input type="text" id="recapNewSerieJp" placeholder="日本語タイトル (avec label ex: 電撃文庫)">
+                                <small style="color:#666;">Identifiant unique. Pour les LN, inclure le label d'édition</small>
+                            </div>
+                            <div class="filter-group">
+                                <label>Nom de recherche (optionnel)</label>
+                                <input type="text" id="recapNewSerieSearch" placeholder="Titre sans le label d'édition">
+                                <small style="color:#666;">Si vide, utilise le nom japonais. Pour les LN, mettre le titre sans (文庫)</small>
+                            </div>
+                            <div class="filter-group">
+                                <label>URL Amazon (volume)</label>
+                                <input type="text" id="recapNewSerieUrl" placeholder="https://amazon.co.jp/dp/...">
+                            </div>
+                            <div class="filter-group">
+                                <label>Type</label>
+                                <select id="recapNewSerieType">
+                                    <option value="">Manga (défaut)</option>
+                                    <option value="ln">📖 Light Novel</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label>Nom FR (optionnel)</label>
+                                <input type="text" id="recapNewSerieFr" placeholder="Titre français">
+                            </div>
+    
+                        </div>
+                        <div style="margin-top: 15px; display: flex; gap: 10px;">
+                            <button class="btn btn-success admin-only" onclick="addNewSerieFromRecap()" id="addSerieBtnRecap">➕ Ajouter la série</button>
+                            <span style="color: #888; font-size: 0.8rem; align-self: center;">(Mode admin requis)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section Admin: URLs supplémentaires -->
+                <div class="admin-section" style="margin-top: 20px;">
+                    <div class="filters">
+                        <h3 style="color: #48dbfb; margin-bottom: 15px;">🔗 Ajouter une URL supplémentaire</h3>
+                        <div class="filters-grid">
+                            <div class="filter-group">
+                                <label>Série</label>
+                                <input type="text" id="urlSerieInput" list="urlSerieDatalist" placeholder="Tapez le titre..." autocomplete="off">
+                                <datalist id="urlSerieDatalist"></datalist>
+                            </div>
+                            <div class="filter-group">
+                                <label>URL Amazon (produit)</label>
+                                <input type="text" id="urlInput" placeholder="https://amazon.co.jp/dp/...">
+                            </div>
+                            <div class="filter-group" style="justify-content: flex-end;">
+                                <button class="btn btn-success admin-only" onclick="addSupplementaryUrl()" id="addUrlBtn">➕ Ajouter URL</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Corrections -->
+    <div class="modal-overlay hidden" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <h3>📋 corrections.json</h3>
+            <pre id="modalContent"></pre>
+            <p>Placez ce fichier dans le même dossier que mangavega_monitor.py</p>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="closeModal()">Fermer</button>
+                <button class="btn btn-primary" onclick="copyJson()">📋 Copier</button>
+                <button class="btn btn-danger" onclick="downloadCorrections()">📥 Télécharger</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Series -->
+    <div class="modal-overlay hidden" id="seriesModalOverlay" onclick="closeSeriesModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <h3>📋 series_config.json</h3>
+            <pre id="seriesModalContent"></pre>
+            <p>Placez ce fichier dans le même dossier que mangavega_monitor.py, puis relancez le script.</p>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="closeSeriesModal()">Fermer</button>
+                <button class="btn btn-primary" onclick="copySeriesJson()">📋 Copier</button>
+                <button class="btn btn-primary" onclick="downloadSeriesConfig()">📥 Télécharger</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Détail Série -->
+    <div class="modal-overlay hidden" id="seriesDetailOverlay" onclick="closeSeriesDetail(event)">
+        <div class="modal series-detail-modal" onclick="event.stopPropagation()">
+            <div class="series-detail-header">
+                <div>
+                    <h3 id="seriesDetailTitle">📚 Détail de la série</h3>
+                    <p id="seriesDetailSubtitle" style="color:#888;margin:5px 0 0 0;font-size:0.85rem;"></p>
+                </div>
+                <button class="btn btn-secondary" onclick="closeSeriesDetail()" style="padding:5px 10px;">✕</button>
+            </div>
+            <div class="series-detail-stats" id="seriesDetailStats"></div>
+            <div class="series-detail-actions">
+                <button class="btn btn-success" onclick="validateAllSeriesVolumes()">✓ Tout valider</button>
+                <button class="btn btn-danger" onclick="rejectAllSeriesVolumes()">✗ Tout rejeter</button>
+                <button class="btn btn-warning" onclick="resetAllSeriesVolumes()">↩ Tout réinitialiser</button>
+                <button class="btn btn-primary admin-only" onclick="openSplitSeriesDialog()" id="splitSeriesBtn">✂️ Scinder la série</button>
+            </div>
+            <div class="series-detail-volumes" id="seriesDetailVolumes"></div>
+        </div>
+    </div>
+
+    <script>
+        // État global
+        let allData = [];
+        let filteredData = [];
+        let volumeStatuts = {};
+        let seriesData = {};  // {serie_jp: {serie_fr, tomes, lastTome, lastDate, url, type, removed}}
+        let addedSeries = []; // Séries ajoutées
+        let removedSeries = new Set(); // Séries supprimées
+        let currentSort = { field: 'serie_fr', order: 'asc' };
+        let currentPage = 1;
+        const perPage = 100;
+        
+        // NOUVEAU: Éditeurs officiels par série (défini quand on valide un volume)
+        let editeursOfficiels = {};  // {serie_jp: "Kodansha"}
+        
+        // NOUVEAU: Volumes assignés à des séries scindées
+        // {asin: "Alya (Manga)"} → ce volume appartient à "Alya (Manga)" au lieu de "Alya"
+        let volumeSerieOverride = {};
+        
+        // NOUVEAU: Séries scindées créées par l'utilisateur
+        // [{nom_original: "Alya", nouveau_nom: "Alya (Manga)", editeur: "Kodansha", type: "manga"}]
+        let seriesScindees = [];
+        
+        // NOUVEAU: URLs supplémentaires par série (pour détecter LN, etc.)
+        // {serie_jp: ["https://amazon.co.jp/dp/...", ...]}
+        let seriesUrlsSupplementaires = {};
+        
+        // NOUVEAU: Traductions FR personnalisées par série
+        // {serie_jp: "Titre FR personnalisé"}
+        let seriesTraductions = {};
+
+        // ============================================
+        // CONFIGURATION GITHUB + GIST
+        // ============================================
+        const CONFIG = {
+            GITHUB_USER: 'DunstanCooper',
+            GITHUB_REPO: 'mangavega-v7',
+            GITHUB_BRANCH: 'main',
+            JSON_FILE: 'manga_collection.json',
+            GIST_ID: '30cd62947f2ea6c07a044ab3546fb08f'
+        };
+        CONFIG.GITHUB_JSON_URL = `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.GITHUB_REPO}/${CONFIG.GITHUB_BRANCH}/${CONFIG.JSON_FILE}`;
+        CONFIG.GIST_API_URL = `https://api.github.com/gists/${CONFIG.GIST_ID}`;
+
+        // État admin
+        let isAdmin = false;
+        let pendingChanges = 0;
+        let gistCorrections = { valides: [], rejetes: [], commentaires: {}, tomes: {} };
+        // tomes: { asin: numero } - corrections manuelles de numéros de tome
+        let gistSeriesConfig = { urls_supplementaires: {}, series_ajoutees: [], series_supprimees: [] };
+
+        // ============================================
+        // CRYPTO UTILS (chiffrement AES du token)
+        // ============================================
+        async function deriveKey(password) {
+            const enc = new TextEncoder();
+            const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+            return crypto.subtle.deriveKey(
+                { name: 'PBKDF2', salt: enc.encode('manga-viewer-salt-v1'), iterations: 100000, hash: 'SHA-256' },
+                keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']
+            );
+        }
+
+        async function encrypt(text, password) {
+            const key = await deriveKey(password);
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            const enc = new TextEncoder();
+            const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(text));
+            const combined = new Uint8Array(iv.length + encrypted.byteLength);
+            combined.set(iv);
+            combined.set(new Uint8Array(encrypted), iv.length);
+            return btoa(String.fromCharCode(...combined));
+        }
+
+        async function decrypt(encryptedBase64, password) {
+            try {
+                const key = await deriveKey(password);
+                const combined = Uint8Array.from(atob(encryptedBase64), c => c.charCodeAt(0));
+                const iv = combined.slice(0, 12);
+                const data = combined.slice(12);
+                const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
+                return new TextDecoder().decode(decrypted);
+            } catch (e) { return null; }
+        }
+
+        function getEncryptedToken() { return localStorage.getItem('manga_viewer_token_v1'); }
+        function setEncryptedToken(t) { localStorage.setItem('manga_viewer_token_v1', t); }
+        async function getToken(password) {
+            const encrypted = getEncryptedToken();
+            if (!encrypted) return null;
+            return await decrypt(encrypted, password);
+        }
+
+        // ============================================
+        // TOAST NOTIFICATIONS
+        // ============================================
+        function showToast(message, type = 'info') {
+            let container = $('toastContainer');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toastContainer';
+                container.className = 'toast-container';
+                document.body.appendChild(container);
+            }
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // ============================================
+        // ADMIN MODE
+        // ============================================
+        async function toggleAdmin() {
+            const password = $('adminPassword')?.value;
+            if (!password) { showToast('Entrez un mot de passe', 'error'); return; }
+
+            if (!isAdmin) {
+                let token = await getToken(password);
+                if (!token) {
+                    const newToken = prompt('Première connexion:\\nEntrez votre GitHub Token (gist scope)\\n\\nIl sera chiffré avec votre mot de passe.');
+                    if (!newToken) return;
+                    try {
+                        const resp = await fetch(CONFIG.GIST_API_URL, { headers: { 'Authorization': `token ${newToken}` } });
+                        if (!resp.ok) throw new Error('Token invalide ou pas de permission gist');
+                        const encrypted = await encrypt(newToken, password);
+                        setEncryptedToken(encrypted);
+                        token = newToken;
+                        showToast('Token enregistré et chiffré !', 'success');
+                    } catch (e) { showToast('Erreur: ' + e.message, 'error'); return; }
+                }
+                
+                try {
+                    const resp = await fetch(CONFIG.GIST_API_URL, { headers: { 'Authorization': `token ${token}` } });
+                    if (!resp.ok) throw new Error('Accès refusé');
+                    isAdmin = true;
+                    sessionStorage.setItem('manga_admin_pwd', password);
+                    updateAdminUI();
+                    showToast('Mode admin activé !', 'success');
+                } catch (e) { showToast('Mot de passe incorrect', 'error'); }
+            } else {
+                isAdmin = false;
+                sessionStorage.removeItem('manga_admin_pwd');
+                updateAdminUI();
+                showToast('Déconnecté', 'info');
+            }
+        }
+
+        function updateAdminUI() {
+            const bar = $('adminBar');
+            const icon = $('adminIcon');
+            const text = $('adminText');
+            const btn = $('adminLoginBtn');
+            const pwd = $('adminPassword');
+            
+            // Afficher/masquer les éléments admin-only
+            document.querySelectorAll('.tab.admin-only').forEach(el => {
+                el.style.display = isAdmin ? '' : 'none';
+            });
+            
+            if (bar) {
+                if (isAdmin) {
+                    bar.classList.remove('locked');
+                    if (icon) icon.textContent = '🔓';
+                    if (text) text.textContent = 'Mode admin activé';
+                    if (btn) btn.textContent = '🚪 Déconnexion';
+                    if (pwd) pwd.style.display = 'none';
+                } else {
+                    bar.classList.add('locked');
+                    if (icon) icon.textContent = '🔒';
+                    if (text) text.textContent = 'Mode lecture seule';
+                    if (btn) btn.textContent = '🔑 Connexion';
+                    if (pwd) { pwd.style.display = ''; pwd.value = ''; }
+                }
+            }
+            updateSyncBanner();
+        }
+
+        function updateSyncBanner() {
+            const banner = $('syncBanner');
+            console.log('updateSyncBanner: banner=', banner, 'pendingChanges=', pendingChanges, 'isAdmin=', isAdmin);
+            if (banner) {
+                if (pendingChanges > 0 && isAdmin) {
+                    banner.classList.remove('hidden');
+                    console.log('Banner should be VISIBLE now');
+                    const count = $('syncCount');
+                    if (count) count.textContent = pendingChanges;
+                } else {
+                    banner.classList.add('hidden');
+                }
+            } else {
+                console.error('syncBanner element NOT FOUND!');
+            }
+        }
+
+        function markPendingChange() {
+            pendingChanges++;
+            console.log('markPendingChange appelé, pendingChanges:', pendingChanges, 'isAdmin:', isAdmin);
+            updateSyncBanner();
+        }
+
+        // ============================================
+        // GIST OPERATIONS
+        // ============================================
+        async function loadFromGist() {
+            try {
+                const resp = await fetch(CONFIG.GIST_API_URL);
+                if (resp.ok) {
+                    const gist = await resp.json();
+                    if (gist.files['corrections.json']) {
+                        gistCorrections = JSON.parse(gist.files['corrections.json'].content);
+                        console.log('Corrections chargées:', gistCorrections);
+                        // Restaurer les éditeurs officiels sauvegardés dans le Gist
+                        if (gistCorrections.editeurs_officiels) {
+                            Object.assign(editeursOfficiels, gistCorrections.editeurs_officiels);
+                            console.log('📚 Éditeurs officiels restaurés depuis Gist:', Object.keys(editeursOfficiels).length);
+                        }
+                    }
+                    if (gist.files['series_config.json']) {
+                        gistSeriesConfig = JSON.parse(gist.files['series_config.json'].content);
+                        seriesUrlsSupplementaires = gistSeriesConfig.urls_supplementaires || {};
+                        // Charger les séries supprimées
+                        if (gistSeriesConfig.series_supprimees) {
+                            removedSeries = new Set(gistSeriesConfig.series_supprimees);
+                            console.log('Séries supprimées chargées:', removedSeries.size);
+                        }
+                        // Charger les séries ajoutées
+                        if (gistSeriesConfig.series_ajoutees) {
+                            addedSeries = gistSeriesConfig.series_ajoutees;
+                            console.log('Séries ajoutées chargées:', addedSeries.length);
+                        }
+                        // Charger les traductions personnalisées
+                        if (gistSeriesConfig.traductions) {
+                            seriesTraductions = gistSeriesConfig.traductions;
+                            console.log('Traductions chargées:', Object.keys(seriesTraductions).length);
+                        }
+                        console.log('Config chargée:', gistSeriesConfig);
+                    }
+                }
+            } catch (e) { console.warn('Erreur Gist:', e); }
+        }
+
+        async function syncToGist() {
+            if (!isAdmin) { showToast('Mode admin requis', 'error'); return; }
+            
+            const password = sessionStorage.getItem('manga_admin_pwd');
+            const token = await getToken(password);
+            if (!token) { showToast('Session expirée, reconnectez-vous', 'error'); return; }
+
+            const syncBtn = $('syncBtn');
+            if (syncBtn) { syncBtn.disabled = true; syncBtn.textContent = '⏳ Synchronisation...'; }
+
+            // Construire les corrections depuis volumeStatuts
+            gistCorrections.valides = [];
+            gistCorrections.rejetes = [];
+            for (const asin in volumeStatuts) {
+                if (volumeStatuts[asin] === 'valide') gistCorrections.valides.push(asin);
+                else if (volumeStatuts[asin] === 'rejete') gistCorrections.rejetes.push(asin);
+            }
+            // Sauvegarder les éditeurs officiels (déterminés par les validations)
+            gistCorrections.editeurs_officiels = editeursOfficiels;
+            
+            // Mettre à jour la config
+            gistSeriesConfig.urls_supplementaires = seriesUrlsSupplementaires;
+            gistSeriesConfig.series_supprimees = [...removedSeries];
+            gistSeriesConfig.series_ajoutees = addedSeries;
+            gistSeriesConfig.traductions = seriesTraductions;
+
+            try {
+                const resp = await fetch(CONFIG.GIST_API_URL, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        files: {
+                            'corrections.json': { content: JSON.stringify(gistCorrections, null, 2) },
+                            'series_config.json': { content: JSON.stringify(gistSeriesConfig, null, 2) }
+                        }
+                    })
+                });
+                if (!resp.ok) throw new Error('Erreur HTTP ' + resp.status);
+                pendingChanges = 0;
+                updateSyncBanner();
+                showToast('Synchronisé avec GitHub !', 'success');
+            } catch (e) { showToast('Erreur: ' + e.message, 'error'); }
+
+            if (syncBtn) { syncBtn.disabled = false; syncBtn.textContent = '☁️ Synchroniser avec GitHub'; }
+        }
+
+        // ============================================
+        // AUTO-LOAD FROM GITHUB
+        // ============================================
+        async function autoLoadFromGitHub() {
+            const dropZone = $('dropZone');
+            if (!dropZone) return;
+            
+            try {
+                // 1. Charger le Gist (corrections, config)
+                dropZone.innerHTML = '<h3>⏳ Chargement des corrections...</h3><p>Depuis GitHub Gist...</p>';
+                await loadFromGist();
+                
+                // 2. Charger le JSON principal
+                dropZone.innerHTML = '<h3>⏳ Chargement des volumes...</h3><p>Depuis GitHub...</p>';
+                const resp = await fetch(CONFIG.GITHUB_JSON_URL);
+                if (!resp.ok) throw new Error(`Erreur HTTP ${resp.status}`);
+                const data = await resp.json();
+                
+                // 3. Appliquer les corrections du Gist aux données
+                if (data.volumes) {
+                    data.volumes.forEach(v => {
+                        if (gistCorrections.valides && gistCorrections.valides.includes(v.asin)) v.statut = 'valide';
+                        else if (gistCorrections.rejetes && gistCorrections.rejetes.includes(v.asin)) v.statut = 'rejete';
+                        // Appliquer les corrections de tomes
+                        if (gistCorrections.tomes && gistCorrections.tomes[v.asin]) {
+                            v.tome = gistCorrections.tomes[v.asin];
+                        }
+                    });
+                }
+                
+                // 4. Traiter les données (réutilise le code existant de loadFile)
+                processLoadedData(data);
+                
+                dropZone.innerHTML = `
+                    <h3>✅ Chargé depuis GitHub</h3>
+                    <p style="color:#2ecc71;">Dernière MAJ: ${data.generated_at || 'inconnue'}</p>
+                    <p style="margin-top:8px;font-size:0.75rem;color:#888;">
+                        ${gistCorrections.valides?.length || 0} validés, ${gistCorrections.rejetes?.length || 0} rejetés (Gist)
+                    </p>
+                    <button class="btn btn-secondary" onclick="location.reload()" style="margin-top:10px;">🔄 Recharger</button>
+                `;
+                
+                showToast(`${allData.length} volumes chargés`, 'success');
+                
+            } catch (e) {
+                console.error('Erreur GitHub:', e);
+                
+                // En mode admin, afficher quand même l'interface (pour le Script Runner)
+                if (isAdmin) {
+                    $('dropZone').classList.add('hidden');
+                    $('mainContent').classList.remove('hidden');
+                    // Afficher un bandeau d'info au lieu de bloquer
+                    const tabVolumes = $('tab-volumes');
+                    if (tabVolumes) {
+                        tabVolumes.innerHTML = `
+                            <div style="text-align:center;padding:40px;border:2px dashed rgba(255,255,255,0.15);border-radius:12px;margin:20px 0;">
+                                <h3 style="color:#f39c12;">⚠️ Aucune collection trouvée</h3>
+                                <p style="color:#888;">Le fichier manga_collection.json n'existe pas encore sur le repo.</p>
+                                <p style="color:#aaa;margin-top:10px;">Lancez le script depuis l'onglet <strong>⚡ Script</strong> pour générer la première collection.</p>
+                                <p style="margin-top:15px;">Ou chargez manuellement :</p>
+                                <input type="file" id="fileInput2" accept=".json" style="display:none;">
+                                <label for="fileInput2" class="btn btn-secondary" style="cursor:pointer;">📁 Parcourir...</label>
+                            </div>
+                        `;
+                        const fileInput2 = $('fileInput2');
+                        if (fileInput2) fileInput2.onchange = e => loadFile(e.target.files[0]);
+                    }
+                } else {
+                    dropZone.innerHTML = `
+                        <h3>❌ Erreur de chargement</h3>
+                        <p style="color:#e74c3c;">${e.message}</p>
+                        <p style="margin-top:15px;">Chargez manuellement le fichier JSON:</p>
+                        <input type="file" id="fileInput" accept=".json">
+                        <label for="fileInput">📁 Parcourir...</label>
+                    `;
+                    const fileInput = $('fileInput');
+                    if (fileInput) fileInput.onchange = e => loadFile(e.target.files[0]);
+                }
+            }
+        }
+
+        // Vérifier auto-login au démarrage
+        async function checkAutoLogin() {
+            const pwd = sessionStorage.getItem('manga_admin_pwd');
+            if (pwd) {
+                const token = await getToken(pwd);
+                if (token) {
+                    isAdmin = true;
+                    updateAdminUI();
+                }
+            }
+        }
+
+        const $ = id => document.getElementById(id);
+        const esc = t => { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; };
+        const cleanSerieJp = (name) => {
+            if (!name) return '';
+            if (name.endsWith(' [LN]')) return name.slice(0, -5);
+            if (name.endsWith(' [MANGA]')) return name.slice(0, -8);
+            return name;
+        };
+        const getTypeSuffix = (name) => {
+            if (!name) return '';
+            if (name.endsWith(' [LN]')) return 'LN';
+            if (name.endsWith(' [MANGA]')) return 'Manga';
+            return '';
+        };
+
+        // Tabs
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.onclick = () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                $('tab-' + tab.dataset.tab).classList.add('active');
+                if (tab.dataset.tab === 'predictions') {
+                    buildPredictions();
+                    renderPredictions();
+                }
+                if (tab.dataset.tab === 'runner') {
+                    loadWorkflowRuns();
+                }
+            };
+        });
+
+        // Events (protégés contre éléments manquants)
+        const dropZone = $('dropZone');
+        if (dropZone) {
+            dropZone.ondragover = e => { e.preventDefault(); dropZone.classList.add('dragover'); };
+            dropZone.ondragleave = () => dropZone.classList.remove('dragover');
+            dropZone.ondrop = e => { e.preventDefault(); dropZone.classList.remove('dragover'); loadFile(e.dataTransfer.files[0]); };
+        }
+        const fileInput = $('fileInput');
+        if (fileInput) fileInput.onchange = e => loadFile(e.target.files[0]);
+
+        ['searchInput', 'publisherFilter', 'dateFilter', 'statusFilter', 'seriesFilter'].forEach(id => {
+            const el = $(id);
+            if (el) el.addEventListener(id === 'searchInput' ? 'input' : 'change', debounce(applyFilters, 150));
+        });
+
+        document.querySelectorAll('th[data-sort]').forEach(th => {
+            th.onclick = () => {
+                const f = th.dataset.sort;
+                currentSort = { field: f, order: currentSort.field === f && currentSort.order === 'asc' ? 'desc' : 'asc' };
+                document.querySelectorAll('th').forEach(t => t.classList.remove('sorted-asc', 'sorted-desc'));
+                th.classList.add('sorted-' + currentSort.order);
+                applyFilters();
+            };
+        });
+
+        function loadFile(file) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    processLoadedData(data);
+                } catch (err) { 
+                    console.error(err);
+                    alert('Erreur: ' + err.message); 
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function processLoadedData(data) {
+                    let volumes = data.volumes || (Array.isArray(data) ? data : Object.values(data).flat());
+                    
+                    volumeStatuts = {};
+                    seriesData = {};
+                    
+                    allData = volumes.map((d, index) => {
+                        const asin = d.asin || `unknown_${index}`;
+                        const item = {
+                            serie_jp: d.serie_jp || d.nom || '',
+                            serie_fr: d.serie_fr || d.nom_fr || '',
+                            tome: d.tome || 'N/A',
+                            date: d.date_sortie_jp || d.date || '',
+                            editeur: d.editeur || 'Inconnu',
+                            url: d.url || '',
+                            asin: asin,
+                            originalStatut: d.statut || 'non_traite',
+                            serie_recherchee: d.serie_recherchee || '',  // Série qui a trouvé ce volume
+                            source: d.source || '',  // Source de la découverte
+                            date_detection: d.date_detection || '',  // Date de première détection
+                            titre_volume: d.titre_volume || d.titre || ''  // Titre complet du volume
+                        };
+                        volumeStatuts[asin] = item.originalStatut;
+                        
+                        // Détecter le type depuis le suffixe [LN]/[MANGA] du nom de série
+                        const serieNomBrut = d.serie_jp || d.nom || '';
+                        let volumeType = '';
+                        if (serieNomBrut.endsWith(' [LN]')) {
+                            volumeType = 'LN';
+                        } else if (serieNomBrut.endsWith(' [MANGA]')) {
+                            volumeType = 'Manga';
+                        } else {
+                            // Fallback : détection par mots-clés (séries non migrées)
+                            const titreVolume = d.titre_volume || d.titre || '';
+                            const lnKeywords = ['文庫', 'ノベル', '小説', 'ライトノベル'];
+                            const mangaKeywords = ['コミック', 'コミックス', 'マンガ', '漫画', 'ガンガン', 'KC', 'エース'];
+                            const isLN = lnKeywords.some(kw => titreVolume.includes(kw));
+                            const isManga = mangaKeywords.some(kw => titreVolume.includes(kw));
+                            if (isLN && !isManga) volumeType = 'LN';
+                            else if (isManga && !isLN) volumeType = 'Manga';
+                        }
+                        
+                        item.volumeType = volumeType;
+                        
+                        // Build series data - la clé est le nom complet (avec suffixe)
+                        // Plus besoin du séparateur |||
+                        const serieKey = serieNomBrut;
+                        if (serieKey) {
+                            if (!seriesData[serieKey]) {
+                                seriesData[serieKey] = {
+                                    serieKey: serieKey,  // Clé brute (avec [LN]/[MANGA]) pour les actions
+                                    serie_jp: cleanSerieJp(serieKey),
+                                    serie_fr: item.serie_fr,
+                                    volumeType: volumeType,
+                                    tomesSet: new Set(),
+                                    maxTome: 0,
+                                    lastDate: '',
+                                    lastDateParsed: null,
+                                    editeur: item.editeur,
+                                    url: item.url,
+                                    firstDetection: item.date_detection || '',
+                                    firstDetectionParsed: null
+                                };
+                            }
+                            const tomeNum = parseInt(item.tome) || 0;
+                            if (tomeNum > 0) {
+                                seriesData[serieKey].tomesSet.add(tomeNum);
+                                if (tomeNum > seriesData[serieKey].maxTome) {
+                                    seriesData[serieKey].maxTome = tomeNum;
+                                }
+                            }
+                            // La dernière date = la plus récente (parser correctement)
+                            if (item.date) {
+                                const parts = item.date.split('/');
+                                if (parts.length === 3) {
+                                    const itemDateParsed = new Date(parts[0], parts[1] - 1, parts[2]);
+                                    if (!seriesData[serieKey].lastDateParsed || itemDateParsed > seriesData[serieKey].lastDateParsed) {
+                                        seriesData[serieKey].lastDateParsed = itemDateParsed;
+                                        seriesData[serieKey].lastDate = item.date;
+                                    }
+                                }
+                            }
+                            // Première détection = la plus ancienne
+                            if (item.date_detection) {
+                                const detParts = item.date_detection.split('-');
+                                if (detParts.length === 3) {
+                                    const detParsed = new Date(detParts[0], detParts[1] - 1, detParts[2]);
+                                    if (!seriesData[serieKey].firstDetectionParsed || detParsed < seriesData[serieKey].firstDetectionParsed) {
+                                        seriesData[serieKey].firstDetectionParsed = detParsed;
+                                        seriesData[serieKey].firstDetection = item.date_detection;
+                                    }
+                                }
+                            }
+                            if (item.serie_fr && !seriesData[serieKey].serie_fr) {
+                                seriesData[serieKey].serie_fr = item.serie_fr;
+                            }
+                        }
+                        return item;
+                    });
+                    
+                    // Finaliser les stats des séries
+                    for (const key in seriesData) {
+                        seriesData[key].nbTomes = seriesData[key].tomesSet.size;
+                        seriesData[key].lastTome = seriesData[key].maxTome;
+                        // Conserver tomesSet pour calculer les tomes manquants
+                        // Convertir en Array pour sérialisation
+                        seriesData[key].tomesArray = [...seriesData[key].tomesSet];
+                        delete seriesData[key].tomesSet;
+                        delete seriesData[key].maxTome;
+                        delete seriesData[key].lastDateParsed;
+                        delete seriesData[key].firstDetectionParsed;
+                    }
+                    
+                    // NOUVEAU: Reconstruire editeursOfficiels à partir des volumes validés
+                    // Pour chaque série, l'éditeur officiel est celui des premiers volumes validés
+                    const seriesValidees = {};
+                    allData.forEach(d => {
+                        const statut = volumeStatuts[d.asin] || 'non_traite';
+                        if (statut === 'valide' && d.editeur && d.editeur !== 'Inconnu') {
+                            if (!seriesValidees[d.serie_jp]) {
+                                seriesValidees[d.serie_jp] = {};
+                            }
+                            seriesValidees[d.serie_jp][d.editeur] = (seriesValidees[d.serie_jp][d.editeur] || 0) + 1;
+                        }
+                    });
+                    
+                    // L'éditeur officiel est celui qui a le plus de volumes validés
+                    for (const serieJp in seriesValidees) {
+                        const editeurs = seriesValidees[serieJp];
+                        const editeurPrincipal = Object.entries(editeurs).sort((a, b) => b[1] - a[1])[0];
+                        if (editeurPrincipal) {
+                            editeursOfficiels[serieJp] = editeurPrincipal[0];
+                            console.log(`📚 Éditeur officiel restauré: "${serieJp.substring(0, 20)}..." → ${editeurPrincipal[0]}`);
+                        }
+                    }
+                    
+                    console.log(`Éditeurs officiels:`, editeursOfficiels);
+                    
+                    console.log(`Chargé ${allData.length} volumes, ${Object.keys(seriesData).length} séries`);
+                    init();
+        }
+
+        function init() {
+            $('dropZone').classList.add('hidden');
+            $('mainContent').classList.remove('hidden');
+
+            const pubs = [...new Set(allData.map(d => d.editeur).filter(e => e && e !== 'Inconnu'))].sort();
+            $('publisherFilter').innerHTML = '<option value="">Tous</option>' + pubs.map(p => `<option>${esc(p)}</option>`).join('');
+
+            const series = [...new Set(allData.map(d => d.serie_fr || d.serie_jp).filter(s => s))].sort();
+            $('seriesFilter').innerHTML = '<option value="">Toutes</option>' + series.map(s => `<option value="${esc(s)}">${esc(s.slice(0,30))}</option>`).join('');
+
+            $('seriesCount').textContent = Object.keys(seriesData).length;
+            
+            updateStats();
+            applyFilters();
+            renderSeriesCards();
+            renderRecapTable();
+            
+        }
+
+        function updateStats() {
+            let valides = 0, rejetes = 0, nonTraites = 0;
+            let modifications = 0;  // Compteur de changements par rapport à l'état original
+            
+            for (const asin in volumeStatuts) {
+                const s = volumeStatuts[asin];
+                if (s === 'valide') valides++;
+                else if (s === 'rejete') rejetes++;
+                else nonTraites++;
+            }
+            
+            // Compter les modifications (statut différent de l'original)
+            allData.forEach(d => {
+                const statutActuel = volumeStatuts[d.asin] || 'non_traite';
+                const statutOriginal = d.originalStatut || 'non_traite';
+                if (statutActuel !== statutOriginal) {
+                    modifications++;
+                }
+            });
+
+            $('statSeries').textContent = Object.keys(seriesData).length;
+            $('statVolumes').textContent = allData.length;
+            $('statOk').textContent = valides;
+            $('statRejected').textContent = rejetes;
+            $('statPending').textContent = nonTraites;
+
+            // Les modifications sont maintenant gérées par pendingChanges et syncBanner
+        }
+
+        function updateSeriesBanner() {
+            // Cette fonction n'est plus utilisée - le syncBanner gère tout
+            // Gardée pour compatibilité mais ne fait rien
+        }
+
+        function applyFilters() {
+            const search = $('searchInput').value.toLowerCase();
+            const pub = $('publisherFilter').value;
+            const year = $('dateFilter').value;
+            const status = $('statusFilter').value;
+            const series = $('seriesFilter').value;
+
+            filteredData = allData.filter(d => {
+                const s = volumeStatuts[d.asin] || 'non_traite';
+                if (search && !`${d.serie_fr || ''} ${d.serie_jp || ''} ${d.asin || ''} ${d.editeur || ''}`.toLowerCase().includes(search)) return false;
+                if (pub && d.editeur !== pub) return false;
+                if (year && d.date && !d.date.startsWith(year)) return false;
+                if (status && s !== status) return false;
+                if (series && d.serie_fr !== series && d.serie_jp !== series) return false;
+                return true;
+            });
+
+            filteredData.sort((a, b) => {
+                let va = a[currentSort.field] || '', vb = b[currentSort.field] || '';
+                if (currentSort.field === 'tome') { va = parseInt(va) || 999; vb = parseInt(vb) || 999; }
+                if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
+                const cmp = (va > vb ? 1 : va < vb ? -1 : 0) * (currentSort.order === 'asc' ? 1 : -1);
+                if (cmp === 0 && currentSort.field !== 'tome') {
+                    const tomeA = parseInt(a.tome) || 999;
+                    const tomeB = parseInt(b.tome) || 999;
+                    return tomeA - tomeB;
+                }
+                return cmp;
+            });
+
+            currentPage = 1;
+            render();
+        }
+
+        function render() {
+            $('displayCount').textContent = filteredData.length;
+            const start = (currentPage - 1) * perPage;
+            const page = filteredData.slice(start, start + perPage);
+
+            $('tableBody').innerHTML = page.map(d => {
+                const s = volumeStatuts[d.asin] || 'non_traite';
+                const rowClass = s === 'rejete' ? 'rejected' : s === 'valide' ? 'valide' : '';
+                const safeAsin = d.asin.replace(/'/g, "\\'");
+                
+                // Vérifier si ce volume est assigné à une série scindée
+                const serieOverride = volumeSerieOverride[d.asin];
+                
+                // Vérifier l'éditeur officiel
+                const editeurOfficiel = editeursOfficiels[d.serie_jp];
+                const isEditeurOfficiel = editeurOfficiel && d.editeur === editeurOfficiel;
+                const isEditeurDifferent = editeurOfficiel && d.editeur !== editeurOfficiel;
+                
+                // Badge éditeur avec classe selon statut
+                let pubBadgeClass = 'publisher-badge';
+                let pubBadgeTitle = '';
+                if (isEditeurOfficiel) {
+                    pubBadgeClass += ' official';
+                    pubBadgeTitle = '✓ Éditeur officiel';
+                } else if (isEditeurDifferent) {
+                    pubBadgeClass += ' different';
+                    pubBadgeTitle = `⚠ Officiel: ${editeurOfficiel}`;
+                }
+                
+                // Affichage de la série (avec override si présent)
+                const cleanJp = cleanSerieJp(d.serie_jp);
+                let serieDisplay = `<strong>${esc(d.serie_fr || cleanJp)}</strong>`;
+                if (d.serie_fr && cleanJp !== d.serie_fr) {
+                    serieDisplay += `<div style="font-size:0.65rem;color:#555;">${esc(cleanJp)}</div>`;
+                }
+                if (serieOverride) {
+                    serieDisplay += `<div class="serie-override">→ ${esc(serieOverride)}</div>`;
+                }
+                // Afficher la série recherchée si différente du nom
+                if (d.serie_recherchee && d.serie_recherchee !== d.serie_jp) {
+                    serieDisplay += `<div style="font-size:0.6rem;color:#e67e22;margin-top:2px;">🔍 via: ${esc(d.serie_recherchee.substring(0, 25))}${d.serie_recherchee.length > 25 ? '...' : ''}</div>`;
+                }
+                
+                return `<tr class="${rowClass}" data-asin="${esc(d.asin)}">
+                    <td><span class="status-dot ${s}"></span></td>
+                    <td>${serieDisplay}</td>
+                    <td><span class="tome-badge editable" onclick="editTome('${safeAsin}')" title="Cliquer pour modifier">${d.tome}</span></td>
+                    <td>${esc(d.date || '-')}</td>
+                    <td><span class="${pubBadgeClass}" title="${pubBadgeTitle}">${esc(d.editeur)}</span></td>
+                    <td><span class="asin-code">${esc(d.asin)}</span></td>
+                    <td>${d.url ? `<a href="${d.url}" target="_blank">🔗</a>` : '-'}</td>
+                    <td class="actions-cell"><div class="action-btns">
+                        ${s === 'rejete' || s === 'valide' 
+                            ? `<button class="action-btn undo" onclick="setStatut('${safeAsin}','non_traite')" title="Remettre">↩</button>`
+                            : `<button class="action-btn validate" onclick="setStatut('${safeAsin}','valide')" title="Valider">✓</button>
+                               <button class="action-btn reject" onclick="setStatut('${safeAsin}','rejete')" title="Rejeter">✗</button>`}
+                    </div></td>
+                </tr>`;
+            }).join('');
+
+            renderPagination();
+        }
+
+        function renderSeriesCards() {
+            const search = ($('seriesSearchInput')?.value || '').toLowerCase();
+            const sortValue = $('seriesSortSelect')?.value || 'name_asc';
+            const filterValue = $('seriesFilterSelect')?.value || 'all';
+            const grid = $('seriesGrid');
+            
+            let seriesList = Object.values(seriesData);
+            
+            // Add new series from Gist (pas encore scannées)
+            addedSeries.forEach(s => {
+                const serieNom = s.nom || s.serie_jp || '';
+                const expectedSuffix = s.type === 'ln' ? ' [LN]' : ' [MANGA]';
+                const nomInterne = serieNom.endsWith(' [LN]') || serieNom.endsWith(' [MANGA]') ? serieNom : serieNom + expectedSuffix;
+                if (serieNom && !seriesData[nomInterne]) {
+                    seriesList.push({ 
+                        serieKey: nomInterne,
+                        serie_jp: cleanSerieJp(nomInterne),
+                        serie_fr: s.nom_fr || '',
+                        volumeType: s.type === 'ln' ? 'LN' : '',
+                        nbTomes: 0, 
+                        lastTome: '-', 
+                        lastDate: '-', 
+                        firstDetection: '', 
+                        isNew: true 
+                    });
+                }
+            });
+            
+            // Calculer les tomes manquants pour chaque série
+            seriesList = seriesList.map(s => {
+                const nbTomes = s.nbTomes || 0;
+                const lastTome = parseInt(s.lastTome) || 0;
+                const hasMissing = lastTome > 0 && nbTomes > 0 && nbTomes !== lastTome;
+                const missingCount = hasMissing ? (lastTome - nbTomes) : 0;
+                return { ...s, hasMissingTomes: hasMissing, missingCount };
+            });
+            
+            // Filter by search
+            if (search) {
+                seriesList = seriesList.filter(s => 
+                    (s.serie_jp || '').toLowerCase().includes(search) ||
+                    (s.serie_fr || '').toLowerCase().includes(search)
+                );
+            }
+            
+            // Filter by status
+            if (filterValue === 'missing') {
+                seriesList = seriesList.filter(s => s.hasMissingTomes);
+            } else if (filterValue === 'complete') {
+                seriesList = seriesList.filter(s => !s.hasMissingTomes);
+            }
+            
+            // Sort
+            seriesList.sort((a, b) => {
+                const nameA = a.serie_fr || a.serie_jp || '';
+                const nameB = b.serie_fr || b.serie_jp || '';
+                switch (sortValue) {
+                    case 'name_asc':
+                        return nameA.localeCompare(nameB);
+                    case 'name_desc':
+                        return nameB.localeCompare(nameA);
+                    case 'detection_desc':
+                        return (b.firstDetection || '').localeCompare(a.firstDetection || '');
+                    case 'detection_asc':
+                        return (a.firstDetection || '').localeCompare(b.firstDetection || '');
+                    case 'tomes_desc':
+                        return (b.nbTomes || 0) - (a.nbTomes || 0);
+                    case 'tomes_asc':
+                        return (a.nbTomes || 0) - (b.nbTomes || 0);
+                    case 'date_desc':
+                        return (b.lastDate || '').localeCompare(a.lastDate || '');
+                    case 'date_asc':
+                        return (a.lastDate || '').localeCompare(b.lastDate || '');
+                    case 'missing_desc':
+                        // Trier par nb de tomes manquants décroissant, puis par nom
+                        if (a.missingCount !== b.missingCount) {
+                            return (b.missingCount || 0) - (a.missingCount || 0);
+                        }
+                        return (a.serie_fr || a.serie_jp || '').localeCompare(b.serie_fr || b.serie_jp || '');
+                    default:
+                        return 0;
+                }
+            });
+            
+            grid.innerHTML = seriesList.map(s => {
+                const serieJp = s.serie_jp || '';  // Nom nettoyé pour affichage
+                const serieFullKey = s.serieKey || serieJp;  // Clé avec suffixe pour les actions
+                const isRemoved = removedSeries.has(serieFullKey);
+                const safeKey = serieFullKey.replace(/'/g, "\\'");
+                const safeDisplayKey = serieJp.replace(/'/g, "\\'");
+                
+                // Badge pour le type (Manga/LN)
+                const typeBadge = s.volumeType 
+                    ? `<span class="type-badge ${s.volumeType === 'LN' ? 'ln' : 'manga'}">${s.volumeType === 'LN' ? '📖 Light Novel' : '📕 Manga'}</span>`
+                    : '';
+                
+                // Titre : ne pas ajouter (LN)/(Manga) si déjà dans le titre FR
+                const baseFr = s.serie_fr || serieJp;
+                const needsTypeSuffix = s.volumeType && !baseFr.includes('(LN)') && !baseFr.includes('(Manga)') && !baseFr.includes('(Light Novel)');
+                const displayTitle = needsTypeSuffix
+                    ? `${esc(baseFr)} (${s.volumeType})`
+                    : esc(baseFr);
+                
+                // Éditeur officiel défini ? (la clé éditeur utilise le nom complet)
+                const editeurOfficiel = editeursOfficiels[serieFullKey] || editeursOfficiels[serieJp];
+                const editeurDisplay = editeurOfficiel 
+                    ? `<span style="color:#2ecc71;">✓ ${esc(editeurOfficiel)}</span>`
+                    : `<span style="color:#feca57;">${esc(s.editeur || '-')}</span>`;
+                const editeurLabel = editeurOfficiel ? 'Éditeur officiel' : 'Éditeur';
+                
+                // URLs supplémentaires pour cette série
+                const urlsSupp = seriesUrlsSupplementaires[serieFullKey] || seriesUrlsSupplementaires[serieJp] || [];
+                const urlsSuppDisplay = urlsSupp.length > 0 
+                    ? `<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.1);">
+                         <span style="color:#9b59b6;font-size:0.7rem;">🔗 ${urlsSupp.length} URL(s) supplémentaire(s)</span>
+                       </div>`
+                    : '';
+                
+                // Titre FR personnalisé ?
+                const customTitle = seriesTraductions[serieFullKey] || seriesTraductions[serieJp];
+                const displayTitleFinal = customTitle || (needsTypeSuffix
+                    ? `${esc(baseFr)} (${s.volumeType})`
+                    : esc(baseFr));
+                const hasCustomTitle = !!customTitle;
+                
+                // === TOMES MANQUANTS (pré-calculés) ===
+                const hasMissingTomes = s.hasMissingTomes || false;
+                const missingCount = s.missingCount || 0;
+                const lastTome = parseInt(s.lastTome) || 0;
+                
+                // Calculer les tomes manquants spécifiques
+                let missingTomesDetail = '';
+                if (hasMissingTomes && s.tomesArray && s.tomesArray.length > 0) {
+                    const tomesSet = new Set(s.tomesArray);
+                    const missing = [];
+                    for (let i = 1; i <= lastTome; i++) {
+                        if (!tomesSet.has(i)) missing.push(i);
+                    }
+                    if (missing.length > 0 && missing.length <= 10) {
+                        missingTomesDetail = missing.join(', ');
+                    }
+                }
+                
+                // Alerte visuelle
+                const tomesAlertHtml = hasMissingTomes 
+                    ? `<div class="tomes-alert">
+                         <span class="tomes-alert-icon">⚠️</span>
+                         <div class="tomes-alert-details">
+                           <strong>${missingCount} tome(s) manquant(s)</strong>
+                           ${missingTomesDetail ? `<br>Tomes: ${missingTomesDetail}` : ` sur ${lastTome} attendus`}
+                         </div>
+                       </div>`
+                    : '';
+                
+                return `<div class="series-card ${isRemoved ? 'removed' : ''} ${s.isNew ? 'new' : ''} ${s.volumeType ? 'has-type' : ''} ${hasMissingTomes ? 'has-missing-tomes' : ''}" onclick="openSeriesDetail('${safeKey}')" style="cursor:pointer;">
+                    <div class="series-card-header">
+                        <div>
+                            <div class="series-card-title">${displayTitleFinal}${hasCustomTitle ? ' <span style="color:#9b59b6;font-size:0.6rem;">✏️</span>' : ''}</div>
+                            ${(s.serie_fr || customTitle) ? `<div class="series-card-subtitle">${esc(serieJp)}</div>` : `<div class="series-card-subtitle" style="color:#e74c3c;">⚠️ Pas de titre FR - cliquez ✏️</div>`}
+                            ${typeBadge}
+                            ${s.isNew ? '<span style="color:#2ecc71;font-size:0.7rem;">✨ Nouvelle</span>' : ''}
+                        </div>
+                        <div class="btn-group" style="flex-direction:column;gap:3px;" onclick="event.stopPropagation();">
+                            ${isRemoved 
+                                ? `<button class="btn btn-success" onclick="undoRemoveSeries('${safeKey}')">↩ Restaurer</button>`
+                                : `<button class="btn btn-danger" onclick="removeSeries('${safeKey}')">🗑️</button>`}
+                            <button class="btn btn-primary" onclick="addUrlToSeries('${safeKey}')" title="Ajouter URL supplémentaire">🔗+</button>
+                            <button class="btn btn-secondary" onclick="editSeriesTitle('${safeKey}')" title="Modifier le titre FR">✏️</button>
+                        </div>
+                    </div>
+                    <div class="series-card-stats">
+                        <div class="series-stat ${hasMissingTomes ? 'alert' : ''}">
+                            <div class="value">${s.nbTomes || 0}</div>
+                            <div class="label">Tomes</div>
+                        </div>
+                        <div class="series-stat ${hasMissingTomes ? 'alert' : ''}">
+                            <div class="value">${s.lastTome || '-'}</div>
+                            <div class="label">Dernier</div>
+                        </div>
+                        <div class="series-stat">
+                            <div class="value" style="font-size:0.9rem;">${s.lastDate || '-'}</div>
+                            <div class="label">Date sortie</div>
+                        </div>
+                        <div class="series-stat">
+                            <div class="value" style="font-size:0.8rem;">${editeurDisplay}</div>
+                            <div class="label">${editeurLabel}</div>
+                        </div>
+                    </div>
+                    ${tomesAlertHtml}
+                    ${s.firstDetection ? `<div style="font-size:0.7rem;color:#3498db;padding:5px 15px;background:rgba(52,152,219,0.1);border-top:1px solid rgba(52,152,219,0.2);">📅 Ajouté le: ${s.firstDetection}</div>` : ''}
+                    ${urlsSuppDisplay}
+                    ${s.url ? `<div class="series-card-footer"><a href="${s.url}" target="_blank" class="series-card-link">🔗 Voir sur Amazon</a></div>` : ''}
+                </div>`;
+            }).join('');
+            
+            if (seriesList.length === 0) {
+                grid.innerHTML = '<p style="color:#888;text-align:center;padding:40px;">Aucune série trouvée</p>';
+            }
+        }
+
+        // ============================================
+        // ONGLET RÉCAPITULATIF
+        // ============================================
+        
+        // Données des séries surveillées (chargées depuis le JSON)
+        let seriesSurveillees = [];
+
+        // ===== PRÉDICTIONS =====
+        let predictionsData = [];
+        let predSortKey = 'nextTome1';
+        let predSortAsc = true;
+
+        function buildPredictions() {
+            predictionsData = [];
+            
+            // Grouper les volumes par série (clé avec suffixe)
+            const serieVolumes = {};
+            allData.forEach(v => {
+                const key = v.serie_jp;
+                if (!key) return;
+                if (!serieVolumes[key]) serieVolumes[key] = [];
+                serieVolumes[key].push(v);
+            });
+            
+            Object.keys(serieVolumes).forEach(serieKey => {
+                const vols = serieVolumes[serieKey];
+                const sData = seriesData[serieKey] || {};
+                const cleanName = cleanSerieJp(serieKey);
+                const displayName = sData.serie_fr || cleanName;
+                const typeStr = getTypeSuffix(serieKey) || (sData.volumeType || '');
+                
+                // Extraire les volumes avec tome numérique ET date valide
+                const datedTomes = [];
+                vols.forEach(v => {
+                    const tome = parseInt(v.tome);
+                    if (isNaN(tome) || tome <= 0) return;
+                    if (!v.date) return;
+                    const parts = v.date.split('/');
+                    if (parts.length !== 3) return;
+                    const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                    if (isNaN(d.getTime())) return;
+                    datedTomes.push({ tome, date: d, dateStr: v.date });
+                });
+                
+                // Trier par tome
+                datedTomes.sort((a, b) => a.tome - b.tome);
+                
+                // Dédupliquer (garder la première occurrence par tome)
+                const unique = [];
+                const seen = new Set();
+                datedTomes.forEach(t => {
+                    if (!seen.has(t.tome)) {
+                        seen.add(t.tome);
+                        unique.push(t);
+                    }
+                });
+                
+                const entry = {
+                    serieKey,
+                    name: displayName,
+                    nameJp: cleanName,
+                    type: typeStr,
+                    nbTomes: unique.length,
+                    lastTome: 0,
+                    lastDate: null,
+                    lastDateStr: '',
+                    avgInterval: 0,
+                    intervals: [],
+                    predictions: [],     // [{tome, date, dateStr}]
+                    confidence: 'none',  // high, medium, low, none
+                    confidenceLabel: 'Insuffisant'
+                };
+                
+                if (unique.length === 0) {
+                    predictionsData.push(entry);
+                    return;
+                }
+                
+                entry.lastTome = unique[unique.length - 1].tome;
+                entry.lastDate = unique[unique.length - 1].date;
+                entry.lastDateStr = unique[unique.length - 1].dateStr;
+                
+                if (unique.length < 2) {
+                    entry.confidence = 'none';
+                    entry.confidenceLabel = '1 tome';
+                    predictionsData.push(entry);
+                    return;
+                }
+                
+                // Calculer les intervalles entre tomes consécutifs
+                for (let i = 1; i < unique.length; i++) {
+                    const diffMs = unique[i].date - unique[i - 1].date;
+                    const diffMonths = diffMs / (1000 * 60 * 60 * 24 * 30.44);
+                    entry.intervals.push(diffMonths);
+                }
+                
+                // Moyenne pondérée (les intervalles récents comptent plus)
+                let totalWeight = 0, weightedSum = 0;
+                entry.intervals.forEach((interval, i) => {
+                    const weight = i + 1; // Le dernier intervalle pèse le plus
+                    weightedSum += interval * weight;
+                    totalWeight += weight;
+                });
+                entry.avgInterval = totalWeight > 0 ? weightedSum / totalWeight : 0;
+                
+                // Fiabilité basée sur la variance et le nombre de points
+                if (entry.intervals.length >= 5) {
+                    entry.confidence = 'high';
+                    entry.confidenceLabel = 'Élevée';
+                } else if (entry.intervals.length >= 3) {
+                    entry.confidence = 'medium';
+                    entry.confidenceLabel = 'Moyenne';
+                } else {
+                    entry.confidence = 'low';
+                    entry.confidenceLabel = 'Faible';
+                }
+                
+                // Vérifier la variance (écart-type / moyenne)
+                if (entry.avgInterval > 0 && entry.intervals.length >= 2) {
+                    const mean = entry.intervals.reduce((a, b) => a + b, 0) / entry.intervals.length;
+                    const variance = entry.intervals.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / entry.intervals.length;
+                    const cv = Math.sqrt(variance) / mean; // coefficient de variation
+                    if (cv > 0.5) {
+                        // Très irrégulier → baisser la fiabilité
+                        if (entry.confidence === 'high') entry.confidence = 'medium';
+                        else if (entry.confidence === 'medium') entry.confidence = 'low';
+                        entry.confidenceLabel += ' (irrégulier)';
+                    }
+                }
+                
+                // Prédire T+1 à T+4
+                const avgMs = entry.avgInterval * 30.44 * 24 * 60 * 60 * 1000;
+                for (let n = 1; n <= 4; n++) {
+                    const predDate = new Date(entry.lastDate.getTime() + avgMs * n);
+                    entry.predictions.push({
+                        tome: entry.lastTome + n,
+                        date: predDate,
+                        dateStr: `${predDate.getFullYear()}/${String(predDate.getMonth() + 1).padStart(2, '0')}/${String(predDate.getDate()).padStart(2, '0')}`
+                    });
+                }
+                
+                predictionsData.push(entry);
+            });
+        }
+
+        function formatPredDate(dateStr, dateObj) {
+            if (!dateObj) return '<span class="pred-unknown">-</span>';
+            const now = new Date();
+            const diffMs = dateObj - now;
+            const diffDays = diffMs / (1000 * 60 * 60 * 24);
+            
+            let cls = 'future';
+            let extra = '';
+            if (diffDays < -30) {
+                cls = 'past';
+                const months = Math.round(Math.abs(diffDays) / 30);
+                extra = ` <span style="font-size:0.7rem;">(${months} mois de retard)</span>`;
+            } else if (diffDays < 0) {
+                cls = 'past';
+                extra = ' <span style="font-size:0.7rem;">(imminent)</span>';
+            } else if (diffDays < 90) {
+                cls = 'soon';
+                const months = Math.round(diffDays / 30);
+                extra = months <= 1 ? ' <span style="font-size:0.7rem;">(< 1 mois)</span>' : '';
+            } else if (diffDays > 365) {
+                cls = 'far';
+            }
+            
+            return `<span class="pred-date ${cls}">${dateStr}${extra}</span>`;
+        }
+
+        function sortPredictions(key) {
+            if (predSortKey === key) {
+                predSortAsc = !predSortAsc;
+            } else {
+                predSortKey = key;
+                predSortAsc = true;
+            }
+            renderPredictions();
+        }
+        window.sortPredictions = sortPredictions;
+
+        function renderPredictions() {
+            if (predictionsData.length === 0) buildPredictions();
+            
+            const filter = $('predFilterType')?.value || 'all';
+            let data = [...predictionsData];
+            
+            // Filtrage
+            if (filter === 'manga') data = data.filter(d => d.type !== 'LN');
+            else if (filter === 'ln') data = data.filter(d => d.type === 'LN');
+            else if (filter === 'soon') data = data.filter(d => {
+                if (!d.predictions[0]) return false;
+                const diff = (d.predictions[0].date - new Date()) / (1000 * 60 * 60 * 24);
+                return diff > -60 && diff < 90;
+            });
+            else if (filter === 'late') data = data.filter(d => {
+                if (!d.predictions[0]) return false;
+                return d.predictions[0].date < new Date();
+            });
+            
+            // Tri
+            data.sort((a, b) => {
+                let va, vb;
+                switch (predSortKey) {
+                    case 'serie': va = a.name; vb = b.name; break;
+                    case 'type': va = a.type; vb = b.type; break;
+                    case 'lastTome': va = a.lastTome; vb = b.lastTome; break;
+                    case 'lastDate': va = a.lastDate || new Date(0); vb = b.lastDate || new Date(0); break;
+                    case 'avgInterval': va = a.avgInterval; vb = b.avgInterval; break;
+                    case 'nextTome1': 
+                        va = a.predictions[0]?.date || new Date(9999, 0); 
+                        vb = b.predictions[0]?.date || new Date(9999, 0); 
+                        break;
+                    case 'confidence':
+                        const order = {high: 3, medium: 2, low: 1, none: 0};
+                        va = order[a.confidence] || 0;
+                        vb = order[b.confidence] || 0;
+                        break;
+                    default: va = 0; vb = 0;
+                }
+                if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
+                if (va < vb) return predSortAsc ? -1 : 1;
+                if (va > vb) return predSortAsc ? 1 : -1;
+                return 0;
+            });
+            
+            const tbody = $('predictionsBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = data.map(d => {
+                const avgDisplay = d.avgInterval > 0 
+                    ? `${d.avgInterval.toFixed(1)} mois` 
+                    : '<span class="pred-unknown">-</span>';
+                
+                const predCells = [0, 1, 2, 3].map(i => {
+                    const p = d.predictions[i];
+                    if (!p) return '<td><span class="pred-unknown">Données insuffisantes</span></td>';
+                    return `<td>
+                        <span class="pred-tome-label">T${p.tome}</span>
+                        ${formatPredDate(p.dateStr, p.date)}
+                    </td>`;
+                }).join('');
+                
+                return `<tr>
+                    <td>
+                        <strong>${esc(d.name)}</strong>
+                        ${d.nameJp !== d.name ? `<div style="font-size:0.65rem;color:#555;">${esc(d.nameJp)}</div>` : ''}
+                    </td>
+                    <td>${d.type === 'LN' 
+                        ? '<span class="type-badge ln" style="font-size:0.7rem;">📖 LN</span>' 
+                        : '<span class="type-badge manga" style="font-size:0.7rem;">📕 Manga</span>'}</td>
+                    <td style="text-align:center;"><span class="tome-badge">${d.lastTome || '-'}</span></td>
+                    <td>${d.lastDateStr || '-'}</td>
+                    <td>${avgDisplay}</td>
+                    ${predCells}
+                    <td><span class="pred-confidence ${d.confidence}">${d.confidenceLabel}</span></td>
+                </tr>`;
+            }).join('');
+        }
+        window.renderPredictions = renderPredictions;
+
+        // ===== SCRIPT RUNNER (GitHub Actions) =====
+        const ACTIONS_API = `https://api.github.com/repos/${CONFIG.GITHUB_USER}/${CONFIG.GITHUB_REPO}/actions`;
+        let runnerPolling = null;
+
+        async function getAdminToken() {
+            const pwd = sessionStorage.getItem('manga_admin_pwd');
+            if (!pwd) return null;
+            return await getToken(pwd);
+        }
+
+        async function triggerWorkflow() {
+            if (!isAdmin) { showToast('Mode admin requis', 'error'); return; }
+            
+            const token = await getAdminToken();
+            if (!token) { showToast('Token introuvable', 'error'); return; }
+            
+            const btn = $('btnRunScript');
+            const msg = $('runnerMessage');
+            btn.disabled = true;
+            btn.textContent = '⏳ Déclenchement...';
+            msg.style.display = 'block';
+            msg.innerHTML = '<span style="color:#f39c12;">⏳ Envoi de la demande à GitHub Actions...</span>';
+            
+            try {
+                // Lister les workflows pour trouver l'ID
+                const wfResp = await fetch(`${ACTIONS_API}/workflows`, {
+                    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if (!wfResp.ok) throw new Error(`Erreur ${wfResp.status}: vérifiez que le token a le scope "repo" ou "actions"`);
+                const wfData = await wfResp.json();
+                
+                if (!wfData.workflows || wfData.workflows.length === 0) {
+                    throw new Error('Aucun workflow trouvé dans le repo');
+                }
+                
+                // Prendre le premier workflow (ou chercher par nom)
+                const workflow = wfData.workflows.find(w => w.name.toLowerCase().includes('manga') || w.name.toLowerCase().includes('tracker'))
+                    || wfData.workflows[0];
+                
+                // Déclencher le workflow via workflow_dispatch
+                const dispResp = await fetch(`${ACTIONS_API}/workflows/${workflow.id}/dispatches`, {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `token ${token}`, 
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ ref: CONFIG.GITHUB_BRANCH })
+                });
+                
+                if (dispResp.status === 204) {
+                    msg.innerHTML = '<span style="color:#f39c12;">⏳ Demande envoyée, en attente du démarrage...</span>';
+                    showToast('Script déclenché !', 'success');
+                    
+                    // Désactiver le bouton pendant l'exécution
+                    btn.disabled = true;
+                    btn.textContent = '⏳ Exécution en cours...';
+                    
+                    // Polling agressif au début (toutes les 5s) pour capter le démarrage
+                    let startupChecks = 0;
+                    const startupInterval = setInterval(async () => {
+                        startupChecks++;
+                        await loadWorkflowRuns();
+                        
+                        const body = $('runsBody');
+                        const hasActive = body && (body.innerHTML.includes('in_progress') || body.innerHTML.includes('queued'));
+                        
+                        if (hasActive) {
+                            // Run détecté ! Passer au polling normal
+                            clearInterval(startupInterval);
+                            msg.innerHTML = '<span style="color:#48dbfb;">🔄 Script en cours d\'exécution... Rafraîchissement automatique toutes les 15s</span>';
+                            btn.textContent = '🔄 En cours...';
+                            startRunnerPolling();
+                            
+                            // Quand le polling s'arrête (run terminé), remettre le bouton
+                            const checkDone = setInterval(() => {
+                                if (!runnerPolling) {
+                                    clearInterval(checkDone);
+                                    btn.disabled = false;
+                                    btn.textContent = '▶️ Lancer le script';
+                                    // Recharger une dernière fois
+                                    loadWorkflowRuns();
+                                    const lastBody = $('runsBody');
+                                    if (lastBody && lastBody.innerHTML.includes('completed')) {
+                                        msg.innerHTML = '<span style="color:#2ecc71;">✅ Script terminé avec succès !</span>';
+                                    } else if (lastBody && lastBody.innerHTML.includes('failure')) {
+                                        msg.innerHTML = '<span style="color:#e74c3c;">❌ Le script a échoué. Voir les détails ci-dessous.</span>';
+                                    }
+                                }
+                            }, 5000);
+                        } else if (startupChecks >= 12) {
+                            // 60s sans démarrage → timeout
+                            clearInterval(startupInterval);
+                            msg.innerHTML = '<span style="color:#f39c12;">⚠️ Le script a été déclenché mais le démarrage prend du temps. Rafraîchissez l\'onglet dans quelques instants.</span>';
+                            btn.disabled = false;
+                            btn.textContent = '▶️ Lancer le script';
+                        } else {
+                            msg.innerHTML = `<span style="color:#f39c12;">⏳ En attente du démarrage... (${startupChecks * 5}s)</span>`;
+                        }
+                    }, 5000);
+                    
+                    return; // Ne pas ré-activer le bouton dans finally
+                } else if (dispResp.status === 422) {
+                    throw new Error('Le workflow n\'a pas de trigger "workflow_dispatch". Ajoutez-le dans le fichier .yml');
+                } else {
+                    const errData = await dispResp.json().catch(() => ({}));
+                    throw new Error(errData.message || `Erreur ${dispResp.status}`);
+                }
+            } catch (e) {
+                msg.innerHTML = `<span style="color:#e74c3c;">❌ ${e.message}</span>`;
+                showToast('Erreur: ' + e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '▶️ Lancer le script';
+            }
+        }
+        window.triggerWorkflow = triggerWorkflow;
+
+        let pollingErrors = 0;
+        function startRunnerPolling() {
+            stopRunnerPolling();
+            pollingErrors = 0;
+            runnerPolling = setInterval(async () => {
+                try {
+                    await loadWorkflowRuns();
+                    pollingErrors = 0;
+                    // Arrêter le polling si aucun run en cours
+                    const body = $('runsBody');
+                    if (body && !body.innerHTML.includes('in_progress') && !body.innerHTML.includes('queued')) {
+                        stopRunnerPolling();
+                    }
+                } catch (e) {
+                    pollingErrors++;
+                    console.warn('Polling error:', e.message);
+                    if (pollingErrors >= 3) {
+                        console.warn('Polling stopped after 3 errors');
+                        stopRunnerPolling();
+                    }
+                }
+            }, 15000);
+        }
+
+        function stopRunnerPolling() {
+            if (runnerPolling) { clearInterval(runnerPolling); runnerPolling = null; }
+        }
+
+        let trackerWorkflowId = null;
+
+        async function loadWorkflowRuns() {
+            const token = await getAdminToken();
+            if (!token) return;
+            
+            try {
+                // Récupérer l'ID du workflow tracker si pas encore connu
+                if (!trackerWorkflowId) {
+                    const wfResp = await fetch(`${ACTIONS_API}/workflows`, {
+                        headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                    });
+                    if (wfResp.ok) {
+                        const wfData = await wfResp.json();
+                        const wf = (wfData.workflows || []).find(w => 
+                            w.name.toLowerCase().includes('manga') || w.name.toLowerCase().includes('tracker')
+                        ) || (wfData.workflows || [])[0];
+                        if (wf) trackerWorkflowId = wf.id;
+                    }
+                }
+                
+                // Filtrer par workflow ID
+                const url = trackerWorkflowId 
+                    ? `${ACTIONS_API}/workflows/${trackerWorkflowId}/runs?per_page=20`
+                    : `${ACTIONS_API}/runs?per_page=20`;
+                const resp = await fetch(url, {
+                    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if (!resp.ok) return;
+                const data = await resp.json();
+                const runs = data.workflow_runs || [];
+                
+                // Stats
+                const total = data.total_count || runs.length;
+                const success = runs.filter(r => r.conclusion === 'success').length;
+                const failed = runs.filter(r => r.conclusion === 'failure').length;
+                
+                $('runTotal').textContent = total;
+                $('runSuccess').textContent = success;
+                $('runFailed').textContent = failed;
+                
+                if (runs.length > 0) {
+                    const last = runs[0];
+                    const lastDate = new Date(last.created_at);
+                    $('runLast').textContent = lastDate.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+                }
+                
+                // Vérifier si un run est en cours → activer le polling
+                const hasActive = runs.some(r => r.status === 'in_progress' || r.status === 'queued');
+                // Ne PAS démarrer le polling automatiquement ici
+                // Il est démarré uniquement après un triggerWorkflow réussi
+                
+                // Tableau
+                const tbody = $('runsBody');
+                if (!tbody) return;
+                
+                tbody.innerHTML = runs.map(r => {
+                    const status = r.status === 'completed' ? r.conclusion : r.status;
+                    const statusLabel = {
+                        'success': '✅ Réussi', 'failure': '❌ Échoué', 'cancelled': '⛔ Annulé',
+                        'in_progress': '🔄 En cours', 'queued': '⏳ En attente', 'pending': '⏳ En attente'
+                    }[status] || status;
+                    const statusClass = status === 'success' ? 'completed' : status;
+                    
+                    const trigger = {
+                        'workflow_dispatch': '👤 Manuel (viewer)',
+                        'schedule': '⏰ Planifié (cron)',
+                        'push': '📦 Push',
+                        'pull_request': '🔀 PR'
+                    }[r.event] || r.event;
+                    
+                    const startDate = new Date(r.created_at);
+                    const dateStr = startDate.toLocaleDateString('fr-FR', { 
+                        year: 'numeric', month: '2-digit', day: '2-digit',
+                        hour: '2-digit', minute: '2-digit'
+                    });
+                    
+                    let duration = '-';
+                    if (r.updated_at && r.status === 'completed') {
+                        const dur = (new Date(r.updated_at) - startDate) / 1000;
+                        if (dur < 60) duration = `${Math.round(dur)}s`;
+                        else if (dur < 3600) duration = `${Math.round(dur / 60)}min`;
+                        else duration = `${(dur / 3600).toFixed(1)}h`;
+                    } else if (r.status === 'in_progress') {
+                        const elapsed = (new Date() - startDate) / 1000;
+                        duration = `${Math.round(elapsed / 60)}min (en cours)`;
+                    }
+                    
+                    return `<tr>
+                        <td><span class="run-status ${statusClass}">${statusLabel}</span></td>
+                        <td>${trigger}</td>
+                        <td>${dateStr}</td>
+                        <td>${duration}</td>
+                        <td><a href="${r.html_url}" target="_blank" style="color:#48dbfb;">Voir →</a></td>
+                    </tr>`;
+                }).join('');
+                
+                if (runs.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#666;">Aucune exécution trouvée</td></tr>';
+                }
+                
+                $('runnerStatus').textContent = hasActive ? '🔄 Un scan est en cours...' : '✅ Aucun scan en cours';
+                $('runnerStatus').style.color = hasActive ? '#48dbfb' : '#888';
+                
+            } catch (e) {
+                console.error('Erreur chargement runs:', e);
+            }
+        }
+
+        function buildSeriesSurveillees() {
+            // Construire la liste des séries avec leurs stats
+            const seriesMap = {};
+            
+            allData.forEach(v => {
+                const key = v.serie_jp;  // Clé brute avec suffixe
+                if (!key) return;
+                
+                if (!seriesMap[key]) {
+                    seriesMap[key] = {
+                        serieKey: key,
+                        serie_jp: cleanSerieJp(key),
+                        serie_fr: v.serie_fr || '',
+                        tomes: 0,
+                        lastDate: '',
+                        lastDateParsed: null,
+                        volumes: []
+                    };
+                }
+                
+                seriesMap[key].volumes.push(v);
+                seriesMap[key].tomes++;
+                
+                // Mettre à jour le titre FR si disponible
+                if (v.serie_fr && !seriesMap[key].serie_fr) {
+                    seriesMap[key].serie_fr = v.serie_fr;
+                }
+                
+                // Trouver la date la plus récente
+                if (v.date) {
+                    const parts = v.date.split('/');
+                    if (parts.length === 3) {
+                        const dateParsed = new Date(parts[0], parts[1] - 1, parts[2]);
+                        if (!seriesMap[key].lastDateParsed || dateParsed > seriesMap[key].lastDateParsed) {
+                            seriesMap[key].lastDateParsed = dateParsed;
+                            seriesMap[key].lastDate = v.date;
+                        }
+                    }
+                }
+            });
+            
+            seriesSurveillees = Object.values(seriesMap);
+            
+            // Ajouter les séries configurées qui n'ont pas de volumes (si on a la config)
+            if (gistSeriesConfig && gistSeriesConfig.series_ajoutees) {
+                gistSeriesConfig.series_ajoutees.forEach(s => {
+                    const serieNom = s.nom || '';
+                    const expectedSuffix = s.type === 'ln' ? ' [LN]' : ' [MANGA]';
+                    const nomInterne = serieNom.endsWith(' [LN]') || serieNom.endsWith(' [MANGA]') ? serieNom : serieNom + expectedSuffix;
+                    if (serieNom && !seriesMap[nomInterne]) {
+                        seriesSurveillees.push({
+                            serieKey: nomInterne,
+                            serie_jp: cleanSerieJp(nomInterne),
+                            serie_fr: s.nom_fr || '',
+                            tomes: 0,
+                            lastDate: '',
+                            volumes: []
+                        });
+                    }
+                });
+            }
+        }
+
+        let recapSortKey = 'tomes';
+        let recapSortAsc = false;
+        
+        function sortRecap(key) {
+            if (recapSortKey === key) {
+                recapSortAsc = !recapSortAsc;
+            } else {
+                recapSortKey = key;
+                recapSortAsc = (key === 'name'); // alpha = ascending par défaut
+            }
+            renderRecapTable();
+        }
+        window.sortRecap = sortRecap;
+
+        function renderRecapTable() {
+            buildSeriesSurveillees();
+            
+            const search = ($('recapSearchInput')?.value || '').toLowerCase();
+            const statusFilter = $('recapStatusFilter')?.value || '';
+            
+            let filtered = seriesSurveillees.filter(s => {
+                // Filtre recherche
+                if (search) {
+                    const matchFr = (s.serie_fr || '').toLowerCase().includes(search);
+                    const matchJp = (s.serie_jp || '').toLowerCase().includes(search);
+                    if (!matchFr && !matchJp) return false;
+                }
+                
+                // Filtre statut
+                if (statusFilter === 'empty' && s.tomes > 0) return false;
+                if (statusFilter === 'ok' && s.tomes === 0) return false;
+                
+                return true;
+            });
+            
+            // Tri par colonnes cliquables
+            filtered.sort((a, b) => {
+                let va, vb;
+                switch (recapSortKey) {
+                    case 'name':
+                        va = (a.serie_fr || a.serie_jp || '').toLowerCase();
+                        vb = (b.serie_fr || b.serie_jp || '').toLowerCase();
+                        break;
+
+                    case 'tomes':
+                        va = a.tomes; vb = b.tomes;
+                        break;
+                    case 'date':
+                        va = a.lastDateParsed || new Date(0);
+                        vb = b.lastDateParsed || new Date(0);
+                        break;
+                    default:
+                        va = a.tomes; vb = b.tomes;
+                }
+                if (va < vb) return recapSortAsc ? -1 : 1;
+                if (va > vb) return recapSortAsc ? 1 : -1;
+                return 0;
+            });
+            
+            // Render
+            const tbody = $('recapTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = filtered.map(s => {
+                const isEmpty = s.tomes === 0;
+                const rowClass = isEmpty ? 'empty-row' : '';
+                const tomesClass = isEmpty ? 'zero' : 'ok';
+                const safeActionKey = (s.serieKey || s.serie_jp || '').replace(/'/g, "\\'");
+                
+                return `<tr class="${rowClass}">
+                    <td>
+                        ${isEmpty ? '<span class="warning-icon">⚠️</span>' : ''}
+                        ${esc(s.serie_fr) || '<span style="color:#666;">-</span>'}
+                        <div class="title-jp">${esc(s.serie_jp)}</div>
+                    </td>
+                    <td class="tomes-cell ${tomesClass}">${s.tomes}</td>
+                    <td class="date-cell">${s.lastDate || '-'}</td>
+                    <td class="actions-cell">
+                        ${isEmpty ? `<button class="btn btn-warning btn-sm admin-only" onclick="promptAddUrl('${safeActionKey}')" ${!isAdmin ? 'disabled' : ''}>+URL</button>` : ''}
+                        <a href="https://www.amazon.co.jp/s?k=${encodeURIComponent(s.serie_jp)}" target="_blank" class="btn btn-secondary btn-sm">🔍</a>
+                    </td>
+                </tr>`;
+            }).join('');
+            
+            // Stats
+            const total = seriesSurveillees.length;
+            const withVolumes = seriesSurveillees.filter(s => s.tomes > 0).length;
+            const empty = total - withVolumes;
+            const totalVolumes = seriesSurveillees.reduce((sum, s) => sum + s.tomes, 0);
+            
+            if ($('recapTotal')) $('recapTotal').textContent = total;
+            if ($('recapOk')) $('recapOk').textContent = withVolumes;
+            if ($('recapEmpty')) $('recapEmpty').textContent = empty;
+            if ($('recapVolumes')) $('recapVolumes').textContent = totalVolumes;
+            
+            // Populate le datalist des séries pour ajouter URL (titre FR + fallback JP)
+            const urlDatalist = $('urlSerieDatalist');
+            if (urlDatalist) {
+                const seriesOptions = seriesSurveillees
+                    .map(s => ({
+                        label: s.serie_fr || s.serie_jp,
+                        value: s.serie_jp
+                    }))
+                    .sort((a, b) => a.label.localeCompare(b.label));
+                urlDatalist.innerHTML = seriesOptions
+                    .map(s => `<option value="${esc(s.label)}" data-jp="${esc(s.value)}">${esc(s.label)}</option>`)
+                    .join('');
+            }
+        }
+
+        function promptAddUrl(serieJp) {
+            if (!isAdmin) {
+                showToast('Mode admin requis', 'error');
+                return;
+            }
+            
+            const url = prompt(`Ajouter une URL Amazon pour:\n${cleanSerieJp(serieJp)}\n\nEntrez l'URL du produit (ex: https://amazon.co.jp/dp/...):`);
+            if (!url) return;
+            
+            if (!url.includes('amazon.co.jp')) {
+                showToast('URL Amazon invalide', 'error');
+                return;
+            }
+            
+            // Ajouter à la config
+            if (!seriesUrlsSupplementaires[serieJp]) {
+                seriesUrlsSupplementaires[serieJp] = [];
+            }
+            
+            if (!seriesUrlsSupplementaires[serieJp].includes(url)) {
+                seriesUrlsSupplementaires[serieJp].push(url);
+                markPendingChange();
+                
+                showToast('URL ajoutée !', 'success');
+            } else {
+                showToast('URL déjà présente', 'info');
+            }
+        }
+
+        function addSupplementaryUrl() {
+            if (!isAdmin) {
+                showToast('Mode admin requis', 'error');
+                return;
+            }
+            
+            const inputLabel = ($('urlSerieInput')?.value || '').trim();
+            const url = $('urlInput')?.value.trim();
+            
+            if (!inputLabel || !url) {
+                showToast('Sélectionnez une série et entrez une URL', 'error');
+                return;
+            }
+            
+            // Résoudre le titre FR/EN saisi vers la clé JP
+            const match = seriesSurveillees.find(s => 
+                (s.serie_fr || '').toLowerCase() === inputLabel.toLowerCase() ||
+                (s.serie_jp || '').toLowerCase() === inputLabel.toLowerCase()
+            );
+            
+            if (!match) {
+                showToast('Série non trouvée. Vérifiez le titre.', 'error');
+                return;
+            }
+            
+            const serie = match.serie_jp;
+            
+            if (!url.includes('amazon.co.jp')) {
+                showToast('URL Amazon invalide', 'error');
+                return;
+            }
+            
+            if (!seriesUrlsSupplementaires[serie]) {
+                seriesUrlsSupplementaires[serie] = [];
+            }
+            
+            if (!seriesUrlsSupplementaires[serie].includes(url)) {
+                seriesUrlsSupplementaires[serie].push(url);
+                markPendingChange();
+                
+                showToast(`URL ajoutée pour ${match.serie_fr || serie} !`, 'success');
+                $('urlInput').value = '';
+                $('urlSerieInput').value = '';
+            } else {
+                showToast('URL déjà présente', 'info');
+            }
+        }
+
+        // Fonction pour ajouter une série depuis l'onglet Récapitulatif
+        function addNewSerieFromRecap() {
+            if (!isAdmin) {
+                showToast('Mode admin requis', 'error');
+                return;
+            }
+            
+            const nomJp = $('recapNewSerieJp')?.value.trim();
+            const url = $('recapNewSerieUrl')?.value.trim();
+            const searchName = $('recapNewSerieSearch')?.value.trim();
+            const nomFr = $('recapNewSerieFr')?.value.trim();
+            const typeSerie = $('recapNewSerieType')?.value || '';  // "ln" ou ""
+            
+            if (!nomJp) {
+                showToast('Le nom japonais est requis', 'error');
+                return;
+            }
+            
+            // Ajouter à la config
+            if (!gistSeriesConfig.series_ajoutees) {
+                gistSeriesConfig.series_ajoutees = [];
+            }
+            
+            // Construire le nom interne avec suffixe (comme le fera le script)
+            const expectedSuffix = typeSerie === 'ln' ? ' [LN]' : ' [MANGA]';
+            const nomInterne = nomJp.endsWith(' [LN]') || nomJp.endsWith(' [MANGA]') ? nomJp : nomJp + expectedSuffix;
+            
+            // Vérifier si déjà présente
+            if (gistSeriesConfig.series_ajoutees.some(s => s.nom === nomJp)) {
+                showToast('Cette série est déjà dans la liste', 'info');
+                return;
+            }
+            
+            // Vérifier si déjà dans seriesData (clé avec suffixe)
+            if (seriesData[nomInterne]) {
+                showToast('Cette série existe déjà', 'info');
+                return;
+            }
+            
+            const newSerie = {
+                nom: nomJp,
+                url: url || '',
+                nom_fr: nomFr || '',
+            };
+            
+            // Ajouter le nom de recherche s'il diffère du nom
+            if (searchName && searchName !== nomJp) {
+                newSerie.url_suffix = searchName;
+            }
+            
+            // Ajouter le type si LN
+            if (typeSerie) {
+                newSerie.type = typeSerie;
+            }
+            
+            gistSeriesConfig.series_ajoutees.push(newSerie);
+            
+            const typeLabel = typeSerie === 'ln' ? ' (LN)' : '';
+            markPendingChange();
+            showToast(`Série "${nomFr || nomJp}"${typeLabel} ajoutée !`, 'success');
+            
+            // Reset form
+            $('recapNewSerieJp').value = '';
+            $('recapNewSerieUrl').value = '';
+            $('recapNewSerieSearch').value = '';
+            $('recapNewSerieFr').value = '';
+            $('recapNewSerieType').value = '';
+            
+            // Refresh
+            renderRecapTable();
+        }
+
+        // Volume actions
+        window.setStatut = function(asin, newStatut, options = {}) {
+            const volume = allData.find(d => d.asin === asin);
+            if (!volume) { volumeStatuts[asin] = newStatut; updateStats(); render(); return; }
+            
+            const serieJp = volume.serie_jp;
+            const editeur = volume.editeur;
+            
+            console.log(`[setStatut] ASIN=${asin}, statut=${newStatut}, serie="${serieJp}", editeur=${editeur}`);
+            console.log(`[setStatut] editeursOfficiels:`, editeursOfficiels);
+            
+            // Si on VALIDE un volume
+            if (newStatut === 'valide' && !options.skipPrompt) {
+                const editeurOfficiel = editeursOfficiels[serieJp];
+                console.log(`[setStatut] Éditeur officiel pour cette série: ${editeurOfficiel || 'NON DÉFINI'}`);
+                
+                if (!editeurOfficiel && editeur && editeur !== 'Inconnu') {
+                    // Premier volume validé → cet éditeur devient officiel
+                    editeursOfficiels[serieJp] = editeur;
+                    console.log(`✅ Éditeur officiel défini: "${serieJp}" → ${editeur}`);
+                    
+                } else if (editeurOfficiel && editeur !== editeurOfficiel) {
+                    console.log(`⚠️ CONFLIT ÉDITEUR: officiel=${editeurOfficiel}, ce volume=${editeur}`);
+                    // Éditeur DIFFÉRENT de l'officiel → proposer de scinder
+                    const choix = confirm(
+                        `⚠️ ÉDITEUR DIFFÉRENT\n\n` +
+                        `Série: ${volume.serie_fr || serieJp}\n` +
+                        `Éditeur officiel: ${editeurOfficiel}\n` +
+                        `Ce volume: ${editeur}\n\n` +
+                        `Voulez-vous créer une série séparée pour "${editeur}"?\n\n` +
+                        `[OK] = Créer série séparée\n` +
+                        `[Annuler] = Rejeter ce volume`
+                    );
+                    
+                    if (choix) {
+                        // Créer une série scindée
+                        const typeSuggere = detecterType(volume);
+                        const nomSuggere = `${volume.serie_fr || serieJp} (${typeSuggere || editeur})`;
+                        
+                        const nouveauNom = prompt(
+                            `Nom de la nouvelle série:`,
+                            nomSuggere
+                        );
+                        
+                        if (nouveauNom && nouveauNom.trim()) {
+                            // Enregistrer la scission
+                            seriesScindees.push({
+                                nom_original: serieJp,
+                                nouveau_nom: nouveauNom.trim(),
+                                editeur: editeur,
+                                type: typeSuggere?.toLowerCase() || 'autre'
+                            });
+                            
+                            // Définir l'éditeur officiel de la nouvelle série
+                            editeursOfficiels[nouveauNom.trim()] = editeur;
+                            
+                            // Assigner ce volume à la nouvelle série
+                            volumeSerieOverride[asin] = nouveauNom.trim();
+                            
+                            // Proposer d'assigner les autres volumes du même éditeur
+                            const autresVolumes = allData.filter(d => 
+                                d.serie_jp === serieJp && 
+                                d.editeur === editeur && 
+                                d.asin !== asin &&
+                                volumeStatuts[d.asin] !== 'valide'
+                            );
+                            
+                            if (autresVolumes.length > 0) {
+                                if (confirm(`${autresVolumes.length} autre(s) volume(s) de "${editeur}".\nLes assigner aussi à "${nouveauNom.trim()}"?`)) {
+                                    autresVolumes.forEach(v => {
+                                        volumeSerieOverride[v.asin] = nouveauNom.trim();
+                                        volumeStatuts[v.asin] = 'valide';
+                                    });
+                                }
+                            }
+                            
+                            volumeStatuts[asin] = 'valide';
+                            markPendingChange();
+                            updateStats(); render(); renderSeriesCards();
+                            return;
+                        }
+                    }
+                    // Si annulé ou pas de nom → rejeter
+                    volumeStatuts[asin] = 'rejete';
+                    markPendingChange();
+                    updateStats(); render();
+                    return;
+                }
+            }
+            
+            volumeStatuts[asin] = newStatut;
+            markPendingChange();
+            updateStats();
+            render();
+        };
+        
+        // Détecter le type (Manga/LN) basé sur l'éditeur ou le titre
+        function detecterType(volume) {
+            const editeur = volume.editeur || '';
+            const lnEditeurs = ['KADOKAWA', 'Kadokawa', '角川', 'GA文庫', 'MF文庫', '電撃文庫'];
+            const mangaEditeurs = ['Kodansha', '講談社', 'Shueisha', '集英社', 'Square Enix', 'スクウェア・エニックス'];
+            
+            if (lnEditeurs.some(e => editeur.includes(e))) return 'LN';
+            if (mangaEditeurs.some(e => editeur.includes(e))) return 'Manga';
+            
+            // Fallback sur le titre
+            const titre = volume.titre_volume || '';
+            if (['文庫', 'ノベル', '小説'].some(kw => titre.includes(kw))) return 'LN';
+            if (['コミック', 'マンガ', '漫画'].some(kw => titre.includes(kw))) return 'Manga';
+            
+            return null;
+        }
+
+        window.validateVisible = function() { 
+            if (!confirm(`Valider ${filteredData.length} volume(s) ?\n(Les éditeurs seront définis automatiquement)`)) return;
+            filteredData.forEach(d => { 
+                setStatut(d.asin, 'valide', { skipPrompt: true });
+            });
+            updateStats();
+            render();
+        };
+
+        window.rejectVisible = function() {
+            if (!confirm(`Rejeter ${filteredData.length} volume(s) ?`)) return;
+            filteredData.forEach(d => { volumeStatuts[d.asin] = 'rejete'; });
+            updateStats();
+            render();
+        };
+
+        window.resetAllStatuts = function() {
+            if (!confirm('Réinitialiser tous les statuts, éditeurs et scissions ?')) return;
+            allData.forEach(d => { volumeStatuts[d.asin] = 'non_traite'; });
+            editeursOfficiels = {};
+            volumeSerieOverride = {};
+            seriesScindees = [];
+            updateStats();
+            render();
+            renderSeriesCards();
+        };
+
+        // Series actions
+        window.removeSeries = function(serie_jp) {
+            if (!confirm(`Supprimer "${serie_jp}" de la surveillance ?`)) return;
+            removedSeries.add(serie_jp);
+            markPendingChange();
+            renderSeriesCards();
+            showToast(`Série supprimée. Cliquez ☁️ Synchroniser.`, 'info');
+        };
+        
+        // NOUVEAU: Ajouter une URL supplémentaire à une série existante
+        window.addUrlToSeries = function(serie_jp) {
+            const url = prompt(
+                `Ajouter une URL supplémentaire pour "${serie_jp}"\n\n` +
+                `Collez un lien Amazon vers un volume non détecté (ex: LN)\n` +
+                `Le script cherchera les volumes liés via Bulk, Publisher, etc.`,
+                'https://www.amazon.co.jp/dp/'
+            );
+            
+            if (!url || !url.trim()) return;
+            
+            // Valider l'URL
+            const urlClean = url.trim();
+            if (!urlClean.includes('amazon.co.jp') && !urlClean.match(/^[A-Z0-9]{10}$/i)) {
+                alert('URL invalide. Utilisez un lien Amazon ou un ASIN.');
+                return;
+            }
+            
+            // Extraire l'ASIN pour normaliser
+            let asin = urlClean;
+            const asinMatch = urlClean.match(/(?:\/dp\/|\/gp\/product\/)([A-Z0-9]{10})/i);
+            if (asinMatch) {
+                asin = asinMatch[1];
+            } else if (!urlClean.match(/^[A-Z0-9]{10}$/i)) {
+                alert("Impossible d'extraire l'ASIN de cette URL.");
+                return;
+            }
+            
+            // URL normalisée
+            const finalUrl = `https://www.amazon.co.jp/dp/${asin}`;
+            
+            // Ajouter à la liste
+            if (!seriesUrlsSupplementaires[serie_jp]) {
+                seriesUrlsSupplementaires[serie_jp] = [];
+            }
+            
+            // Éviter les doublons (comparer par ASIN extrait)
+            const existingAsins = seriesUrlsSupplementaires[serie_jp].map(u => {
+                const m = u.match(/(?:\/dp\/|\/gp\/product\/)([A-Z0-9]{10})/i);
+                return m ? m[1] : u;
+            });
+            if (existingAsins.includes(asin)) {
+                alert('Cette URL (ASIN: ' + asin + ') est déjà ajoutée pour cette série.');
+                return;
+            }
+            
+            seriesUrlsSupplementaires[serie_jp].push(finalUrl);
+            
+            markPendingChange();
+            updateSeriesBanner();
+            renderSeriesCards();
+            
+            alert(`URL ajoutée pour "${serie_jp}" (ASIN: ${asin})\n\nCliquez ☁️ Synchroniser pour sauvegarder.`);
+        };
+        
+        // NOUVEAU: Modifier le titre FR d'une série
+        window.editSeriesTitle = function(serie_jp) {
+            const cleanJp = cleanSerieJp(serie_jp);
+            const currentTitle = seriesTraductions[serie_jp] || seriesData[serie_jp]?.serie_fr || '';
+            
+            const newTitle = prompt(
+                `Modifier le titre FR pour:\n${cleanJp}\n\n` +
+                `Ce titre sera utilisé pour l'affichage et ajouté au dictionnaire.`,
+                currentTitle
+            );
+            
+            if (newTitle === null) return; // Annulé
+            
+            if (newTitle.trim()) {
+                seriesTraductions[serie_jp] = newTitle.trim();
+                
+                // Mettre à jour aussi les volumes de cette série dans allData
+                allData.forEach(vol => {
+                    if (vol.serie_jp === serie_jp) {
+                        vol.serie_fr = newTitle.trim();
+                    }
+                });
+            } else {
+                // Supprimer la traduction personnalisée
+                delete seriesTraductions[serie_jp];
+            }
+            
+            markPendingChange();
+            renderSeriesCards();
+            render();
+            
+            showToast('Titre mis à jour. Cliquez ☁️ Synchroniser.', 'success');
+        };
+
+        window.undoRemoveSeries = function(serie_jp) {
+            removedSeries.delete(serie_jp);
+            markPendingChange();
+            renderSeriesCards();
+            showToast('Série restaurée', 'success');
+        };
+
+        window.resetSeriesModifs = function() {
+            if (!confirm('Annuler toutes les modifications de séries ?')) return;
+            addedSeries = [];
+            removedSeries.clear();
+            seriesUrlsSupplementaires = {};
+            seriesTraductions = {};
+            updateSeriesBanner();
+            renderSeriesCards();
+            render();
+        };
+
+        // JSON generation
+        function genJson() {
+            const rejetes = [];
+            const valides = [];
+            const commentaires = {};
+            
+            allData.forEach(d => {
+                const statut = volumeStatuts[d.asin];
+                const serieAffectee = volumeSerieOverride[d.asin] || d.serie_jp;
+                
+                if (statut === 'rejete') {
+                    rejetes.push(d.asin);
+                    commentaires[d.asin] = `${d.serie_fr || d.serie_jp} - T${d.tome} (${d.editeur})`;
+                } else if (statut === 'valide') {
+                    valides.push(d.asin);
+                }
+            });
+            
+            return { 
+                hors_sujet: rejetes, 
+                valides: valides,
+                editeurs_officiels: editeursOfficiels,
+                volume_serie_override: volumeSerieOverride,
+                series_scindees: seriesScindees,
+                commentaires,
+                generated_at: new Date().toISOString()
+            };
+        }
+
+        function genSeriesJson() {
+            return {
+                added: addedSeries,
+                removed: [...removedSeries],
+                urls_supplementaires: seriesUrlsSupplementaires,
+                traductions: seriesTraductions,
+                editeurs_officiels: editeursOfficiels,
+                series_scindees: seriesScindees,
+                generated_at: new Date().toISOString()
+            };
+        }
+
+        // Modals
+        window.showModal = function() {
+            $('modalContent').textContent = JSON.stringify(genJson(), null, 2);
+            $('modalOverlay').classList.remove('hidden');
+        };
+
+        window.closeModal = function(e) { 
+            if (!e || e.target === $('modalOverlay')) $('modalOverlay').classList.add('hidden'); 
+        };
+
+        window.copyJson = function() { 
+            navigator.clipboard.writeText(JSON.stringify(genJson(), null, 2))
+                .then(() => alert('Copié !'));
+        };
+
+        window.downloadCorrections = function() {
+            const blob = new Blob([JSON.stringify(genJson(), null, 2)], { type: 'application/json' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); 
+            a.download = 'corrections.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        };
+
+        window.showSeriesModal = function() {
+            $('seriesModalContent').textContent = JSON.stringify(genSeriesJson(), null, 2);
+            $('seriesModalOverlay').classList.remove('hidden');
+        };
+
+        window.closeSeriesModal = function(e) { 
+            if (!e || e.target === $('seriesModalOverlay')) $('seriesModalOverlay').classList.add('hidden'); 
+        };
+
+        window.copySeriesJson = function() { 
+            navigator.clipboard.writeText(JSON.stringify(genSeriesJson(), null, 2))
+                .then(() => alert('Copié !'));
+        };
+
+        window.downloadSeriesConfig = function() {
+            const blob = new Blob([JSON.stringify(genSeriesJson(), null, 2)], { type: 'application/json' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); 
+            a.download = 'series_config.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        };
+
+        // === MODAL DÉTAIL SÉRIE ===
+        let currentDetailSeries = null;  // Série actuellement affichée
+
+        window.openSeriesDetail = function(serieJp) {
+            currentDetailSeries = serieJp;  // Clé avec suffixe
+            const series = seriesData[serieJp];
+            if (!series) return;
+
+            const cleanJp = cleanSerieJp(serieJp);
+            
+            // Titre
+            const customTitle = seriesTraductions[serieJp] || seriesTraductions[cleanJp];
+            const displayTitle = customTitle || series.serie_fr || cleanJp;
+            $('seriesDetailTitle').textContent = `📚 ${displayTitle}`;
+            $('seriesDetailSubtitle').textContent = cleanJp !== displayTitle ? cleanJp : '';
+
+            // Volumes de cette série (d.serie_jp contient la clé brute avec suffixe)
+            const seriesVolumes = allData.filter(d => d.serie_jp === serieJp);
+            seriesVolumes.sort((a, b) => {
+                const tomeA = parseInt(a.tome) || 999;
+                const tomeB = parseInt(b.tome) || 999;
+                return tomeA - tomeB;
+            });
+
+            // Stats
+            let valides = 0, rejetes = 0, pending = 0;
+            seriesVolumes.forEach(v => {
+                const s = volumeStatuts[v.asin] || 'non_traite';
+                if (s === 'valide') valides++;
+                else if (s === 'rejete') rejetes++;
+                else pending++;
+            });
+
+            $('seriesDetailStats').innerHTML = `
+                <div class="series-detail-stat">
+                    <div class="value">${seriesVolumes.length}</div>
+                    <div class="label">Total</div>
+                </div>
+                <div class="series-detail-stat ok">
+                    <div class="value">${valides}</div>
+                    <div class="label">Validés</div>
+                </div>
+                <div class="series-detail-stat rejected">
+                    <div class="value">${rejetes}</div>
+                    <div class="label">Rejetés</div>
+                </div>
+                <div class="series-detail-stat pending">
+                    <div class="value">${pending}</div>
+                    <div class="label">À traiter</div>
+                </div>
+                <div class="series-detail-stat">
+                    <div class="value" style="font-size:1rem;color:#3498db;">${series.editeur || '-'}</div>
+                    <div class="label">Éditeur principal</div>
+                </div>
+            `;
+
+            // Liste des volumes
+            $('seriesDetailVolumes').innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:30px;"></th>
+                            <th style="width:60px;">Tome</th>
+                            <th>Titre</th>
+                            <th style="width:100px;">Date</th>
+                            <th style="width:100px;">Éditeur</th>
+                            <th style="width:100px;">ASIN</th>
+                            <th style="width:120px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${seriesVolumes.map(v => {
+                            const s = volumeStatuts[v.asin] || 'non_traite';
+                            const safeAsin = v.asin.replace(/'/g, "\\'");
+                            const titreVolume = v.titre_volume || '';
+                            const sourceInfo = v.serie_recherchee && v.serie_recherchee !== v.serie_jp 
+                                ? `<div style="font-size:0.65rem;color:#e67e22;">🔍 via: ${esc(v.serie_recherchee.substring(0, 20))}...</div>` 
+                                : '';
+                            return `<tr class="${s}" data-asin="${v.asin}">
+                                <td><span class="status-dot ${s}"></span></td>
+                                <td><span class="tome-badge" onclick="editTome('${safeAsin}', '${v.tome}')" style="cursor:pointer;" title="Cliquer pour modifier le tome">✏️ ${v.tome}</span></td>
+                                <td>
+                                    ${esc(v.serie_fr || cleanSerieJp(v.serie_jp))}
+                                    ${titreVolume ? `<div class="volume-title">${esc(titreVolume.substring(0, 50))}${titreVolume.length > 50 ? '...' : ''}</div>` : ''}
+                                    ${sourceInfo}
+                                </td>
+                                <td>${esc(v.date || '-')}</td>
+                                <td><span class="publisher-badge">${esc(v.editeur)}</span></td>
+                                <td><a href="${v.url}" target="_blank" class="asin-code">${esc(v.asin)}</a></td>
+                                <td>
+                                    <div class="action-btns" style="justify-content:flex-start;">
+                                        ${s === 'valide' || s === 'rejete' 
+                                            ? `<button class="action-btn undo" onclick="setStatutInDetail('${safeAsin}','non_traite')" title="Réinitialiser">↩</button>`
+                                            : `<button class="action-btn validate" onclick="setStatutInDetail('${safeAsin}','valide')" title="Valider">✓</button>
+                                               <button class="action-btn reject" onclick="setStatutInDetail('${safeAsin}','rejete')" title="Rejeter">✗</button>`}
+                                    </div>
+                                </td>
+                            </tr>`;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            $('seriesDetailOverlay').classList.remove('hidden');
+        };
+
+        window.closeSeriesDetail = function(e) {
+            if (!e || e.target === $('seriesDetailOverlay')) {
+                $('seriesDetailOverlay').classList.add('hidden');
+                currentDetailSeries = null;
+            }
+        };
+
+        window.setStatutInDetail = function(asin, newStatut) {
+            setStatut(asin, newStatut, { skipPrompt: true });
+            // Rafraîchir la modal
+            if (currentDetailSeries) {
+                openSeriesDetail(currentDetailSeries);
+            }
+        };
+
+        window.editTome = function(asin, currentTome) {
+            if (!isAdmin) {
+                showToast('Mode admin requis', 'error');
+                return;
+            }
+            
+            const newTome = prompt(`Modifier le numéro de tome pour ${asin}:`, currentTome || '');
+            if (newTome === null) return;
+            
+            const tomeValue = newTome.trim();
+            if (!tomeValue) return;
+            
+            // Sauvegarder dans les corrections Gist (tomes)
+            if (!gistCorrections.tomes) gistCorrections.tomes = {};
+            gistCorrections.tomes[asin] = parseInt(tomeValue) || tomeValue;
+            
+            // Mettre à jour dans allData
+            const vol = allData.find(d => d.asin === asin);
+            if (vol) {
+                vol.tome = parseInt(tomeValue) || tomeValue;
+                
+                // Recalculer les stats de la série dans seriesData
+                const serieKey = vol.serie_jp;
+                if (serieKey && seriesData[serieKey]) {
+                    const vols = allData.filter(d => d.serie_jp === serieKey);
+                    const tomesSet = new Set();
+                    let maxTome = 0;
+                    vols.forEach(v => {
+                        const t = parseInt(v.tome);
+                        if (!isNaN(t) && t > 0) {
+                            tomesSet.add(t);
+                            if (t > maxTome) maxTome = t;
+                        }
+                    });
+                    seriesData[serieKey].nbTomes = tomesSet.size || vols.length;
+                    seriesData[serieKey].lastTome = maxTome || '-';
+                    seriesData[serieKey].tomesArray = [...tomesSet];
+                }
+            }
+            
+            markPendingChange();
+            showToast(`Tome ${tomeValue} défini pour ${asin}`, 'success');
+            
+            // Rafraîchir le détail et les cartes
+            if (currentDetailSeries) {
+                openSeriesDetail(currentDetailSeries);
+            }
+            renderSeriesCards();
+        };
+
+        window.validateAllSeriesVolumes = function() {
+            if (!currentDetailSeries) return;
+            const seriesVolumes = allData.filter(d => d.serie_jp === currentDetailSeries);
+            const pending = seriesVolumes.filter(v => (volumeStatuts[v.asin] || 'non_traite') === 'non_traite');
+            
+            if (pending.length === 0) {
+                alert('Aucun volume à traiter.');
+                return;
+            }
+            
+            if (!confirm(`Valider ${pending.length} volume(s) ?`)) return;
+            
+            pending.forEach(v => {
+                volumeStatuts[v.asin] = 'valide';
+            });
+            
+            // Définir l'éditeur officiel si pas encore défini
+            const editeurs = {};
+            seriesVolumes.forEach(v => {
+                if (v.editeur && v.editeur !== 'Inconnu') {
+                    editeurs[v.editeur] = (editeurs[v.editeur] || 0) + 1;
+                }
+            });
+            if (!editeursOfficiels[currentDetailSeries] && Object.keys(editeurs).length > 0) {
+                const topEditeur = Object.entries(editeurs).sort((a, b) => b[1] - a[1])[0][0];
+                editeursOfficiels[currentDetailSeries] = topEditeur;
+            }
+            
+            updateStats();
+            render();
+            renderSeriesCards();
+            openSeriesDetail(currentDetailSeries);
+        };
+
+        window.rejectAllSeriesVolumes = function() {
+            if (!currentDetailSeries) return;
+            const seriesVolumes = allData.filter(d => d.serie_jp === currentDetailSeries);
+            const pending = seriesVolumes.filter(v => (volumeStatuts[v.asin] || 'non_traite') === 'non_traite');
+            
+            if (pending.length === 0) {
+                alert('Aucun volume à traiter.');
+                return;
+            }
+            
+            if (!confirm(`Rejeter ${pending.length} volume(s) ?`)) return;
+            
+            pending.forEach(v => {
+                volumeStatuts[v.asin] = 'rejete';
+            });
+            
+            updateStats();
+            render();
+            renderSeriesCards();
+            openSeriesDetail(currentDetailSeries);
+        };
+
+        window.resetAllSeriesVolumes = function() {
+            if (!currentDetailSeries) return;
+            const seriesVolumes = allData.filter(d => d.serie_jp === currentDetailSeries);
+            
+            if (!confirm(`Réinitialiser ${seriesVolumes.length} volume(s) ?`)) return;
+            
+            seriesVolumes.forEach(v => {
+                volumeStatuts[v.asin] = 'non_traite';
+            });
+            
+            // Supprimer l'éditeur officiel
+            delete editeursOfficiels[currentDetailSeries];
+            
+            updateStats();
+            render();
+            renderSeriesCards();
+            openSeriesDetail(currentDetailSeries);
+        };
+
+        // ============================================
+        // SCISSION MANUELLE DE SÉRIE
+        // ============================================
+        window.openSplitSeriesDialog = function() {
+            if (!isAdmin) {
+                showToast('Mode admin requis', 'error');
+                return;
+            }
+            if (!currentDetailSeries) return;
+            
+            const seriesVolumes = allData.filter(d => d.serie_jp === currentDetailSeries);
+            const serieInfo = seriesData[currentDetailSeries] || {};
+            const currentName = serieInfo.serie_fr || currentDetailSeries;
+            
+            // Proposer les types courants
+            const typeChoix = prompt(
+                `✂️ SCINDER LA SÉRIE\n\n` +
+                `Série: ${currentName}\n` +
+                `${seriesVolumes.length} volume(s)\n\n` +
+                `Quel type de scission ?\n` +
+                `1 = Manga vs Light Novel\n` +
+                `2 = Éditions différentes\n` +
+                `3 = Personnalisé\n\n` +
+                `Entrez 1, 2 ou 3:`
+            );
+            
+            if (!typeChoix) return;
+            
+            let nomNouvelleSerie = '';
+            let suffixe = '';
+            
+            switch (typeChoix.trim()) {
+                case '1':
+                    // Manga vs LN - demander lequel garder
+                    const gardeManga = confirm(
+                        `La série principale "${currentName}" sera-t-elle le MANGA ?\n\n` +
+                        `[OK] = Oui, créer "${currentName} (LN)" pour les light novels\n` +
+                        `[Annuler] = Non, créer "${currentName} (Manga)" pour les mangas`
+                    );
+                    suffixe = gardeManga ? '(LN)' : '(Manga)';
+                    nomNouvelleSerie = `${currentName} ${suffixe}`.replace(/\s+/g, ' ').trim();
+                    break;
+                    
+                case '2':
+                    // Éditions différentes
+                    const edition = prompt(`Nom de l'édition (ex: "Deluxe", "Nouvelle édition", "Bunko"):`);
+                    if (!edition) return;
+                    nomNouvelleSerie = `${currentName} (${edition})`;
+                    break;
+                    
+                case '3':
+                    // Personnalisé
+                    nomNouvelleSerie = prompt(`Nom complet de la nouvelle série:`, `${currentName} (2)`);
+                    if (!nomNouvelleSerie) return;
+                    break;
+                    
+                default:
+                    showToast('Choix invalide', 'error');
+                    return;
+            }
+            
+            // Vérifier que le nom n'existe pas déjà
+            if (seriesData[nomNouvelleSerie]) {
+                showToast(`La série "${nomNouvelleSerie}" existe déjà`, 'error');
+                return;
+            }
+            
+            // Afficher les volumes à sélectionner
+            showVolumeSplitSelector(seriesVolumes, nomNouvelleSerie);
+        };
+
+        function showVolumeSplitSelector(volumes, newSeriesName) {
+            // Créer un dialog pour sélectionner les volumes à déplacer
+            const volumesList = volumes.map((v, i) => {
+                const statut = volumeStatuts[v.asin] || 'non_traite';
+                const statutIcon = statut === 'valide' ? '✅' : statut === 'rejete' ? '❌' : '⚪';
+                return `${i + 1}. ${statutIcon} Tome ${v.tome || '?'} - ${v.titre_volume || v.editeur || ''} [${v.asin}]`;
+            }).join('\n');
+            
+            const selection = prompt(
+                `📋 SÉLECTIONNER LES VOLUMES À DÉPLACER\n\n` +
+                `Vers: "${newSeriesName}"\n\n` +
+                `Volumes disponibles:\n${volumesList}\n\n` +
+                `Entrez les numéros séparés par des virgules (ex: 1,3,5)\n` +
+                `Ou "all" pour tous, ou "none" pour annuler:`
+            );
+            
+            if (!selection || selection.toLowerCase() === 'none') return;
+            
+            let selectedIndices = [];
+            if (selection.toLowerCase() === 'all') {
+                selectedIndices = volumes.map((_, i) => i);
+            } else {
+                selectedIndices = selection.split(',')
+                    .map(s => parseInt(s.trim()) - 1)
+                    .filter(i => i >= 0 && i < volumes.length);
+            }
+            
+            if (selectedIndices.length === 0) {
+                showToast('Aucun volume sélectionné', 'error');
+                return;
+            }
+            
+            // Confirmer
+            if (!confirm(`Déplacer ${selectedIndices.length} volume(s) vers "${newSeriesName}" ?`)) return;
+            
+            // Effectuer la scission
+            const selectedVolumes = selectedIndices.map(i => volumes[i]);
+            
+            // Enregistrer la scission
+            seriesScindees.push({
+                nom_original: currentDetailSeries,
+                nouveau_nom: newSeriesName,
+                volumes: selectedVolumes.map(v => v.asin)
+            });
+            
+            // Assigner les volumes à la nouvelle série
+            selectedVolumes.forEach(v => {
+                volumeSerieOverride[v.asin] = newSeriesName;
+            });
+            
+            // Marquer comme modifié
+            markPendingChange();
+            
+            // Mettre à jour l'affichage
+            // Reconstruire seriesData pour inclure la nouvelle série
+            rebuildSeriesDataWithSplits();
+            
+            showToast(`${selectedVolumes.length} volume(s) déplacé(s) vers "${newSeriesName}"`, 'success');
+            
+            closeSeriesDetail();
+            renderSeriesCards();
+            renderRecapTable();
+        }
+
+        function rebuildSeriesDataWithSplits() {
+            // Reconstruire seriesData en tenant compte des overrides
+            const newSeriesData = {};
+            
+            allData.forEach(d => {
+                // Utiliser l'override si présent, sinon la série originale
+                const serieKey = volumeSerieOverride[d.asin] || d.serie_jp;
+                
+                if (!newSeriesData[serieKey]) {
+                    newSeriesData[serieKey] = {
+                        serie_jp: d.serie_jp,
+                        serie_fr: volumeSerieOverride[d.asin] || d.serie_fr || '',
+                        volumes: [],
+                        tomesSet: new Set(),
+                        nbTomes: 0,
+                        lastTome: 0,
+                        lastDate: '',
+                        firstDetection: d.date_detection || '',
+                        isNew: false,
+                        isSplit: !!volumeSerieOverride[d.asin]
+                    };
+                }
+                
+                newSeriesData[serieKey].volumes.push(d);
+                
+                const tome = parseInt(d.tome);
+                if (!isNaN(tome) && tome > 0) {
+                    newSeriesData[serieKey].tomesSet.add(tome);
+                    if (tome > newSeriesData[serieKey].lastTome) {
+                        newSeriesData[serieKey].lastTome = tome;
+                    }
+                }
+                
+                if (d.date && d.date > newSeriesData[serieKey].lastDate) {
+                    newSeriesData[serieKey].lastDate = d.date;
+                }
+            });
+            
+            // Mettre à jour nbTomes
+            for (const key in newSeriesData) {
+                newSeriesData[key].nbTomes = newSeriesData[key].tomesSet.size;
+            }
+            
+            // Remplacer seriesData
+            Object.keys(seriesData).forEach(k => delete seriesData[k]);
+            Object.assign(seriesData, newSeriesData);
+        }
+
+        // ============================================
+        // ÉDITION MANUELLE DU NUMÉRO DE TOME
+        // ============================================
+        window.editTome = function(asin) {
+            const volume = allData.find(d => d.asin === asin);
+            if (!volume) return;
+            
+            const currentTome = gistCorrections.tomes?.[asin] || volume.tome || '?';
+            const newTome = prompt(
+                `📖 Modifier le numéro de tome\n\n` +
+                `Série: ${volume.serie_fr || volume.serie_jp}\n` +
+                `ASIN: ${asin}\n` +
+                `Tome actuel: ${currentTome}\n\n` +
+                `Nouveau numéro (ou vide pour annuler):`,
+                currentTome === '?' ? '' : currentTome
+            );
+            
+            if (newTome === null) return; // Annulé
+            
+            if (newTome === '' || newTome === '?') {
+                // Supprimer la correction
+                if (gistCorrections.tomes?.[asin]) {
+                    delete gistCorrections.tomes[asin];
+                    volume.tome = '?';
+                    markPendingChange();
+                    showToast('Tome réinitialisé', 'info');
+                }
+            } else {
+                const tomeNum = parseInt(newTome);
+                if (isNaN(tomeNum) || tomeNum < 1) {
+                    showToast('Numéro invalide', 'error');
+                    return;
+                }
+                
+                // Enregistrer la correction
+                if (!gistCorrections.tomes) gistCorrections.tomes = {};
+                gistCorrections.tomes[asin] = tomeNum;
+                volume.tome = tomeNum;
+                markPendingChange();
+                showToast(`Tome ${tomeNum} enregistré`, 'success');
+            }
+            
+            // Rafraîchir l'affichage
+            render();
+            renderSeriesCards();
+        };
+
+        window.resetFilters = function() {
+            ['searchInput', 'publisherFilter', 'dateFilter', 'statusFilter', 'seriesFilter'].forEach(id => $(id).value = '');
+            applyFilters();
+        };
+
+        function renderPagination() {
+            const total = Math.ceil(filteredData.length / perPage);
+            if (total <= 1) { $('pagination').innerHTML = ''; return; }
+            let html = `<button onclick="goTo(${currentPage-1})" ${currentPage===1?'disabled':''}>◀</button>`;
+            for (let i = 1; i <= total; i++) {
+                if (i === 1 || i === total || Math.abs(i - currentPage) <= 2) {
+                    html += `<button class="${i===currentPage?'active':''}" onclick="goTo(${i})">${i}</button>`;
+                } else if (Math.abs(i - currentPage) === 3) html += `<button disabled>…</button>`;
+            }
+            html += `<button onclick="goTo(${currentPage+1})" ${currentPage===total?'disabled':''}>▶</button>`;
+            $('pagination').innerHTML = html;
+        }
+
+        window.goTo = function(p) { 
+            const t = Math.ceil(filteredData.length / perPage); 
+            if (p >= 1 && p <= t) { currentPage = p; render(); window.scrollTo({top:150,behavior:'smooth'}); } 
+        };
+
+        function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+
+        // ============================================
+        // INITIALISATION AUTO - Chargement depuis GitHub
+        // ============================================
+        checkAutoLogin();
+        autoLoadFromGitHub();
+    </script>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+</body>
+</html>
