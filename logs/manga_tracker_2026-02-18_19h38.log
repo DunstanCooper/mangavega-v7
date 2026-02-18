@@ -1,0 +1,184 @@
+📋 55 série(s) chargée(s) depuis mangas_liste.json
+🔍 Filtre --serie '勇者': 3/55 série(s) sélectionnée(s)
+   → 勇者刑に処す [MANGA]
+   → 誰が勇者を殺したか [MANGA]
+   → 誰が勇者を殺したか [LN]
+
+================================================================================
+🚀 MANGA TRACKER v7.0.0 (2026-02-17)
+================================================================================
+📚 3 mangas à surveiller
+📅 Date seuil nouveautés: 2025/06/01
+================================================================================
+
+📦 Initialisation de la base de données...
+   ✅ Tables 'volumes' et 'series_editeurs' prêtes
+   ✅ Traductions manuelles déjà en BDD (54 entrées)
+☁️  Chargement de la configuration depuis le Gist...
+   ✅ corrections.json: 0 validé(s), 0 rejeté(s)
+   📅 Date seuil nouveautés: 2026/02/04 (depuis Gist)
+   ✅ series_config.json: 0 URL(s) supp., 0 série(s) ajoutée(s)
+📚 3 mangas à surveiller (après fusion)
+   ⚠️  2 série(s) sans titre FR
+   → Les traductions seront recherchées automatiquement
+================================================================================
+📋 Ordre optimisé (cache en premier):
+   🥇 3 série(s) avec cache (passent d'abord)
+   🥈 0 série(s) avec ASIN de référence, sans cache
+   🥉 0 série(s) sans cache ni référence (à la fin)
+
+🌐 Session HTTP: curl_cffi (impersonate=chrome, TLS+HTTP/2 fingerprint)
+   📋 Headers auto-générés par curl_cffi (pas de custom headers)
+   🔥 Warm-up: visite amazon.co.jp pour recevoir les cookies...
+   ✅ Warm-up: HTTP 202 | 0 cookies: 
+   ⏸️  Pause post-warm-up: 3.9s
+
+================================================================================
+📚 MANGA: 誰が勇者を殺したか [LN]
+   📖 LN uniquement
+   🇫🇷 Who killed the hero (officielle, manuel)
+================================================================================
+💾 3 volume(s) déjà connu(s) en BDD
+💾 6 ASIN(s) déjà classifié(s) (skip) [4 ebook | 1 non_papier | 1 sponsorise]
+🔄 Exploration Bulk depuis [4041141842]...
+
+      🔍 Recherche volumes liés depuis [4041141842]...
+      [HTTP] 200 | 1,078,730 chars | cookies:5 | https://www.amazon.co.jp/dp/4041141842
+📄 Featured: exploration complète (page 1 uniquement pour nouveautés)
+
+🔍 Recherche Featured...
+
+      [HTTP] 200 | 608,376 chars | cookies:6 | https://www.amazon.co.jp/s
+🔍 Analyse de 12 résultats Featured (page 1)...
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+📊 Page 1: 0 nouveau(x) | 8 déjà vu(s)
+📊 Featured total: 0 papier | 0 ebook | 0 spon | 0 h-s | 8 déjà vu | 4 sans info
+
+📦 Phase A terminée: 3 candidat(s) (3 connus + 0 nouveaux)
+
+🔍 Vérification des 3 produit(s) papier...
+--------------------------------------------------------------------------------
+      [HTTP] 200 | 1,090,561 chars | cookies:7 | https://www.amazon.co.jp/dp/4041141842
+  ⚠️  [4041141842] Tome non détecté
+      📚 Éditeur: Kadokawa
+  ⏳ [4041141842] Trop ancien: September 29, 2023, Tome: N/A
+      [HTTP] 200 | 1,060,566 chars | cookies:7 | https://www.amazon.co.jp/dp/4041162572
+  ⚠️  [4041162572] Tome non détecté
+      📚 Éditeur: Kadokawa
+  ⏳ [4041162572] Trop ancien: May 30, 2025, Tome: N/A
+      [HTTP] 200 | 1,060,716 chars | cookies:7 | https://www.amazon.co.jp/dp/4041152305
+  ⚠️  [4041152305] Tome non détecté
+      📚 Éditeur: Kadokawa
+  ⏳ [4041152305] Trop ancien: August 1, 2024, Tome: N/A
+--------------------------------------------------------------------------------
+✅ Résultat: 0 nouveauté(s) | 3 papier(s) au total
+📚 Éditeur officiel détecté pour 誰が勇者を殺したか [LN]: kadokawa
+
+
+================================================================================
+📚 MANGA: 勇者刑に処す [MANGA]
+   🇫🇷 Sentenced to a Heroic Punishment (officielle, manuel)
+================================================================================
+💾 2 volume(s) déjà connu(s) en BDD
+💾 17 ASIN(s) déjà classifié(s) (skip) [11 ebook | 1 hors_sujet_titre | 2 lot | 3 sponsorise]
+🔄 Exploration Bulk depuis [4049147262]...
+
+      🔍 Recherche volumes liés depuis [4049147262]...
+      [HTTP] 200 | 1,227,558 chars | cookies:7 | https://www.amazon.co.jp/dp/4049147262
+      📦 Bulk: 1 volume(s) trouvé(s)
+📄 Featured: exploration complète (page 1 uniquement pour nouveautés)
+
+🔍 Recherche Featured...
+
+      [HTTP] 200 | 752,963 chars | cookies:7 | https://www.amazon.co.jp/s
+🔍 Analyse de 18 résultats Featured (page 1)...
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+📊 Page 1: 0 nouveau(x) | 14 déjà vu(s)
+📊 Featured total: 0 papier | 0 ebook | 0 spon | 0 h-s | 14 déjà vu | 4 sans info
+
+📦 Phase A terminée: 2 candidat(s) (2 connus + 0 nouveaux)
+
+🔍 Vérification des 2 produit(s) papier...
+--------------------------------------------------------------------------------
+      [HTTP] 200 | 1,228,438 chars | cookies:7 | https://www.amazon.co.jp/dp/4049147262
+  ⚠️  [4049147262] Tome non détecté
+      📚 Éditeur: Kadokawa
+  ⏳ [4049147262] Trop ancien: December 9, 2022, Tome: N/A
+      [HTTP] 200 | 1,195,471 chars | cookies:7 | https://www.amazon.co.jp/dp/4049156911
+  ⚠️  [4049156911] Tome non détecté
+      📚 Éditeur: Kadokawa
+  ⏳ [4049156911] Trop ancien: April 26, 2024, Tome: N/A
+--------------------------------------------------------------------------------
+✅ Résultat: 0 nouveauté(s) | 2 papier(s) au total
+
+
+================================================================================
+📚 MANGA: 誰が勇者を殺したか [MANGA]
+   🇫🇷 Who killed the hero (officielle, manuel)
+================================================================================
+💾 1 volume(s) déjà connu(s) en BDD
+💾 8 ASIN(s) déjà classifié(s) (skip) [5 ebook | 3 sponsorise]
+🔄 Exploration Bulk depuis [4048115405]...
+
+      🔍 Recherche volumes liés depuis [4048115405]...
+      [HTTP] 200 | 1,234,972 chars | cookies:7 | https://www.amazon.co.jp/dp/4048115405
+📄 Featured: exploration complète (page 1 uniquement pour nouveautés)
+
+🔍 Recherche Featured...
+
+      [HTTP] 200 | 607,053 chars | cookies:7 | https://www.amazon.co.jp/s
+🔍 Analyse de 12 résultats Featured (page 1)...
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+📊 Page 1: 0 nouveau(x) | 8 déjà vu(s)
+📊 Featured total: 0 papier | 0 ebook | 0 spon | 0 h-s | 8 déjà vu | 4 sans info
+
+📦 Phase A terminée: 1 candidat(s) (1 connus + 0 nouveaux)
+
+🔍 Vérification des 1 produit(s) papier...
+--------------------------------------------------------------------------------
+  💾 [4048115405] Utilisation du cache (vérifié aujourd'hui)
+      📖 July 7, 2025, Tome: 1, 📚 Kadokawa
+--------------------------------------------------------------------------------
+✅ Résultat: 0 nouveauté(s) | 1 papier(s) au total
+
+
+================================================================================
+📊 RÉSUMÉ FINAL
+================================================================================
+⏱️  Temps: 48.1s
+📚 Scannés: 3
+📦 Papiers trouvés: 6
+✨ Nouveautés: 0
+================================================================================
+
+================================================================================
+📊 RÉSUMÉ PAR SÉRIE
+================================================================================
+
+📚 勇者刑に処す [MANGA]
+   (Sentenced to a Heroic Punishment)
+   📖 0 tome(s) | Dernier: Tome 0 | ✓
+   Tomes: N/A, N/A
+
+📚 誰が勇者を殺したか [LN]
+   (Who killed the hero)
+   📖 0 tome(s) | Dernier: Tome 0 | ✓
+   Tomes: N/A, N/A, N/A
+
+📚 誰が勇者を殺したか [MANGA]
+   (Who killed the hero)
+   📖 1 tome(s) | Dernier: Tome 1 | ✓
+   Tomes: 1
+
+================================================================================
+📁 FICHIERS GÉNÉRÉS
+================================================================================
+📋 JSON collection: manga_collection.json
+☁️  Sauvegarde du Gist...
+   📅 Nouvelle date seuil: 2026-02-04
+   ✅ Gist mis à jour avec succès
+📧 Emails désactivés (--no-email)
+📤 Git push désactivé (--no-push)

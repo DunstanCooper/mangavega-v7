@@ -1,0 +1,219 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+MangaVega Tracker - Notifications email
+"""
+
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from datetime import datetime
+from typing import List, Dict
+
+import config
+
+logger = config.logger
+
+
+def generer_email_html(nouvelles_publications: List[Dict]) -> str:
+    """Génère l'email HTML"""
+    
+    cartes_html = ""
+    for pub in nouvelles_publications:
+        couverture_html = f'<img src="{pub.get("couverture", "")}" alt="Couverture" style="width:100%;height:100%;object-fit:cover;">' if pub.get('couverture') else '<div style="color:#667eea;font-size:11px;text-align:center;padding:10px;">Couverture non disponible</div>'
+        
+        # Badge et bordure selon le type d'alerte
+        if pub.get('date_modifiee'):
+            badge_html = '<span style="display:inline-block;background-color:#e53e3e;color:white;padding:5px 12px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px;">⚠️ DATE MODIFIÉE</span>'
+            border_color = '#e53e3e'
+            date_display = f"<s style='color:#999;'>{pub.get('ancienne_date', '')}</s> → <strong style='color:#e53e3e;'>{pub['date']}</strong>"
+        else:
+            badge_html = '<span style="display:inline-block;background-color:#48bb78;color:white;padding:5px 12px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px;">NOUVEAU</span>'
+            border_color = '#667eea'
+            date_display = pub['date']
+        
+        cartes_html += f'''
+            <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#f9fafb;border-left:4px solid {border_color};border-radius:6px;margin-bottom:20px;">
+                <tr>
+                    <td style="padding:20px;">
+                        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tr>
+                                <td width="120" valign="top" style="padding-right:20px;">
+                                    <div style="width:100px;height:140px;background:linear-gradient(135deg,#e0e7ff 0%,#c7d2fe 100%);border-radius:4px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+                                        {couverture_html}
+                                    </div>
+                                </td>
+                                <td valign="top">
+                                    <h2 style="font-size:18px;font-weight:600;color:#1a202c;margin:0 0 10px 0;">
+                                        {pub['nom']}
+                                        {badge_html}
+                                    </h2>
+                                    <p style="font-size:16px;color:#667eea;font-weight:500;margin:0 0 18px 0;">{pub['nom_fr']}</p>
+                                    <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:18px;">
+                                        <tr><td style="padding:8px 20px 8px 0;"><span style="font-size:18px;">📖</span><strong style="font-size:15px;color:#4a5568;margin-left:8px;">Tome {pub['tome']}</strong></td></tr>
+                                        <tr><td style="padding:8px 20px 8px 0;"><span style="font-size:18px;">📅</span><span style="font-size:15px;color:#4a5568;margin-left:8px;">{date_display}</span></td></tr>
+                                        <tr><td style="padding:8px 20px 8px 0;"><span style="font-size:18px;">🏢</span><span style="font-size:15px;color:#4a5568;margin-left:8px;">{pub['editeur']}</span></td></tr>
+                                    </table>
+                                    <a href="{pub['url']}" style="display:inline-block;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:14px 28px;text-decoration:none;border-radius:8px;font-weight:600;font-size:14px;">Voir sur Amazon →</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        '''
+    
+    return f'''<!DOCTYPE html>
+    <html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+    <body style="margin:0;padding:0;background-color:#f0f4f8;font-family:system-ui,-apple-system,sans-serif;">
+        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#f0f4f8;padding:40px 20px;">
+            <tr><td align="center">
+                <table cellpadding="0" cellspacing="0" border="0" width="600" style="max-width:600px;background-color:white;border-radius:16px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.1);">
+                    <tr><td style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);padding:40px 30px;text-align:center;">
+                        <h1 style="color:white;margin:0;font-size:28px;">📚 Nouveautés Manga</h1>
+                        <p style="color:rgba(255,255,255,0.95);margin:12px 0 0 0;font-size:16px;">{len(nouvelles_publications)} nouvelle(s) détectée(s)</p>
+                    </td></tr>
+                    <tr><td style="padding:30px;">{cartes_html}</td></tr>
+                    <tr><td style="background-color:#f7fafc;padding:25px 30px;text-align:center;border-top:1px solid #e2e8f0;">
+                        <p style="margin:0;color:#718096;font-size:13px;">Manga Tracker • {datetime.now().strftime("%d/%m/%Y")}</p>
+                    </td></tr>
+                </table>
+            </td></tr>
+        </table>
+    </body></html>'''
+
+
+def envoyer_email_rapport(destinataire: str, nb_series: int, nb_papiers: int, nb_nouveautes: int, nb_a_traiter: int, duree: float):
+    """Envoie un email de rapport même sans nouveautés"""
+    
+    statut = "✅ Scan OK" if nb_nouveautes == 0 else f"🎉 {nb_nouveautes} nouveauté(s)"
+    
+    html = f'''<!DOCTYPE html>
+    <html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+    <body style="margin:0;padding:0;background-color:#f0f4f8;font-family:system-ui,-apple-system,sans-serif;">
+        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#f0f4f8;padding:40px 20px;">
+            <tr><td align="center">
+                <table cellpadding="0" cellspacing="0" border="0" width="600" style="max-width:600px;background-color:white;border-radius:16px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.1);">
+                    <tr><td style="background:linear-gradient(135deg,#2d3748 0%,#4a5568 100%);padding:30px;text-align:center;">
+                        <h1 style="color:white;margin:0;font-size:24px;">📊 Rapport MangaVega Tracker</h1>
+                        <p style="color:rgba(255,255,255,0.8);margin:8px 0 0 0;font-size:14px;">v{config.VERSION} • {datetime.now().strftime("%d/%m/%Y %H:%M")}</p>
+                    </td></tr>
+                    <tr><td style="padding:30px;">
+                        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom:20px;">
+                            <tr>
+                                <td style="text-align:center;padding:15px;background:#f7fafc;border-radius:8px;width:20%;">
+                                    <div style="font-size:28px;font-weight:700;color:#2d3748;">{nb_series}</div>
+                                    <div style="font-size:12px;color:#718096;">Séries</div>
+                                </td>
+                                <td style="width:6px;"></td>
+                                <td style="text-align:center;padding:15px;background:#f7fafc;border-radius:8px;width:20%;">
+                                    <div style="font-size:28px;font-weight:700;color:#2d3748;">{nb_papiers}</div>
+                                    <div style="font-size:12px;color:#718096;">Volumes</div>
+                                </td>
+                                <td style="width:6px;"></td>
+                                <td style="text-align:center;padding:15px;background:{'#f0fff4' if nb_nouveautes > 0 else '#f7fafc'};border-radius:8px;width:20%;">
+                                    <div style="font-size:28px;font-weight:700;color:{'#38a169' if nb_nouveautes > 0 else '#2d3748'};">{nb_nouveautes}</div>
+                                    <div style="font-size:12px;color:#718096;">Nouveautés</div>
+                                </td>
+                                <td style="width:6px;"></td>
+                                <td style="text-align:center;padding:15px;background:{'#fffff0' if nb_a_traiter > 0 else '#f7fafc'};border-radius:8px;width:20%;">
+                                    <div style="font-size:28px;font-weight:700;color:{'#d69e2e' if nb_a_traiter > 0 else '#2d3748'};">{nb_a_traiter}</div>
+                                    <div style="font-size:12px;color:#718096;">À traiter</div>
+                                </td>
+                                <td style="width:6px;"></td>
+                                <td style="text-align:center;padding:15px;background:#f7fafc;border-radius:8px;width:20%;">
+                                    <div style="font-size:28px;font-weight:700;color:#2d3748;">{duree:.0f}s</div>
+                                    <div style="font-size:12px;color:#718096;">Durée</div>
+                                </td>
+                            </tr>
+                        </table>
+                        <p style="text-align:center;font-size:16px;color:#4a5568;margin:20px 0;">
+                            {'🎉 De nouvelles sorties ont été détectées !' if nb_nouveautes > 0 else '📭 Aucune nouvelle sortie détectée cette fois-ci.'}
+                        </p>
+                        {f'<p style="text-align:center;font-size:14px;color:#d69e2e;margin:10px 0;">⏳ {nb_a_traiter} volume(s) en attente de validation dans le viewer.</p>' if nb_a_traiter > 0 else ''}
+                        <p style="text-align:center;font-size:13px;color:#a0aec0;margin:10px 0 0 0;">
+                            Le log complet est disponible dans les artifacts GitHub Actions.
+                        </p>
+                    </td></tr>
+                    <tr><td style="background-color:#f7fafc;padding:20px 30px;text-align:center;border-top:1px solid #e2e8f0;">
+                        <p style="margin:0;color:#718096;font-size:12px;">MangaVega Tracker v{config.VERSION} • {statut}</p>
+                    </td></tr>
+                </table>
+            </td></tr>
+        </table>
+    </body></html>'''
+    
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = f"📊 Manga Tracker: {nb_series} séries, {nb_papiers} volumes, {nb_nouveautes} nouveauté(s), {nb_a_traiter} à traiter"
+    msg['From'] = config.EMAIL_EXPEDITEUR
+    msg['To'] = destinataire
+    msg.attach(MIMEText(html, 'html'))
+    
+    for port in config.SMTP_PORTS:
+        try:
+            logger.info(f"📧 Envoi rapport via port {port}...")
+            if port == 465:
+                server = smtplib.SMTP_SSL(config.SMTP_SERVER, port, timeout=10)
+            else:
+                server = smtplib.SMTP(config.SMTP_SERVER, port, timeout=10)
+                if port == 587:
+                    server.starttls()
+            server.login(config.EMAIL_EXPEDITEUR, config.MOT_DE_PASSE_APP)
+            server.send_message(msg)
+            server.quit()
+            logger.info(f"✅ Rapport envoyé avec succès!\n")
+            return
+        except Exception as e:
+            logger.warning(f"⚠️  Port {port}: {str(e)[:80]}")
+    
+    logger.error("❌ Échec d'envoi du rapport sur tous les ports\n")
+
+
+def envoyer_email(destinataire: str, nouvelles_publications: List[Dict]):
+    """Envoie l'email"""
+    if not nouvelles_publications:
+        logger.info("📧 Aucune nouveauté, pas d'email envoyé")
+        return
+    
+    msg = MIMEMultipart('alternative')
+    nb_nouvelles = sum(1 for p in nouvelles_publications if not p.get('date_modifiee'))
+    nb_dates_modifiees = sum(1 for p in nouvelles_publications if p.get('date_modifiee'))
+    
+    sujet_parts = []
+    if nb_nouvelles > 0:
+        sujet_parts.append(f"{nb_nouvelles} nouvelle(s) sortie(s)")
+    if nb_dates_modifiees > 0:
+        sujet_parts.append(f"⚠️ {nb_dates_modifiees} date(s) modifiée(s)")
+    
+    msg['Subject'] = f"📚 {' + '.join(sujet_parts)}"
+    msg['From'] = config.EMAIL_EXPEDITEUR
+    msg['To'] = destinataire
+    
+    html = generer_email_html(nouvelles_publications)
+    msg.attach(MIMEText(html, 'html'))
+    
+    for port in config.SMTP_PORTS:
+        try:
+            logger.info(f"📧 Envoi email via port {port}...")
+            
+            if port == 465:
+                server = smtplib.SMTP_SSL(config.SMTP_SERVER, port, timeout=10)
+            else:
+                server = smtplib.SMTP(config.SMTP_SERVER, port, timeout=10)
+                if port == 587:
+                    server.starttls()
+            
+            server.login(config.EMAIL_EXPEDITEUR, config.MOT_DE_PASSE_APP)
+            server.send_message(msg)
+            server.quit()
+            
+            logger.info(f"✅ Email envoyé avec succès!\n")
+            return
+            
+        except Exception as e:
+            logger.warning(f"⚠️  Port {port}: {str(e)[:80]}")
+    
+    logger.error("❌ Échec d'envoi sur tous les ports\n")
+
+
+

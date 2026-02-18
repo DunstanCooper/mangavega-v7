@@ -1,0 +1,34 @@
+# Secrets (JAMAIS commités)
+.env
+.env.*
+!.env.example
+
+# Logs
+manga_tracker.log
+
+# Fichiers générés par le scan (le viewer les lit depuis le Gist ou localement)
+manga_collection.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Environnement
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backups de config appliquées
+corrections_imported_*.json
+series_config_applied_*.json
+
+# Debug
+debug_page_*.html
+
+# IDE
+.vscode/
+.idea/
