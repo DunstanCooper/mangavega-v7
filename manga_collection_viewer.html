@@ -552,51 +552,74 @@
             <div class="tab-content" id="tab-runner">
                 <div style="max-width: 900px; margin: 0 auto;">
                     <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
-                        <h3 style="color:#48dbfb; margin:0;">⚡ Lancement du script</h3>
+                        <h3 style="color:#48dbfb; margin:0;">⚡ Pilotage local</h3>
                         <span id="runnerStatus" style="font-size:0.8rem; color:#888;"></span>
+                        <span id="serverIndicator" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#666;"></span>
                     </div>
                     
-                    <!-- Bouton de lancement -->
-                    <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:20px; margin-bottom:20px; border:1px solid rgba(72,219,251,0.2);">
-                        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:15px;">
-                            <div>
-                                <div style="font-size:1.1rem; font-weight:600; color:#eee;">MangaVega Tracker</div>
-                                <div style="color:#888; font-size:0.8rem; margin-top:4px;">Lance le scan complet de toutes les séries via GitHub Actions</div>
-                            </div>
-                            <button id="btnRunScript" onclick="triggerWorkflow()" 
-                                style="padding:12px 28px; background:linear-gradient(135deg,#48dbfb,#6c5ce7); border:none; border-radius:10px; color:white; font-size:1rem; font-weight:600; cursor:pointer; transition:all 0.2s; white-space:nowrap;">
-                                ▶️ Lancer le script
+                    <!-- Actions principales -->
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:15px; margin-bottom:20px;">
+                        
+                        <!-- Sync Gist → BDD -->
+                        <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:20px; border:1px solid rgba(46,204,113,0.3);">
+                            <div style="font-size:1rem; font-weight:600; color:#2ecc71; margin-bottom:8px;">🔄 Synchroniser</div>
+                            <div style="color:#888; font-size:0.78rem; margin-bottom:15px;">Applique les corrections du Gist (validations, rejets, tomes) à la BDD locale immédiatement.</div>
+                            <button id="btnSync" onclick="localSync()" 
+                                style="padding:10px 22px; background:linear-gradient(135deg,#2ecc71,#27ae60); border:none; border-radius:8px; color:white; font-size:0.9rem; font-weight:600; cursor:pointer; width:100%;">
+                                🔄 Synchroniser BDD
                             </button>
                         </div>
-                        <div id="runnerMessage" style="margin-top:12px; display:none;"></div>
+                        
+                        <!-- Lancer scan -->
+                        <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:20px; border:1px solid rgba(72,219,251,0.3);">
+                            <div style="font-size:1rem; font-weight:600; color:#48dbfb; margin-bottom:8px;">▶️ Scanner</div>
+                            <div style="color:#888; font-size:0.78rem; margin-bottom:10px;">Lance le scan sur votre PC. Le script tourne en arrière-plan.</div>
+                            <div style="display:flex; gap:8px; margin-bottom:10px;">
+                                <input type="text" id="scanSerie" placeholder="Série (vide = toutes)" 
+                                    style="flex:1; padding:8px; border-radius:6px; border:1px solid rgba(255,255,255,0.2); background:rgba(0,0,0,0.3); color:#eee; font-size:0.85rem;">
+                            </div>
+                            <div style="display:flex; gap:8px; margin-bottom:10px;">
+                                <label style="font-size:0.75rem; color:#aaa; display:flex; align-items:center; gap:4px;">
+                                    <input type="checkbox" id="scanNoEmail" checked> --no-email
+                                </label>
+                                <label style="font-size:0.75rem; color:#aaa; display:flex; align-items:center; gap:4px;">
+                                    <input type="checkbox" id="scanNoPush"> --no-push
+                                </label>
+                            </div>
+                            <button id="btnScan" onclick="localScan()" 
+                                style="padding:10px 22px; background:linear-gradient(135deg,#48dbfb,#6c5ce7); border:none; border-radius:8px; color:white; font-size:0.9rem; font-weight:600; cursor:pointer; width:100%;">
+                                ▶️ Lancer le scan
+                            </button>
+                        </div>
+                        
+                        <!-- Backup BDD -->
+                        <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:20px; border:1px solid rgba(254,202,87,0.3);">
+                            <div style="font-size:1rem; font-weight:600; color:#feca57; margin-bottom:8px;">💾 Sauvegarder</div>
+                            <div style="color:#888; font-size:0.78rem; margin-bottom:15px;">Crée une copie horodatée de la BDD dans le dossier backups/. Garde les 10 dernières.</div>
+                            <button id="btnBackup" onclick="localBackup()" 
+                                style="padding:10px 22px; background:linear-gradient(135deg,#feca57,#f39c12); border:none; border-radius:8px; color:#1a1a2e; font-size:0.9rem; font-weight:600; cursor:pointer; width:100%;">
+                                💾 Backup BDD
+                            </button>
+                        </div>
                     </div>
                     
-                    <!-- Infos workflow -->
-                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:20px;">
-                        <div class="stat-card"><div class="number" id="runTotal">-</div><div class="label">Exécutions totales</div></div>
-                        <div class="stat-card ok"><div class="number" id="runSuccess">-</div><div class="label">Réussies</div></div>
-                        <div class="stat-card rejected"><div class="number" id="runFailed">-</div><div class="label">Échouées</div></div>
-                        <div class="stat-card series"><div class="number" id="runLast">-</div><div class="label">Dernier run</div></div>
+                    <!-- Messages -->
+                    <div id="runnerMessage" style="display:none; background:rgba(255,255,255,0.03); border-radius:10px; padding:15px; margin-bottom:20px; border:1px solid rgba(255,255,255,0.08);"></div>
+                    
+                    <!-- Stats BDD -->
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:10px; margin-bottom:20px;">
+                        <div class="stat-card series"><div class="number" id="localSeries">-</div><div class="label">Séries en BDD</div></div>
+                        <div class="stat-card volumes"><div class="number" id="localVolumes">-</div><div class="label">Volumes en BDD</div></div>
+                        <div class="stat-card ok"><div class="number" id="localFeatured">-</div><div class="label">ASINs classifiés</div></div>
+                        <div class="stat-card"><div class="number" id="localLastScan">-</div><div class="label">Dernier scan</div></div>
                     </div>
                     
-                    <!-- Historique des runs -->
-                    <h4 style="color:#ccc; margin-bottom:10px;">📋 Historique des exécutions</h4>
-                    <div style="overflow-x:auto;">
-                        <table id="runsTable">
-                            <thead>
-                                <tr>
-                                    <th>Statut</th>
-                                    <th>Déclencheur</th>
-                                    <th>Date de lancement</th>
-                                    <th>Durée</th>
-                                    <th>Lien</th>
-                                </tr>
-                            </thead>
-                            <tbody id="runsBody">
-                                <tr><td colspan="5" style="text-align:center;color:#666;">Chargement...</td></tr>
-                            </tbody>
-                        </table>
+                    <!-- Log en direct -->
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                        <h4 style="color:#ccc; margin:0;">📋 Log en direct</h4>
+                        <button onclick="refreshLog()" style="padding:5px 12px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:6px; color:#ccc; cursor:pointer; font-size:0.8rem;">🔄 Rafraîchir</button>
                     </div>
+                    <pre id="logOutput" style="background:rgba(0,0,0,0.4); border-radius:10px; padding:15px; max-height:400px; overflow-y:auto; font-size:0.75rem; color:#aaa; white-space:pre-wrap; border:1px solid rgba(255,255,255,0.08);">En attente de connexion au serveur local...</pre>
                 </div>
             </div>
 
@@ -1208,7 +1231,7 @@
                     renderPredictions();
                 }
                 if (tab.dataset.tab === 'runner') {
-                    loadWorkflowRuns();
+                    checkLocalServer();
                 }
             };
         });
@@ -2007,260 +2030,166 @@
         }
         window.renderPredictions = renderPredictions;
 
-        // ===== SCRIPT RUNNER (GitHub Actions) =====
-        const ACTIONS_API = `https://api.github.com/repos/${CONFIG.GITHUB_USER}/${CONFIG.GITHUB_REPO}/actions`;
-        let runnerPolling = null;
+        // ============================================
+        // LOCAL API — Pilotage depuis le viewer
+        // ============================================
+        const LOCAL_API = 'http://localhost:5000/api';
+        let localServerOnline = false;
+        let logPolling = null;
 
-        async function getAdminToken() {
-            const pwd = sessionStorage.getItem('manga_admin_pwd');
-            if (!pwd) return null;
-            return await getToken(pwd);
+        async function checkLocalServer() {
+            try {
+                const resp = await fetch(`${LOCAL_API}/status`, { signal: AbortSignal.timeout(2000) });
+                if (resp.ok) {
+                    const data = await resp.json();
+                    localServerOnline = true;
+                    const ind = $('serverIndicator');
+                    if (ind) { ind.style.background = '#2ecc71'; ind.title = 'Serveur local connecté'; }
+                    const st = $('runnerStatus');
+                    if (st) { st.textContent = '🟢 Serveur local connecté'; st.style.color = '#2ecc71'; }
+                    if (data.total_series) { const el = $('localSeries'); if (el) el.textContent = data.total_series; }
+                    if (data.total_volumes) { const el = $('localVolumes'); if (el) el.textContent = data.total_volumes; }
+                    if (data.total_featured) { const el = $('localFeatured'); if (el) el.textContent = data.total_featured; }
+                    if (data.last_scan) { const el = $('localLastScan'); if (el) el.textContent = data.last_scan.substring(0, 10); }
+                    if (data.scan_running) {
+                        const btn = $('btnScan');
+                        if (btn) { btn.disabled = true; btn.textContent = '🔄 Scan en cours...'; }
+                        if (!logPolling) startLogPolling();
+                    }
+                    return true;
+                }
+            } catch (e) {}
+            localServerOnline = false;
+            const ind = $('serverIndicator');
+            if (ind) { ind.style.background = '#e74c3c'; ind.title = 'Serveur local hors ligne'; }
+            const st = $('runnerStatus');
+            if (st) { st.textContent = '🔴 Serveur hors ligne — lancez: python api_server.py'; st.style.color = '#e74c3c'; }
+            return false;
         }
 
-        async function triggerWorkflow() {
-            if (!isAdmin) { showToast('Mode admin requis', 'error'); return; }
-            
-            const token = await getAdminToken();
-            if (!token) { showToast('Token introuvable', 'error'); return; }
-            
-            const btn = $('btnRunScript');
+        function showRunnerMsg(html) {
             const msg = $('runnerMessage');
-            btn.disabled = true;
-            btn.textContent = '⏳ Déclenchement...';
-            msg.style.display = 'block';
-            msg.innerHTML = '<span style="color:#f39c12;">⏳ Envoi de la demande à GitHub Actions...</span>';
-            
+            if (msg) { msg.style.display = 'block'; msg.innerHTML = html; }
+        }
+
+        async function localSync() {
+            if (!localServerOnline) { showToast('Serveur local hors ligne', 'error'); return; }
+            const btn = $('btnSync');
+            btn.disabled = true; btn.textContent = '⏳ Synchronisation...';
             try {
-                // Lister les workflows pour trouver l'ID
-                const wfResp = await fetch(`${ACTIONS_API}/workflows`, {
-                    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-                });
-                if (!wfResp.ok) throw new Error(`Erreur ${wfResp.status}: vérifiez que le token a le scope "repo" ou "actions"`);
-                const wfData = await wfResp.json();
-                
-                if (!wfData.workflows || wfData.workflows.length === 0) {
-                    throw new Error('Aucun workflow trouvé dans le repo');
-                }
-                
-                // Prendre le premier workflow (ou chercher par nom)
-                const workflow = wfData.workflows.find(w => w.name.toLowerCase().includes('manga') || w.name.toLowerCase().includes('tracker'))
-                    || wfData.workflows[0];
-                
-                // Déclencher le workflow via workflow_dispatch
-                const dispResp = await fetch(`${ACTIONS_API}/workflows/${workflow.id}/dispatches`, {
-                    method: 'POST',
-                    headers: { 
-                        'Authorization': `token ${token}`, 
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ ref: CONFIG.GITHUB_BRANCH })
-                });
-                
-                if (dispResp.status === 204) {
-                    msg.innerHTML = '<span style="color:#f39c12;">⏳ Demande envoyée, en attente du démarrage...</span>';
-                    showToast('Script déclenché !', 'success');
-                    
-                    // Désactiver le bouton pendant l'exécution
-                    btn.disabled = true;
-                    btn.textContent = '⏳ Exécution en cours...';
-                    
-                    // Polling agressif au début (toutes les 5s) pour capter le démarrage
-                    let startupChecks = 0;
-                    const startupInterval = setInterval(async () => {
-                        startupChecks++;
-                        await loadWorkflowRuns();
-                        
-                        const body = $('runsBody');
-                        const hasActive = body && (body.innerHTML.includes('in_progress') || body.innerHTML.includes('queued'));
-                        
-                        if (hasActive) {
-                            // Run détecté ! Passer au polling normal
-                            clearInterval(startupInterval);
-                            msg.innerHTML = '<span style="color:#48dbfb;">🔄 Script en cours d\'exécution... Rafraîchissement automatique toutes les 15s</span>';
-                            btn.textContent = '🔄 En cours...';
-                            startRunnerPolling();
-                            
-                            // Quand le polling s'arrête (run terminé), remettre le bouton
-                            const checkDone = setInterval(() => {
-                                if (!runnerPolling) {
-                                    clearInterval(checkDone);
-                                    btn.disabled = false;
-                                    btn.textContent = '▶️ Lancer le script';
-                                    // Recharger une dernière fois
-                                    loadWorkflowRuns();
-                                    const lastBody = $('runsBody');
-                                    if (lastBody && lastBody.innerHTML.includes('completed')) {
-                                        msg.innerHTML = '<span style="color:#2ecc71;">✅ Script terminé avec succès !</span>';
-                                    } else if (lastBody && lastBody.innerHTML.includes('failure')) {
-                                        msg.innerHTML = '<span style="color:#e74c3c;">❌ Le script a échoué. Voir les détails ci-dessous.</span>';
-                                    }
-                                }
-                            }, 5000);
-                        } else if (startupChecks >= 12) {
-                            // 60s sans démarrage → timeout
-                            clearInterval(startupInterval);
-                            msg.innerHTML = '<span style="color:#f39c12;">⚠️ Le script a été déclenché mais le démarrage prend du temps. Rafraîchissez l\'onglet dans quelques instants.</span>';
-                            btn.disabled = false;
-                            btn.textContent = '▶️ Lancer le script';
-                        } else {
-                            msg.innerHTML = `<span style="color:#f39c12;">⏳ En attente du démarrage... (${startupChecks * 5}s)</span>`;
-                        }
-                    }, 5000);
-                    
-                    return; // Ne pas ré-activer le bouton dans finally
-                } else if (dispResp.status === 422) {
-                    throw new Error('Le workflow n\'a pas de trigger "workflow_dispatch". Ajoutez-le dans le fichier .yml');
-                } else {
-                    const errData = await dispResp.json().catch(() => ({}));
-                    throw new Error(errData.message || `Erreur ${dispResp.status}`);
-                }
-            } catch (e) {
-                msg.innerHTML = `<span style="color:#e74c3c;">❌ ${e.message}</span>`;
-                showToast('Erreur: ' + e.message, 'error');
-            } finally {
-                btn.disabled = false;
-                btn.textContent = '▶️ Lancer le script';
-            }
-        }
-        window.triggerWorkflow = triggerWorkflow;
-
-        let pollingErrors = 0;
-        function startRunnerPolling() {
-            stopRunnerPolling();
-            pollingErrors = 0;
-            runnerPolling = setInterval(async () => {
-                try {
-                    await loadWorkflowRuns();
-                    pollingErrors = 0;
-                    // Arrêter le polling si aucun run en cours
-                    const body = $('runsBody');
-                    if (body && !body.innerHTML.includes('in_progress') && !body.innerHTML.includes('queued')) {
-                        stopRunnerPolling();
-                    }
-                } catch (e) {
-                    pollingErrors++;
-                    console.warn('Polling error:', e.message);
-                    if (pollingErrors >= 3) {
-                        console.warn('Polling stopped after 3 errors');
-                        stopRunnerPolling();
-                    }
-                }
-            }, 15000);
-        }
-
-        function stopRunnerPolling() {
-            if (runnerPolling) { clearInterval(runnerPolling); runnerPolling = null; }
-        }
-
-        let trackerWorkflowId = null;
-
-        async function loadWorkflowRuns() {
-            const token = await getAdminToken();
-            if (!token) return;
-            
-            try {
-                // Récupérer l'ID du workflow tracker si pas encore connu
-                if (!trackerWorkflowId) {
-                    const wfResp = await fetch(`${ACTIONS_API}/workflows`, {
-                        headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-                    });
-                    if (wfResp.ok) {
-                        const wfData = await wfResp.json();
-                        const wf = (wfData.workflows || []).find(w => 
-                            w.name.toLowerCase().includes('manga') || w.name.toLowerCase().includes('tracker')
-                        ) || (wfData.workflows || [])[0];
-                        if (wf) trackerWorkflowId = wf.id;
-                    }
-                }
-                
-                // Filtrer par workflow ID
-                const url = trackerWorkflowId 
-                    ? `${ACTIONS_API}/workflows/${trackerWorkflowId}/runs?per_page=20`
-                    : `${ACTIONS_API}/runs?per_page=20`;
-                const resp = await fetch(url, {
-                    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-                });
-                if (!resp.ok) return;
+                const resp = await fetch(`${LOCAL_API}/sync`, { method: 'POST' });
                 const data = await resp.json();
-                const runs = data.workflow_runs || [];
-                
-                // Stats
-                const total = data.total_count || runs.length;
-                const success = runs.filter(r => r.conclusion === 'success').length;
-                const failed = runs.filter(r => r.conclusion === 'failure').length;
-                
-                $('runTotal').textContent = total;
-                $('runSuccess').textContent = success;
-                $('runFailed').textContent = failed;
-                
-                if (runs.length > 0) {
-                    const last = runs[0];
-                    const lastDate = new Date(last.created_at);
-                    $('runLast').textContent = lastDate.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+                if (data.success) {
+                    showRunnerMsg(`<span style="color:#2ecc71;">✅ ${data.message}</span>`);
+                    showToast('Corrections appliquées !', 'success');
+                } else {
+                    showRunnerMsg(`<span style="color:#e74c3c;">❌ ${data.error}</span>`);
                 }
-                
-                // Vérifier si un run est en cours → activer le polling
-                const hasActive = runs.some(r => r.status === 'in_progress' || r.status === 'queued');
-                // Ne PAS démarrer le polling automatiquement ici
-                // Il est démarré uniquement après un triggerWorkflow réussi
-                
-                // Tableau
-                const tbody = $('runsBody');
-                if (!tbody) return;
-                
-                tbody.innerHTML = runs.map(r => {
-                    const status = r.status === 'completed' ? r.conclusion : r.status;
-                    const statusLabel = {
-                        'success': '✅ Réussi', 'failure': '❌ Échoué', 'cancelled': '⛔ Annulé',
-                        'in_progress': '🔄 En cours', 'queued': '⏳ En attente', 'pending': '⏳ En attente'
-                    }[status] || status;
-                    const statusClass = status === 'success' ? 'completed' : status;
-                    
-                    const trigger = {
-                        'workflow_dispatch': '👤 Manuel (viewer)',
-                        'schedule': '⏰ Planifié (cron)',
-                        'push': '📦 Push',
-                        'pull_request': '🔀 PR'
-                    }[r.event] || r.event;
-                    
-                    const startDate = new Date(r.created_at);
-                    const dateStr = startDate.toLocaleDateString('fr-FR', { 
-                        year: 'numeric', month: '2-digit', day: '2-digit',
-                        hour: '2-digit', minute: '2-digit'
-                    });
-                    
-                    let duration = '-';
-                    if (r.updated_at && r.status === 'completed') {
-                        const dur = (new Date(r.updated_at) - startDate) / 1000;
-                        if (dur < 60) duration = `${Math.round(dur)}s`;
-                        else if (dur < 3600) duration = `${Math.round(dur / 60)}min`;
-                        else duration = `${(dur / 3600).toFixed(1)}h`;
-                    } else if (r.status === 'in_progress') {
-                        const elapsed = (new Date() - startDate) / 1000;
-                        duration = `${Math.round(elapsed / 60)}min (en cours)`;
-                    }
-                    
-                    return `<tr>
-                        <td><span class="run-status ${statusClass}">${statusLabel}</span></td>
-                        <td>${trigger}</td>
-                        <td>${dateStr}</td>
-                        <td>${duration}</td>
-                        <td><a href="${r.html_url}" target="_blank" style="color:#48dbfb;">Voir →</a></td>
-                    </tr>`;
-                }).join('');
-                
-                if (runs.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#666;">Aucune exécution trouvée</td></tr>';
-                }
-                
-                $('runnerStatus').textContent = hasActive ? '🔄 Un scan est en cours...' : '✅ Aucun scan en cours';
-                $('runnerStatus').style.color = hasActive ? '#48dbfb' : '#888';
-                
             } catch (e) {
-                console.error('Erreur chargement runs:', e);
+                showRunnerMsg(`<span style="color:#e74c3c;">❌ Erreur: ${e.message}</span>`);
+            } finally {
+                btn.disabled = false; btn.textContent = '🔄 Synchroniser BDD';
+                checkLocalServer();
             }
         }
+
+        async function localScan() {
+            if (!localServerOnline) { showToast('Serveur local hors ligne', 'error'); return; }
+            const btn = $('btnScan');
+            const serie = ($('scanSerie') || {}).value || '';
+            const noEmail = ($('scanNoEmail') || {}).checked;
+            const noPush = ($('scanNoPush') || {}).checked;
+            btn.disabled = true; btn.textContent = '⏳ Lancement...';
+            try {
+                const resp = await fetch(`${LOCAL_API}/scan`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ serie: serie || null, no_email: noEmail, no_push: noPush })
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    showRunnerMsg(`<span style="color:#48dbfb;">🔄 ${data.message}</span><br><code style="font-size:0.7rem;color:#888;">${data.command}</code>`);
+                    showToast('Scan lancé !', 'success');
+                    btn.textContent = '🔄 Scan en cours...';
+                    startLogPolling();
+                } else {
+                    showRunnerMsg(`<span style="color:#e74c3c;">❌ ${data.error}</span>`);
+                    btn.disabled = false; btn.textContent = '▶️ Lancer le scan';
+                }
+            } catch (e) {
+                showRunnerMsg(`<span style="color:#e74c3c;">❌ Erreur: ${e.message}</span>`);
+                btn.disabled = false; btn.textContent = '▶️ Lancer le scan';
+            }
+        }
+
+        async function localBackup() {
+            if (!localServerOnline) { showToast('Serveur local hors ligne', 'error'); return; }
+            const btn = $('btnBackup');
+            btn.disabled = true; btn.textContent = '⏳ Sauvegarde...';
+            try {
+                const resp = await fetch(`${LOCAL_API}/backup`, { method: 'POST' });
+                const data = await resp.json();
+                if (data.success) {
+                    showRunnerMsg(`<span style="color:#feca57;">💾 ${data.message} (${data.size_mb} MB, ${data.total_backups} backup(s))</span>`);
+                    showToast('Backup créé !', 'success');
+                } else {
+                    showRunnerMsg(`<span style="color:#e74c3c;">❌ ${data.error}</span>`);
+                }
+            } catch (e) {
+                showRunnerMsg(`<span style="color:#e74c3c;">❌ Erreur: ${e.message}</span>`);
+            } finally {
+                btn.disabled = false; btn.textContent = '💾 Backup BDD';
+            }
+        }
+
+        async function refreshLog() {
+            if (!localServerOnline) return;
+            try {
+                const resp = await fetch(`${LOCAL_API}/log?lines=80`);
+                const data = await resp.json();
+                const el = $('logOutput');
+                if (el && data.log) { el.textContent = data.log; el.scrollTop = el.scrollHeight; }
+            } catch (e) {}
+        }
+
+        function startLogPolling() {
+            stopLogPolling();
+            refreshLog();
+            logPolling = setInterval(async () => {
+                await refreshLog();
+                try {
+                    const resp = await fetch(`${LOCAL_API}/status`, { signal: AbortSignal.timeout(2000) });
+                    const data = await resp.json();
+                    if (!data.scan_running) {
+                        stopLogPolling();
+                        const btn = $('btnScan');
+                        if (btn) { btn.disabled = false; btn.textContent = '▶️ Lancer le scan'; }
+                        if (data.last_result === 'success') {
+                            showRunnerMsg(`<span style="color:#2ecc71;">✅ Scan terminé avec succès !</span>`);
+                            showToast('Scan terminé !', 'success');
+                        } else if (data.last_result) {
+                            showRunnerMsg(`<span style="color:#e74c3c;">❌ Scan terminé: ${data.last_result}</span>`);
+                        }
+                        checkLocalServer();
+                    }
+                } catch (e) {}
+            }, 5000);
+        }
+
+        function stopLogPolling() {
+            if (logPolling) { clearInterval(logPolling); logPolling = null; }
+        }
+
+        window.localSync = localSync;
+        window.localScan = localScan;
+        window.localBackup = localBackup;
+        window.refreshLog = refreshLog;
+
+        setInterval(() => {
+            const runnerTab = $('tab-runner');
+            if (runnerTab && runnerTab.classList.contains('active')) checkLocalServer();
+        }, 10000);
+        setTimeout(checkLocalServer, 2000);
 
         function buildSeriesSurveillees() {
             // Construire la liste des séries avec leurs stats
