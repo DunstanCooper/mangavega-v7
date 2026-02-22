@@ -1,225 +1,15 @@
 {
   "version": "2.0",
   "description": "MangaVega Tracker - Liste des séries à surveiller",
-  "last_updated": "2026-02-17",
+  "last_updated": "2026-02-22 14:02:48",
   "mangas": [
-    {
-      "nom": "近畿地方のある場所について [MANGA]",
-      "url_suffix": "近畿地方のある場所について"
-    },
-    {
-      "nom": "令和のダラさん [MANGA]",
-      "url_suffix": "令和のダラさん"
-    },
-    {
-      "nom": "マグメル深海水族館 [MANGA]",
-      "url_suffix": "マグメル深海水族館"
-    },
-    {
-      "nom": "ダンジョンバンド [MANGA]",
-      "url_suffix": "ダンジョンバンド"
-    },
-    {
-      "nom": "ELDEN RING 遠き狭間の物語 [MANGA]",
-      "url_suffix": "ELDEN RING 遠き狭間の物語"
-    },
-    {
-      "nom": "あくまでクジャクの話です。 [MANGA]",
-      "url_suffix": "あくまでクジャクの話です。"
-    },
-    {
-      "nom": "頼くんとヨリを戻すわけには! [MANGA]",
-      "url_suffix": "頼くんとヨリを戻すわけには!"
-    },
-    {
-      "nom": "ギフテッド [MANGA]",
-      "url_suffix": "ギフテッド"
-    },
-    {
-      "nom": "機動戦士Ζガンダム Define [MANGA]",
-      "url_suffix": "機動戦士Ζガンダム Define"
-    },
-    {
-      "nom": "ヒモクズ花くんは死にたがり [MANGA]",
-      "url_suffix": "ヒモクズ花くんは死にたがり"
-    },
-    {
-      "nom": "氷菓 [MANGA]",
-      "url_suffix": "氷菓"
-    },
-    {
-      "nom": "石神戦記 [MANGA]",
-      "url_suffix": "石神戦記"
-    },
-    {
-      "nom": "ひねもすのたり日記 [MANGA]",
-      "url_suffix": "ひねもすのたり日記"
-    },
-    {
-      "nom": "カグライ ～神楽と雷人～ [MANGA]",
-      "url_suffix": "カグライ ～神楽と雷人～"
-    },
-    {
-      "nom": "結界師の一輪華 [MANGA]",
-      "url_suffix": "結界師の一輪華"
-    },
-    {
-      "nom": "泥の国 [MANGA]",
-      "url_suffix": "泥の国"
-    },
-    {
-      "nom": "今さらですが、幼なじみを好きになってしまいました [MANGA]",
-      "url_suffix": "今さらですが、幼なじみを好きになってしまいました"
-    },
-    {
-      "nom": "イクサガミ [MANGA]",
-      "url_suffix": "イクサガミ"
-    },
-    {
-      "nom": "本なら売るほど [MANGA]",
-      "url_suffix": "本なら売るほど"
-    },
-    {
-      "nom": "放課後帰宅びより [MANGA]",
-      "url_suffix": "放課後帰宅びより"
-    },
-    {
-      "nom": "ヤクザにお風呂で働かされてます。 [MANGA]",
-      "url_suffix": "ヤクザにお風呂で働かされてます。"
-    },
-    {
-      "nom": "大正學生愛妻家 [MANGA]",
-      "url_suffix": "大正學生愛妻家"
-    },
-    {
-      "nom": "開花アパートメント [MANGA]",
-      "url_suffix": "開花アパートメント"
-    },
-    {
-      "nom": "百瀬アキラの初恋破綻中。 [MANGA]",
-      "url_suffix": "百瀬アキラの初恋破綻中。"
-    },
-    {
-      "nom": "ラブ・バレット [MANGA]",
-      "url_suffix": "ラブ・バレット"
-    },
-    {
-      "nom": "鍛冶屋ではじめる異世界スローライフ [MANGA]",
-      "url_suffix": "鍛冶屋ではじめる異世界スローライフ"
-    },
-    {
-      "nom": "満州アヘンスクワッド [MANGA]",
-      "url_suffix": "満州アヘンスクワッド"
-    },
-    {
-      "nom": "みなと商事コインランドリー [MANGA]",
-      "url_suffix": "みなと商事コインランドリー"
-    },
-    {
-      "nom": "くまぐらし [MANGA]",
-      "url_suffix": "くまぐらし"
-    },
-    {
-      "nom": "夜分に吸血失礼します [MANGA]",
-      "url_suffix": "夜分に吸血失礼します"
-    },
-    {
-      "nom": "現象X 超常現象捜査録 [MANGA]",
-      "url_suffix": "現象X 超常現象捜査録"
-    },
-    {
-      "nom": "夫婦以上、恋人未満。 [MANGA]",
-      "url_suffix": "夫婦以上、恋人未満。"
-    },
-    {
-      "nom": "峠鬼 [MANGA]",
-      "url_suffix": "峠鬼"
-    },
-    {
-      "nom": "リビルドワールド [MANGA]",
-      "url_suffix": "リビルドワールド"
-    },
-    {
-      "nom": "時々ボソッとロシア語でデレる隣のアーリャさん [MANGA]",
-      "url_suffix": "時々ボソッとロシア語でデレる隣のアーリャさん"
-    },
-    {
-      "nom": "佐々木とピーちゃん [MANGA]",
-      "url_suffix": "佐々木とピーちゃん"
-    },
     {
       "nom": "勇者刑に処す [MANGA]",
       "url_suffix": "勇者刑に処す"
     },
     {
-      "nom": "サーヴァント ビースト [MANGA]",
-      "url_suffix": "サーヴァント ビースト"
-    },
-    {
-      "nom": "音盤紀行 [MANGA]",
-      "url_suffix": "音盤紀行"
-    },
-    {
-      "nom": "ニセモノの錬金術師 [MANGA]",
-      "url_suffix": "ニセモノの錬金術師"
-    },
-    {
-      "nom": "針子の乙女 [MANGA]",
-      "url_suffix": "針子の乙女"
-    },
-    {
-      "nom": "となりの席のヤツがそういう目で見てくる [MANGA]",
-      "url_suffix": "となりの席のヤツがそういう目で見てくる"
-    },
-    {
-      "nom": "アンダーク 新しい透明な力のすべて [MANGA]",
-      "url_suffix": "アンダーク 新しい透明な力のすべて"
-    },
-    {
       "nom": "誰が勇者を殺したか [MANGA]",
       "url_suffix": "誰が勇者を殺したか"
-    },
-    {
-      "nom": "ウィキッドスポット [MANGA]",
-      "url_suffix": "ウィキッドスポット"
-    },
-    {
-      "nom": "成仏させてよ！ [MANGA]",
-      "url_suffix": "成仏させてよ！"
-    },
-    {
-      "nom": "矢野くんの普通の日々 [MANGA]",
-      "url_suffix": "矢野くんの普通の日々"
-    },
-    {
-      "nom": "対ありでした。 ～お嬢さまは格闘ゲームなんてしない～ [MANGA]",
-      "url_suffix": "対ありでした。 ～お嬢さまは格闘ゲームなんてしない～"
-    },
-    {
-      "nom": "拝啓見知らぬ旦那様、離婚していただきます [MANGA]",
-      "url_suffix": "拝啓見知らぬ旦那様、離婚していただきます"
-    },
-    {
-      "nom": "死亡遊戯で飯を食う。 [MANGA]",
-      "url_suffix": "死亡遊戯で飯を食う。"
-    },
-    {
-      "nom": "わたしの幸せな結婚 [LN]",
-      "url_suffix": "わたしの幸せな結婚",
-      "filtre": "ln_only",
-      "type": "ln"
-    },
-    {
-      "nom": "時々ボソッとロシア語でデレる隣のアーリャさん (角川スニーカー文庫) [LN]",
-      "url_suffix": "時々ボソッとロシア語でデレる隣のアーリャさん (角川スニーカー文庫)",
-      "filtre": "ln_only",
-      "type": "ln"
-    },
-    {
-      "nom": "ユア・フォルマ [LN]",
-      "url_suffix": "ユア・フォルマ",
-      "filtre": "ln_only",
-      "type": "ln"
     },
     {
       "nom": "誰が勇者を殺したか [LN]",
@@ -228,8 +18,8 @@
       "type": "ln"
     },
     {
-      "nom": "正しいナイフの使い方 [MANGA]",
-      "url_suffix": "正しいナイフの使い方"
+      "nom": "時々ボソッとロシア語でデレる隣のアーリャさん [MANGA]",
+      "url_suffix": "時々ボソッとロシア語でデレる隣のアーリャさん"
     }
   ]
 }
