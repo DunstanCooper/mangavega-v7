@@ -513,7 +513,7 @@ async def rechercher_manga(session: aiohttp.ClientSession, db: DatabaseManager, 
     # Sinon, il tournera après Featured (A4) si un nouveau papier est trouvé.
     if candidats:
         premier_asin = next(iter(candidats))
-        inclure_fb = bool(asin_reference and not volumes_connus)
+        inclure_fb = True  # FBT activé comme source complémentaire (même pour séries existantes)
         await executer_bulk(premier_asin, inclure_frequently_bought=inclure_fb)
     
     # --- A2. Source FEATURED (recherche Amazon par nom) ---

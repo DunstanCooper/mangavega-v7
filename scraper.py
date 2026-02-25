@@ -410,6 +410,13 @@ async def extraire_volumes_depuis_page(session: aiohttp.ClientSession, url_ou_as
                                     ('Bulk purchases' in tag.get_text() or '新品まとめ買い' in tag.get_text()))
             if bulk_header:
                 parent = bulk_header.find_parent('div', class_=lambda x: x and 'a-section' in x) or bulk_header.find_parent('div')
+                # Si ce parent ne contient pas de liens produits, essayer l'ancêtre supérieur
+                # (cas où header et items sont dans des branches DOM séparées)
+                if parent and not any(
+                    re.search(r'/dp/[A-Z0-9]{10}', a.get('href', ''))
+                    for a in parent.find_all("a", href=True)
+                ):
+                    parent = parent.find_parent('div') or parent
                 if parent:
                     # Essayer d'extraire avec labels de tome
                     items = parent.find_all("div", class_="pbnx-single-product")
@@ -445,15 +452,16 @@ async def extraire_volumes_depuis_page(session: aiohttp.ClientSession, url_ou_as
         result["bulk"] = bulk_asins
         result["bulk_tomes"] = bulk_tomes
     
-    # Si le Bulk a trouvé des résultats, pas besoin des sources moins fiables
-    if result["bulk"]:
+    # Si le Bulk a trouvé des résultats, pas besoin de Publisher (source moins précise)
+    # Mais on continue si FBT est demandé (source complémentaire utile)
+    if result["bulk"] and "frequently_bought" not in sources:
         return result
     
     # ========================================
     # SECTION 2: From the Publisher / 出版社より
     # Fallback si Bulk absent — même éditeur
     # ========================================
-    if "publisher" in sources:
+    if "publisher" in sources and not result["bulk"]:
         publisher_asins = []
         
         # Chercher la section "From the Publisher" ou "出版社より"

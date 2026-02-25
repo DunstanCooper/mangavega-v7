@@ -1341,7 +1341,7 @@
                                 };
                             }
                             const tomeNum = parseInt(item.tome) || 0;
-                            if (tomeNum > 0) {
+                            if (tomeNum > 0 && item.originalStatut !== 'rejete') {
                                 seriesData[serieKey].tomesSet.add(tomeNum);
                                 if (tomeNum > seriesData[serieKey].maxTome) {
                                     seriesData[serieKey].maxTome = tomeNum;
@@ -3000,13 +3000,15 @@
                     const tomesSet = new Set();
                     let maxTome = 0;
                     vols.forEach(v => {
+                        if ((volumeStatuts[v.asin] || 'non_traite') === 'rejete') return;
                         const t = parseInt(v.tome);
                         if (!isNaN(t) && t > 0) {
                             tomesSet.add(t);
                             if (t > maxTome) maxTome = t;
                         }
                     });
-                    seriesData[serieKey].nbTomes = tomesSet.size || vols.length;
+                    const volsNonRejetes = vols.filter(v => (volumeStatuts[v.asin] || 'non_traite') !== 'rejete');
+                    seriesData[serieKey].nbTomes = tomesSet.size || volsNonRejetes.length;
                     seriesData[serieKey].lastTome = maxTome || '-';
                     seriesData[serieKey].tomesArray = [...tomesSet];
                 }
