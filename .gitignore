@@ -20,6 +20,12 @@ venv/
 .DS_Store
 Thumbs.db
 
+# Base de données locale (jamais dans git — reste sur la machine)
+manga_alerts.db
+
+# Backups locaux
+backups/
+
 # Backups de config appliquées
 corrections_imported_*.json
 series_config_applied_*.json

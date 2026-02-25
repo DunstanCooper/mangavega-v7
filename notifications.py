@@ -132,7 +132,7 @@ def envoyer_email_rapport(destinataire: str, nb_series: int, nb_papiers: int, nb
                         </p>
                         {f'<p style="text-align:center;font-size:14px;color:#d69e2e;margin:10px 0;">⏳ {nb_a_traiter} volume(s) en attente de validation dans le viewer.</p>' if nb_a_traiter > 0 else ''}
                         <p style="text-align:center;font-size:13px;color:#a0aec0;margin:10px 0 0 0;">
-                            Le log complet est disponible dans les artifacts GitHub Actions.
+                            Consultez le détail sur le <a href="https://dunstancooper.github.io/mangavega-v7/manga_collection_viewer.html" style="color:#667eea;">viewer en ligne</a>.
                         </p>
                     </td></tr>
                     <tr><td style="background-color:#f7fafc;padding:20px 30px;text-align:center;border-top:1px solid #e2e8f0;">

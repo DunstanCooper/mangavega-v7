@@ -59,7 +59,7 @@ SMTP_PORTS = [465, 587, 25, 2525]
 # GIST (synchronisation avec le viewer)
 # ============================================================================
 GIST_TOKEN = os.environ.get('GIST_TOKEN') or os.environ.get('GH_TOKEN') or os.environ.get('GITHUB_TOKEN')
-GIST_ID = "8deb1120eaa6acc53c1f627fcd0839bc"
+GIST_ID = "30cd62947f2ea6c07a044ab3546fb08f"
 GIST_API_URL = f"https://api.github.com/gists/{GIST_ID}"
 
 # Debug: afficher si le token est présent (sans révéler la valeur)
