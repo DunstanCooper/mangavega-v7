@@ -419,7 +419,8 @@ async def rechercher_manga(session: aiohttp.ClientSession, db: DatabaseManager, 
 
     # --- Helper : exécuter le Bulk depuis un ASIN et intégrer les résultats ---
     bulk_effectue = False
-    
+    bulk_asins_essayes = set()  # ASINs déjà tentés pour le Bulk (évite les doublons)
+
     async def executer_bulk(asin_source: str, inclure_frequently_bought: bool = False) -> bool:
         """
         Exécute le Bulk depuis un ASIN, ajoute les résultats à candidats{}.
@@ -428,8 +429,9 @@ async def rechercher_manga(session: aiohttp.ClientSession, db: DatabaseManager, 
         permettant de retenter avec un autre ASIN si la page n'a pas de section Bulk statique.
         """
         nonlocal bulk_effectue
-        if bulk_effectue:
+        if bulk_effectue or asin_source in bulk_asins_essayes:
             return False
+        bulk_asins_essayes.add(asin_source)
 
         logger.info(f"🔄 Exploration Bulk depuis [{asin_source}]...\n")
         
@@ -734,6 +736,12 @@ async def rechercher_manga(session: aiohttp.ClientSession, db: DatabaseManager, 
         if not asin_bulk:
             asin_bulk = next(iter(candidats))
         await executer_bulk(asin_bulk)
+        # Retry sur les autres candidats si la section Bulk était absente
+        if not bulk_effectue:
+            for asin_c in candidats:
+                await executer_bulk(asin_c)  # no-op si déjà essayé (bulk_asins_essayes)
+                if bulk_effectue:
+                    break
     
     # --- Bilan Phase A ---
     nb_nouveaux = len(candidats) - nb_connus
