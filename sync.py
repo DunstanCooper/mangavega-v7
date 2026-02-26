@@ -205,9 +205,16 @@ def charger_corrections(db: 'DatabaseManager' = None):
                         db.creer_workflow_depuis_asin(asin, today_str)
                         nb_init += 1
                     else:
-                        for etape, date_completion in completions.items():
-                            if date_completion and isinstance(date_completion, str):
-                                db.marquer_etape_faite(asin, etape, date_completion)
+                        for etape, valeur in completions.items():
+                            if not valeur or not isinstance(valeur, str):
+                                continue
+                            if etape.endswith('__pause'):
+                                # Clé pause : ex "draft_ad__pause" → "2026-03-15"
+                                etape_reelle = etape[:-7]  # retirer "__pause"
+                                db.definir_pause_workflow(asin, etape_reelle, valeur)
+                            else:
+                                # Clé completion normale
+                                db.marquer_etape_faite(asin, etape, valeur)
                 msg = f"📑 {len(gist_suivi)} workflow(s) suivi éditorial depuis Gist"
                 if nb_init:
                     msg += f" ({nb_init} initialisé(s) manuellement)"

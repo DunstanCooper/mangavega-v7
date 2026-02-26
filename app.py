@@ -427,6 +427,17 @@ async def _main_inner(args):
                 notifications.envoyer_email_relances_workflow(config.EMAIL_DESTINATAIRE, actions_retard)
             except Exception as e:
                 logger.warning(f"⚠️  Erreur email relances workflow: {e}")
+        # 4. Vérifier les pauses expirées → email fin de pause + effacer la pause
+        pauses_expirees = db.get_pauses_expirees()
+        if pauses_expirees:
+            logger.info(f"▶️  {len(pauses_expirees)} pause(s) workflow expirée(s)")
+            for p in pauses_expirees:
+                db.effacer_pause_workflow(p['asin'], p['etape'])
+            if not args.no_email:
+                try:
+                    notifications.envoyer_email_fin_pause(config.EMAIL_DESTINATAIRE, pauses_expirees)
+                except Exception as e:
+                    logger.warning(f"⚠️  Erreur email fin de pause: {e}")
 
     fin = datetime.now()
     duree = (fin - debut).total_seconds()

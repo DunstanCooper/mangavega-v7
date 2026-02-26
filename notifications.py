@@ -298,4 +298,80 @@ def envoyer_email_relances_workflow(destinataire: str, actions_retard: List[Dict
     logger.error("❌ Échec envoi relances workflow sur tous les ports\n")
 
 
+def envoyer_email_fin_pause(destinataire: str, pauses_expirees: List[Dict]):
+    """Envoie un email de notification quand des pauses workflow arrivent à expiration."""
+    if not pauses_expirees:
+        return
 
+    VIEWER_URL = "https://dunstancooper.github.io/mangavega-v7/manga_collection_viewer.html"
+
+    lignes_html = ""
+    for p in pauses_expirees:
+        serie = p.get('serie_jp', '')[:35]
+        tome = p.get('tome', '?')
+        label = p.get('label', p.get('etape', ''))
+        pause_date = p.get('pause_jusqu_au', '')
+        lignes_html += f'''
+        <tr>
+            <td style="padding:8px 12px;border-bottom:1px solid #eee;">{serie}</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center;">T{tome}</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #eee;">{label}</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center;color:#2d8a4e;">{pause_date}</td>
+        </tr>'''
+
+    html = f'''<!DOCTYPE html>
+<html><head><meta charset="utf-8"></head>
+<body style="font-family:Arial,sans-serif;background:#f5f5f5;margin:0;padding:20px;">
+<table width="600" style="margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+<tr><td style="background:linear-gradient(135deg,#2d8a4e,#1a6035);padding:24px 30px;">
+    <h1 style="color:#fff;margin:0;font-size:1.3rem;">▶️ Fin de pause — Suivi Éditorial</h1>
+    <p style="color:rgba(255,255,255,0.85);margin:6px 0 0;font-size:0.9rem;">
+        {len(pauses_expirees)} étape(s) reprennent leur suivi normal
+    </p>
+</td></tr>
+<tr><td style="padding:24px 30px;">
+    <p style="color:#555;margin:0 0 16px;">Les pauses suivantes sont arrivées à expiration. Le suivi reprend normalement.</p>
+    <table width="100%" style="border-collapse:collapse;font-size:0.85rem;">
+        <thead>
+            <tr style="background:#f7f7f7;">
+                <th style="padding:8px 12px;text-align:left;border-bottom:2px solid #ddd;">Série</th>
+                <th style="padding:8px 12px;text-align:center;border-bottom:2px solid #ddd;">Tome</th>
+                <th style="padding:8px 12px;text-align:left;border-bottom:2px solid #ddd;">Étape</th>
+                <th style="padding:8px 12px;text-align:center;border-bottom:2px solid #ddd;">Pause jusqu'au</th>
+            </tr>
+        </thead>
+        <tbody>{lignes_html}</tbody>
+    </table>
+    <div style="margin-top:20px;text-align:center;">
+        <a href="{VIEWER_URL}" style="display:inline-block;background:#2d8a4e;color:#fff;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:600;">
+            📑 Ouvrir le Suivi éditorial →
+        </a>
+    </div>
+</td></tr>
+</table>
+</body></html>'''
+
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = f"▶️ Fin de pause workflow — {len(pauses_expirees)} étape(s) reprennent"
+    msg['From'] = config.EMAIL_EXPEDITEUR
+    msg['To'] = destinataire
+    msg.attach(MIMEText(html, 'html'))
+
+    for port in config.SMTP_PORTS:
+        try:
+            logger.info(f"📧 Envoi fin-de-pause workflow via port {port}...")
+            if port == 465:
+                server = smtplib.SMTP_SSL(config.SMTP_SERVER, port, timeout=10)
+            else:
+                server = smtplib.SMTP(config.SMTP_SERVER, port, timeout=10)
+                if port == 587:
+                    server.starttls()
+            server.login(config.EMAIL_EXPEDITEUR, config.MOT_DE_PASSE_APP)
+            server.send_message(msg)
+            server.quit()
+            logger.info("✅ Email fin de pause workflow envoyé!\n")
+            return
+        except Exception as e:
+            logger.warning(f"⚠️  Port {port}: {str(e)[:80]}")
+
+    logger.error("❌ Échec envoi fin-de-pause workflow sur tous les ports\n")

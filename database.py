@@ -120,10 +120,18 @@ class DatabaseManager:
                 date_declenchement TEXT NOT NULL,
                 date_completion TEXT,
                 nb_relances INTEGER DEFAULT 0,
+                pause_jusqu_au TEXT,
                 PRIMARY KEY (asin, etape)
             )
         ''')
         conn.commit()
+        # Migration : ajouter la colonne pause_jusqu_au si absente (BDD existante)
+        try:
+            cursor.execute("ALTER TABLE suivi_editorial ADD COLUMN pause_jusqu_au TEXT")
+            conn.commit()
+            logger.info("Migration BDD : colonne pause_jusqu_au ajoutée à suivi_editorial")
+        except Exception:
+            pass  # Colonne déjà présente
     
     def set_volume_serie_override(self, asin: str, serie_alternative: str):
         """Définit une série alternative pour un volume spécifique"""
@@ -877,6 +885,7 @@ class DatabaseManager:
             FROM suivi_editorial
             WHERE statut = 'en_attente'
             AND date(date_declenchement, '+' || ? || ' days') < date('now')
+            AND (pause_jusqu_au IS NULL OR date(pause_jusqu_au) < date('now'))
             ORDER BY date_declenchement ASC
         ''', (delai_jours,))
         result = []
@@ -917,13 +926,13 @@ class DatabaseManager:
         conn = self._get_conn()
         cursor = conn.cursor()
         cursor.execute('''
-            SELECT asin, etape, date_declenchement, nb_relances
+            SELECT asin, etape, date_declenchement, nb_relances, pause_jusqu_au
             FROM suivi_editorial
             WHERE statut = 'en_attente'
         ''')
         workflows = {}
         for row in cursor.fetchall():
-            asin, etape, date_decl, nb_relances = row
+            asin, etape, date_decl, nb_relances, pause_jusqu_au = row
             try:
                 from datetime import date
                 jours = (date.today() - datetime.strptime(date_decl, '%Y-%m-%d').date()).days
@@ -938,8 +947,57 @@ class DatabaseManager:
                     'jours_ecoules': jours,
                     'nb_relances': nb_relances,
                     'etapes_faites': etapes_faites,
+                    'pause_jusqu_au': pause_jusqu_au,
                 }
         return workflows
+
+    def definir_pause_workflow(self, asin: str, etape: str, date_pause: str):
+        """Définit une pause sur une étape jusqu'à date_pause (format YYYY-MM-DD)."""
+        conn = self._get_conn()
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE suivi_editorial SET pause_jusqu_au = ?
+            WHERE asin = ? AND etape = ? AND statut = 'en_attente'
+        ''', (date_pause, asin, etape))
+        conn.commit()
+        logger.info(f"   ⏸ Pause workflow [{asin}] étape {etape} jusqu'au {date_pause}")
+
+    def effacer_pause_workflow(self, asin: str, etape: str):
+        """Efface la pause d'une étape (reprend le suivi normal)."""
+        conn = self._get_conn()
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE suivi_editorial SET pause_jusqu_au = NULL
+            WHERE asin = ? AND etape = ?
+        ''', (asin, etape))
+        conn.commit()
+
+    def get_pauses_expirees(self) -> List[Dict]:
+        """Retourne les étapes en pause dont la date de pause est dépassée (aujourd'hui)."""
+        conn = self._get_conn()
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT asin, serie_jp, tome, etape, date_declenchement, nb_relances, pause_jusqu_au
+            FROM suivi_editorial
+            WHERE statut = 'en_attente'
+            AND pause_jusqu_au IS NOT NULL
+            AND date(pause_jusqu_au) <= date('now')
+            ORDER BY pause_jusqu_au ASC
+        ''')
+        result = []
+        for row in cursor.fetchall():
+            asin, serie_jp, tome, etape, date_decl, nb_relances, pause_jusqu_au = row
+            result.append({
+                'asin': asin,
+                'serie_jp': serie_jp,
+                'tome': tome,
+                'etape': etape,
+                'label': self.LABELS_ETAPES.get(etape, etape),
+                'date_declenchement': date_decl,
+                'nb_relances': nb_relances,
+                'pause_jusqu_au': pause_jusqu_au,
+            })
+        return result
 
     # ========================================================================
     # MÉTHODES POUR LES STATUTS MANUELS (validé/rejeté)

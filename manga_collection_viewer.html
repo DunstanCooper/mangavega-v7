@@ -557,6 +557,7 @@
                 <div class="stats-grid" style="margin-bottom:20px;">
                     <div class="stat-card series"><div class="number" id="editorialActifs">0</div><div class="label">Workflows actifs</div></div>
                     <div class="stat-card rejected"><div class="number" id="editorialRetard">0</div><div class="label">En retard (+10j)</div></div>
+                    <div class="stat-card" style="border-top:3px solid #3498db;"><div class="number" id="editorialPauses" style="color:#3498db;">0</div><div class="label">En pause</div></div>
                     <div class="stat-card ok"><div class="number" id="editorialTermines">0</div><div class="label">Terminés</div></div>
                     <div class="stat-card volumes"><div class="number" id="editorialTotal2">0</div><div class="label">Total suivis</div></div>
                 </div>
@@ -569,6 +570,7 @@
                                 <option value="">Tous</option>
                                 <option value="retard">En retard (&gt;10j)</option>
                                 <option value="encours">En cours</option>
+                                <option value="pause">En pause</option>
                                 <option value="termine">Terminés</option>
                             </select>
                         </div>
@@ -1595,6 +1597,8 @@
                     const termine = !etapeCourante;
                     const jours = termine ? 0 : (etapeCourante === d.workflow.etape_courante
                         ? (d.workflow.jours_ecoules || 0) : 0);
+                    const pauseJusquAu = termine ? null :
+                        (completions[etapeCourante + '__pause'] || d.workflow.pause_jusqu_au || null);
                     rows.push({
                         asin: d.asin,
                         serie_fr: d.serie_fr || d.serie_jp || '',
@@ -1604,8 +1608,9 @@
                         label: termine ? '✅ Terminé' : (LABELS_ETAPES[etapeCourante] || etapeCourante),
                         jours: jours,
                         nb_relances: d.workflow.nb_relances || 0,
-                        etapes_faites: Object.keys(completions).filter(e => completions[e]),
+                        etapes_faites: Object.keys(completions).filter(e => completions[e] && !e.endsWith('__pause')),
                         termine,
+                        pause_jusqu_au: pauseJusquAu,
                     });
                 }
             });
@@ -1618,6 +1623,7 @@
                         if (!completions[etape]) { etapeCourante = etape; break; }
                     }
                     const vol = allData.find(d => d.asin === asin) || {};
+                    const pauseJusquAu = etapeCourante ? (completions[etapeCourante + '__pause'] || null) : null;
                     rows.push({
                         asin,
                         serie_fr: vol.serie_fr || vol.serie_jp || asin,
@@ -1627,8 +1633,9 @@
                         label: etapeCourante ? (LABELS_ETAPES[etapeCourante] || etapeCourante) : '✅ Terminé',
                         jours: 0,
                         nb_relances: 0,
-                        etapes_faites: Object.keys(completions).filter(e => completions[e]),
+                        etapes_faites: Object.keys(completions).filter(e => completions[e] && !e.endsWith('__pause')),
                         termine: !etapeCourante,
+                        pause_jusqu_au: pauseJusquAu,
                     });
                 }
             });
@@ -1640,21 +1647,24 @@
             const filterStatut = $('editorialFilterStatut')?.value || '';
             const search = ($('editorialSearch')?.value || '').toLowerCase();
 
-            let actifs = 0, retard = 0, termines = 0;
+            let actifs = 0, retard = 0, termines = 0, pauses = 0;
             rows.forEach(r => {
                 if (r.termine) termines++;
+                else if (r.pause_jusqu_au) { pauses++; actifs++; }
                 else { actifs++; if (r.jours > 10) retard++; }
             });
             if ($('editorialActifs')) $('editorialActifs').textContent = actifs;
             if ($('editorialRetard')) $('editorialRetard').textContent = retard;
+            if ($('editorialPauses')) $('editorialPauses').textContent = pauses;
             if ($('editorialTermines')) $('editorialTermines').textContent = termines;
             if ($('editorialTotal2')) $('editorialTotal2').textContent = rows.length;
             if ($('editorialCount')) $('editorialCount').textContent = actifs;
 
             const filtered = rows.filter(r => {
                 if (search && !`${r.serie_fr} ${r.serie_jp}`.toLowerCase().includes(search)) return false;
-                if (filterStatut === 'retard' && (r.termine || r.jours <= 10)) return false;
-                if (filterStatut === 'encours' && (r.termine || r.jours > 10)) return false;
+                if (filterStatut === 'retard' && (r.termine || r.pause_jusqu_au || r.jours <= 10)) return false;
+                if (filterStatut === 'encours' && (r.termine || r.pause_jusqu_au || r.jours > 10)) return false;
+                if (filterStatut === 'pause' && (r.termine || !r.pause_jusqu_au)) return false;
                 if (filterStatut === 'termine' && !r.termine) return false;
                 return true;
             });
@@ -1674,19 +1684,33 @@
             }
 
             tbody.innerHTML = filtered.map(r => {
+                const isPaused = !r.termine && !!r.pause_jusqu_au;
                 const rowBg = r.termine ? 'rgba(46,204,113,0.05)' :
+                              isPaused   ? 'rgba(52,152,219,0.06)' :
                               r.jours > 10 ? 'rgba(231,76,60,0.08)' :
                               r.jours > 7  ? 'rgba(255,165,0,0.08)' : '';
-                const jourstyle = r.jours > 10 ? 'color:#e74c3c;font-weight:600;' :
+                const jourstyle = isPaused ? 'color:#3498db;' :
+                                  r.jours > 10 ? 'color:#e74c3c;font-weight:600;' :
                                   r.jours > 7  ? 'color:#f39c12;font-weight:600;' : 'color:#888;';
                 // Pastilles de progression (6 étapes)
                 const pastilles = ETAPES_WORKFLOW.map(e => {
                     const fait = r.etapes_faites.includes(e);
                     const courant = !r.termine && e === r.etape;
-                    return `<span title="${LABELS_ETAPES[e]}" style="display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 1px;background:${fait ? '#2ecc71' : courant ? '#f39c12' : 'rgba(255,255,255,0.15)'}; border:1px solid ${fait ? '#27ae60' : courant ? '#d68910' : 'rgba(255,255,255,0.2)'};"></span>`;
+                    const bg = fait ? '#2ecc71' : courant ? (isPaused ? '#3498db' : '#f39c12') : 'rgba(255,255,255,0.15)';
+                    const border = fait ? '#27ae60' : courant ? (isPaused ? '#2980b9' : '#d68910') : 'rgba(255,255,255,0.2)';
+                    return `<span title="${LABELS_ETAPES[e]}" style="display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 1px;background:${bg};border:1px solid ${border};"></span>`;
                 }).join('');
-                const btnFait = r.termine ? '' : `<button onclick="marquerEtapeFaite('${r.asin}','${r.etape}')"
-                    style="padding:4px 10px;background:#27ae60;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:0.78rem;" ${isAdmin ? '' : 'disabled title="Mode admin requis"'}>✓ Fait</button>`;
+                let actionHtml = '';
+                if (!r.termine) {
+                    const safeAsin = r.asin.replace(/'/g, "\\'");
+                    if (isPaused) {
+                        actionHtml = `<span style="font-size:0.78rem;color:#3498db;">⏸ jusqu'au ${r.pause_jusqu_au}</span>`
+                            + ` <button onclick="reprendrePause('${safeAsin}','${r.etape}')" style="margin-left:5px;padding:3px 8px;background:#3498db;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:0.75rem;" ${isAdmin ? '' : 'disabled title="Mode admin requis"'}>▶ Reprendre</button>`;
+                    } else {
+                        actionHtml = `<button onclick="marquerEtapeFaite('${safeAsin}','${r.etape}')" style="padding:4px 10px;background:#27ae60;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:0.78rem;" ${isAdmin ? '' : 'disabled title="Mode admin requis"'}>✓ Fait</button>`
+                            + ` <button onclick="mettreEnPause('${safeAsin}','${r.etape}')" style="margin-left:4px;padding:4px 8px;background:#3498db;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:0.75rem;" title="Mettre en pause" ${isAdmin ? '' : 'disabled'}>⏸</button>`;
+                    }
+                }
                 return `<tr style="background:${rowBg};">
                     <td style="padding:8px 12px;">${esc(r.serie_fr)}</td>
                     <td style="padding:8px 12px;text-align:center;">T${r.tome}</td>
@@ -1694,7 +1718,7 @@
                     <td style="padding:8px 12px;text-align:center;">${pastilles}</td>
                     <td style="padding:8px 12px;text-align:center;${jourstyle}">${r.termine ? '—' : r.jours + 'j'}</td>
                     <td style="padding:8px 12px;text-align:center;color:#888;">${r.nb_relances}</td>
-                    <td style="padding:8px 12px;">${btnFait}</td>
+                    <td style="padding:8px 12px;white-space:nowrap;">${actionHtml}</td>
                 </tr>`;
             }).join('');
         }
@@ -1722,6 +1746,31 @@
             showToast('Workflow créé — sera activé au prochain scan après sync ✓', 'success');
         };
 
+        window.mettreEnPause = function(asin, etape) {
+            if (!isAdmin) { showToast('Mode admin requis', 'error'); return; }
+            // Proposer une date par défaut à J+14
+            const defDate = new Date();
+            defDate.setDate(defDate.getDate() + 14);
+            const defStr = defDate.toISOString().slice(0, 10);
+            const dateStr = prompt(`Mettre en pause jusqu'au (YYYY-MM-DD) :`, defStr);
+            if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return;
+            if (!suiviEditorial[asin]) suiviEditorial[asin] = {};
+            suiviEditorial[asin][etape + '__pause'] = dateStr;
+            markPendingChange();
+            renderEditorial();
+            showToast(`Pause définie jusqu'au ${dateStr} ✓`, 'success');
+        };
+
+        window.reprendrePause = function(asin, etape) {
+            if (!isAdmin) { showToast('Mode admin requis', 'error'); return; }
+            if (suiviEditorial[asin] && suiviEditorial[asin][etape + '__pause']) {
+                delete suiviEditorial[asin][etape + '__pause'];
+                markPendingChange();
+                renderEditorial();
+                showToast('Pause annulée — suivi repris ✓', 'success');
+            }
+        };
+
         function applyFilters() {
             const search = $('searchInput').value.toLowerCase();
             const pub = $('publisherFilter').value;
@@ -1742,6 +1791,10 @@
             filteredData.sort((a, b) => {
                 let va = a[currentSort.field] || '', vb = b[currentSort.field] || '';
                 if (currentSort.field === 'tome') { va = parseInt(va) || 999; vb = parseInt(vb) || 999; }
+                else if (currentSort.field === 'date') {
+                    const toTs = s => { if (!s) return 0; const d = new Date(s); return isNaN(d.getTime()) ? 0 : d.getTime(); };
+                    va = toTs(a[currentSort.field]); vb = toTs(b[currentSort.field]);
+                }
                 if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
                 const cmp = (va > vb ? 1 : va < vb ? -1 : 0) * (currentSort.order === 'asc' ? 1 : -1);
                 if (cmp === 0 && currentSort.field !== 'tome') {
