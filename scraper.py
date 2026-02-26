@@ -406,7 +406,7 @@ async def extraire_volumes_depuis_page(session: aiohttp.ClientSession, url_ou_as
         
         # Méthode 2: Header "Bulk purchases" ou "新品まとめ買い"
         if not bulk_asins:
-            bulk_header = soup.find(lambda tag: tag.name in ['h2', 'h3', 'div', 'span'] and 
+            bulk_header = soup.find(lambda tag: tag.name in ['h2', 'h3', 'div', 'span'] and
                                     ('Bulk purchases' in tag.get_text() or '新品まとめ買い' in tag.get_text()))
             if bulk_header:
                 parent = bulk_header.find_parent('div', class_=lambda x: x and 'a-section' in x) or bulk_header.find_parent('div')
