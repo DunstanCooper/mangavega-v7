@@ -78,8 +78,7 @@ async def main():
             nom_display = serie_fr if serie_fr else serie_jp
             logger.info(f"  📚 {nom_display}")
             logger.info(f"     {nb} tome(s) | T{t_min}-T{t_max} | {date_min} → {date_max} | {editeur or '?'}")
-        
-        db.close()
+
         return
     
     try:
@@ -564,9 +563,6 @@ async def _main_inner(args):
             notifications.envoyer_email_rapport(config.EMAIL_DESTINATAIRE, len(config.MANGAS_A_SUIVRE), len(tous_papiers), len(toutes_nouveautes), nb_non_traites, duree)
         except Exception as e:
             logger.warning(f"⚠️  Erreur envoi rapport (non-bloquant): {e}")
-    
-    # Fermer la connexion BDD
-    db.close()
     
     # Git push (sauf --no-push)
     if args.no_push:

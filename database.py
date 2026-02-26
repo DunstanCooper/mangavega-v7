@@ -365,7 +365,7 @@ class Database:
             if row[1] == 'N/A':
                 return None
             return {
-                'date_sortie': row[0],
+                'date': row[0],
                 'tome': row[1],
                 'titre': row[2],
                 'editeur': row[3],
@@ -385,7 +385,7 @@ class Database:
             if not row:
                 return None
             return {
-                'date_sortie': row[0],
+                'date': row[0],
                 'tome': row[1],
                 'titre': row[2],
                 'editeur': row[3],
