@@ -202,23 +202,29 @@ def charger_corrections(db: 'DatabaseManager' = None):
                         continue
                     if not completions:
                         # {} = initiation manuelle depuis le viewer — créer le workflow si absent
-                        db.creer_workflow_depuis_asin(asin, today_str)
-                        nb_init += 1
+                        try:
+                            db.creer_workflow_depuis_asin(asin, today_str)
+                            nb_init += 1
+                        except Exception as e:
+                            logger.warning(f"   ⚠️  Workflow init {asin[:12]}: {e}")
                     else:
                         for etape, valeur in completions.items():
                             if not valeur or not isinstance(valeur, str):
                                 continue
-                            if etape.endswith('__pause'):
-                                # Clé pause : ex "draft_ad__pause" → "2026-03-15"
-                                etape_reelle = etape[:-7]  # retirer "__pause"
-                                db.definir_pause_workflow(asin, etape_reelle, valeur)
-                            elif etape.endswith('__relance'):
-                                # Clé relance : ex "mail_nwk__relance" → "2026-02-26"
-                                etape_reelle = etape[:-9]  # retirer "__relance"
-                                db.marquer_relance_faite(asin, etape_reelle, valeur)
-                            else:
-                                # Clé completion normale
-                                db.marquer_etape_faite(asin, etape, valeur)
+                            try:
+                                if etape.endswith('__pause'):
+                                    # Clé pause : ex "draft_ad__pause" → "2026-03-15"
+                                    etape_reelle = etape[:-7]  # retirer "__pause"
+                                    db.definir_pause_workflow(asin, etape_reelle, valeur)
+                                elif etape.endswith('__relance'):
+                                    # Clé relance : ex "mail_nwk__relance" → "2026-02-26"
+                                    etape_reelle = etape[:-9]  # retirer "__relance"
+                                    db.marquer_relance_faite(asin, etape_reelle, valeur)
+                                else:
+                                    # Clé completion normale
+                                    db.marquer_etape_faite(asin, etape, valeur)
+                            except Exception as e:
+                                logger.warning(f"   ⚠️  Workflow {asin[:12]}/{etape}: {e}")
                 msg = f"📑 {len(gist_suivi)} workflow(s) suivi éditorial depuis Gist"
                 if nb_init:
                     msg += f" ({nb_init} initialisé(s) manuellement)"
