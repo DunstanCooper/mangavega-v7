@@ -170,7 +170,7 @@ def api_scan():
         try:
             result = subprocess.run(
                 cmd, cwd=str(BASE_DIR), env=env,
-                capture_output=True, text=True, timeout=7200  # 2h max
+                capture_output=True, text=True, encoding='utf-8', timeout=7200  # 2h max
             )
             if result.returncode == 0:
                 scan_state['last_result'] = 'success'
