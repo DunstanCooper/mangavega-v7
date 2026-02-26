@@ -1283,3 +1283,7 @@ class Database:
             logger.info('   \U0001f5d1\ufe0f  Cache purg\u00e9 pour ' + serie_jp)
         finally:
             conn.close()
+
+
+# Alias de compatibilité — app.py, pipeline.py et api_server.py importent DatabaseManager
+DatabaseManager = Database
