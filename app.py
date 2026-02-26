@@ -132,19 +132,23 @@ async def _main_inner(args):
     # === NETTOYAGE : supprimer les doublons de traductions migration_v7 ===
     # Les traductions 'migration_v7' (sans suffixe [MANGA]/[LN]) sont redondantes
     # car rechercher_traductions() insère avec le bon nom (avec suffixe) source='manuel'
+    conn_trad = None
     try:
-        conn = db._get_conn()
-        cursor = conn.cursor()
+        conn_trad = db._get_conn()
+        cursor = conn_trad.cursor()
         cursor.execute("DELETE FROM traductions WHERE source = 'migration_v7'")
         nb_supprimees = cursor.rowcount
         if nb_supprimees > 0:
-            conn.commit()
+            conn_trad.commit()
             logger.info(f"   🗑️  {nb_supprimees} traduction(s) legacy 'migration_v7' supprimées (doublons)")
         cursor.execute("SELECT COUNT(*) FROM traductions")
         nb_trad = cursor.fetchone()[0]
         logger.info(f"   ✅ Traductions manuelles déjà en BDD ({nb_trad} entrées)")
     except Exception as e:
         logger.warning(f"   ⚠️  Nettoyage traductions: {e}")
+    finally:
+        if conn_trad:
+            conn_trad.close()
 
     # === MIGRATION : ebooks_traites → featured_history (puis suppression table legacy) ===
     try:
