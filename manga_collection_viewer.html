@@ -1125,7 +1125,7 @@
                 
                 // 2. Charger le JSON principal
                 dropZone.innerHTML = '<h3>⏳ Chargement des volumes...</h3><p>Depuis GitHub...</p>';
-                const resp = await fetch(CONFIG.GITHUB_JSON_URL);
+                const resp = await fetch(CONFIG.GITHUB_JSON_URL + '?t=' + Date.now());
                 if (!resp.ok) throw new Error(`Erreur HTTP ${resp.status}`);
                 const data = await resp.json();
                 

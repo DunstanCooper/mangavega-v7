@@ -532,11 +532,6 @@ async def rechercher_manga(session: aiohttp.ClientSession, db: DatabaseManager, 
     # Progression : déterminer les pages à scanner
     derniere_page_traitee, exploration_complete = db.get_featured_progression(nom_bdd)
     
-    # Correction rétroactive : si on a déjà atteint page 5+ mais pas marqué comme complète
-    if derniere_page_traitee >= 5 and not exploration_complete:
-        db.set_featured_progression(nom_bdd, derniere_page_traitee, complete=True)
-        exploration_complete = True
-    
     # Toujours scanner page 1 (détection nouveautés en tête de résultats)
     # Puis progresser au-delà si tout est déjà connu
     pages_a_scanner = [1]
@@ -546,8 +541,7 @@ async def rechercher_manga(session: aiohttp.ClientSession, db: DatabaseManager, 
     else:
         # Ajouter les pages suivantes à explorer (progression)
         for p in range(max(2, derniere_page_traitee + 1), derniere_page_traitee + 4):  # max 3 nouvelles pages par run
-            if p <= 5:  # max 5 pages au total
-                pages_a_scanner.append(p)
+            pages_a_scanner.append(p)
     
     # Log de progression Featured
     if exploration_complete:
@@ -714,12 +708,7 @@ async def rechercher_manga(session: aiohttp.ClientSession, db: DatabaseManager, 
         # Mettre à jour la progression
         if page_num > page_max_atteinte:
             page_max_atteinte = page_num
-            # Marquer comme complète si on a atteint le max (page 5)
-            if page_num >= 5:
-                db.set_featured_progression(nom_bdd, page_num, complete=True)
-                logger.info(f"   📄 Page max ({page_num}) atteinte → exploration Featured terminée")
-            else:
-                db.set_featured_progression(nom_bdd, page_num)
+            db.set_featured_progression(nom_bdd, page_num)
     
     # --- BULK post-Featured : si pas encore fait et Featured a trouvé des papiers ---
     if not bulk_effectue and candidats:
