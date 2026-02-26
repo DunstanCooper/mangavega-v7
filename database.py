@@ -862,7 +862,7 @@ class Database:
         'facture': 'R\u00e9ception + paiement facture',
     }
 
-    def creer_workflow_volume(self, asin: str, serie_jp: str, tome, today: str, editeur: str = ''):
+    def creer_workflow_volume(self, asin: str, serie_jp: str, tome, today: str, editeur: str = '', date_sortie_jp: str = ''):
         conn = self._get_conn()
         try:
             c = conn.cursor()
@@ -870,7 +870,7 @@ class Database:
                 """INSERT OR IGNORE INTO suivi_editorial
                 (asin, serie_jp, tome, etape, statut, date_declenchement, nb_relances, date_sortie_jp, editeur)
                 VALUES (?, ?, ?, 'mail_nwk', 'en_attente', ?, 0, ?, ?)""",
-                (asin, serie_jp, tome, today, today, editeur)
+                (asin, serie_jp, tome, today, date_sortie_jp or today, editeur)
             )
             conn.commit()
             logger.info('   \U0001f4d1 Workflow cr\u00e9\u00e9: ' + serie_jp[:30] + ' T' + str(tome) + ' [' + asin + ']')
@@ -881,7 +881,7 @@ class Database:
         conn = self._get_conn()
         try:
             c = conn.cursor()
-            c.execute('SELECT serie_jp, tome FROM volumes WHERE asin = ?', (asin,))
+            c.execute('SELECT serie_jp, tome, date_sortie_jp, editeur FROM volumes WHERE asin = ?', (asin,))
             row = c.fetchone()
         finally:
             conn.close()
@@ -890,7 +890,9 @@ class Database:
             logger.warning('   \u26a0\ufe0f  Workflow init ignor\u00e9: ASIN ' + asin + ' introuvable en BDD')
             return
         serie_jp, tome = row[0], row[1]
-        self.creer_workflow_volume(asin, serie_jp, tome, today)
+        date_sortie_jp = row[2] or ''
+        editeur = row[3] or ''
+        self.creer_workflow_volume(asin, serie_jp, tome, today, editeur, date_sortie_jp)
 
     def get_etape_courante_workflow(self, asin: str) -> Optional[Dict]:
         conn = self._get_conn()
@@ -1082,8 +1084,8 @@ class Database:
             c = conn.cursor()
             c.execute("""
                 SELECT s.asin, s.etape, s.date_declenchement, s.nb_relances, s.pause_jusqu_au,
-                       COALESCE(m.date_sortie_jp, v.date_sortie_jp, '') as date_sortie_jp,
-                       COALESCE(m.editeur, s.editeur, v.editeur, '') as editeur
+                       COALESCE(NULLIF(v.date_sortie_jp, ''), NULLIF(m.date_sortie_jp, ''), '') as date_sortie_jp,
+                       COALESCE(NULLIF(v.editeur, ''), NULLIF(m.editeur, ''), NULLIF(s.editeur, ''), '') as editeur
                 FROM suivi_editorial s
                 LEFT JOIN suivi_editorial m ON m.asin = s.asin AND m.etape = 'mail_nwk'
                 LEFT JOIN volumes v ON v.asin = s.asin

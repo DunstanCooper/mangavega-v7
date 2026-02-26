@@ -1655,8 +1655,8 @@
                         termine: !etapeCourante,
                         pause_jusqu_au: pauseJusquAu,
                         relance_date: etapeCourante ? (completions[etapeCourante + '__relance'] || null) : null,
-                        date_sortie_jp: '',
-                        editeur: '',
+                        date_sortie_jp: vol.date_sortie_jp || vol.date || '',
+                        editeur: vol.editeur || '',
                     });
                 }
             });
