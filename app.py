@@ -149,14 +149,17 @@ async def _main_inner(args):
     # === MIGRATION : ebooks_traites → featured_history (puis suppression table legacy) ===
     try:
         nb_migres = db.migrer_ebooks_vers_featured_history()
-        if nb_migres > 0:
+        if nb_migres and nb_migres > 0:
             logger.info(f"   ✅ {nb_migres} ebook(s) migrés vers featured_history")
         # Supprimer la table legacy après migration réussie
         try:
             conn = db._get_conn()
-            conn.execute('DROP TABLE IF EXISTS ebooks_traites')
-            conn.commit()
-            logger.info("   🗑️  Table legacy 'ebooks_traites' supprimée")
+            try:
+                conn.execute('DROP TABLE IF EXISTS ebooks_traites')
+                conn.commit()
+                logger.info("   🗑️  Table legacy 'ebooks_traites' supprimée")
+            finally:
+                conn.close()
         except Exception:
             pass  # Pas grave si elle n'existe déjà plus
     except Exception as e:

@@ -66,8 +66,9 @@ def api_status():
     stats = {'server': 'online', 'scan_running': scan_state['running']}
     
     if DB_PATH.exists():
+        conn = None
         try:
-            conn = sqlite3.connect(str(DB_PATH))
+            conn = sqlite3.connect(str(DB_PATH), timeout=30)
             cursor = conn.cursor()
             cursor.execute('SELECT COUNT(*) FROM volumes')
             stats['total_volumes'] = cursor.fetchone()[0]
@@ -75,15 +76,16 @@ def api_status():
             stats['total_series'] = cursor.fetchone()[0]
             cursor.execute('SELECT COUNT(*) FROM featured_history')
             stats['total_featured'] = cursor.fetchone()[0]
-            
+
             # Dernier scan
             cursor.execute('SELECT MAX(date_maj) FROM volumes')
             r = cursor.fetchone()
             stats['last_scan'] = r[0] if r and r[0] else None
-            
-            conn.close()
         except Exception as e:
             stats['db_error'] = str(e)
+        finally:
+            if conn:
+                conn.close()
     else:
         stats['db_exists'] = False
     
@@ -111,16 +113,14 @@ def api_sync():
         import sync as sync_module
         
         db = DatabaseManager()
-        
+
         # Charger et appliquer les corrections depuis le Gist
         sync_module.charger_gist_config()
         counts = sync_module.charger_corrections(db)
-        
+
         # Charger la config des séries
         sync_module.charger_series_config(db)
-        
-        db.close()
-        
+
         return jsonify({
             'success': True,
             'message': 'Corrections appliquées depuis le Gist',
