@@ -375,3 +375,94 @@ def envoyer_email_fin_pause(destinataire: str, pauses_expirees: List[Dict]):
             logger.warning(f"⚠️  Port {port}: {str(e)[:80]}")
 
     logger.error("❌ Échec envoi fin-de-pause workflow sur tous les ports\n")
+
+
+def envoyer_email_debut_workflow(destinataire: str, volumes: List[Dict]):
+    """
+    Envoie un email le jour de sortie JP d'un tome :
+    "Il est temps de demander à NWK de faire une offre pour ce titre !"
+    """
+    if not volumes:
+        return
+
+    VIEWER_URL = "https://dunstancooper.github.io/mangavega-v7/manga_collection_viewer.html"
+
+    lignes_html = ""
+    for v in volumes:
+        serie = (v.get('nom_fr') or v.get('serie_jp', ''))[:40]
+        tome = v.get('tome', '?')
+        date_jp = v.get('date_sortie_jp', '')
+        lignes_html += f'''
+        <tr>
+            <td style="padding:10px 14px;border-bottom:1px solid #eee;font-weight:600;">{serie}</td>
+            <td style="padding:10px 14px;border-bottom:1px solid #eee;text-align:center;">T{tome}</td>
+            <td style="padding:10px 14px;border-bottom:1px solid #eee;text-align:center;color:#555;">{date_jp}</td>
+        </tr>'''
+
+    nb = len(volumes)
+    titre_email = f"📚 {nb} tome(s) sorti(s) au Japon — Il est temps de contacter NWK"
+
+    html = f'''<!DOCTYPE html>
+<html><head><meta charset="utf-8"></head>
+<body style="font-family:Arial,sans-serif;background:#f5f5f5;margin:0;padding:20px;">
+<table width="620" style="margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+<tr><td style="background:linear-gradient(135deg,#667eea,#764ba2);padding:28px 32px;">
+    <h1 style="color:#fff;margin:0;font-size:1.4rem;">📚 Il est temps de contacter NWK !</h1>
+    <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;font-size:0.95rem;">
+        {nb} tome(s) sorti(s) au Japon aujourd'hui — démarrez les démarches éditoriales
+    </p>
+</td></tr>
+<tr><td style="padding:28px 32px;">
+    <p style="color:#444;margin:0 0 20px;font-size:0.95rem;">
+        Les tomes suivants sont disponibles au Japon. Transmettez à NWK pour qu'il/elle
+        sollicite une offre auprès de l'éditeur japonais.
+    </p>
+    <table width="100%" style="border-collapse:collapse;font-size:0.88rem;">
+        <thead>
+            <tr style="background:#f0f0f8;">
+                <th style="padding:10px 14px;text-align:left;border-bottom:2px solid #ddd;">Titre</th>
+                <th style="padding:10px 14px;text-align:center;border-bottom:2px solid #ddd;">Tome</th>
+                <th style="padding:10px 14px;text-align:center;border-bottom:2px solid #ddd;">Sortie JP</th>
+            </tr>
+        </thead>
+        <tbody>{lignes_html}</tbody>
+    </table>
+    <div style="margin-top:24px;padding:16px;background:#f8f4ff;border-radius:8px;border-left:4px solid #667eea;">
+        <p style="margin:0;font-size:0.88rem;color:#555;">
+            <strong>Action requise :</strong> Contacter NWK pour demander une offre auprès de l'éditeur JP.
+            Une relance automatique sera envoyée si l'étape 1 n'est pas complétée sous 10 jours.
+        </p>
+    </div>
+    <div style="margin-top:20px;text-align:center;">
+        <a href="{VIEWER_URL}#tab-editorial" style="display:inline-block;background:#667eea;color:#fff;padding:11px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:0.9rem;">
+            📑 Ouvrir le Suivi éditorial →
+        </a>
+    </div>
+</td></tr>
+</table>
+</body></html>'''
+
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = titre_email
+    msg['From'] = config.EMAIL_EXPEDITEUR
+    msg['To'] = destinataire
+    msg.attach(MIMEText(html, 'html'))
+
+    for port in config.SMTP_PORTS:
+        try:
+            logger.info(f"📧 Envoi email début workflow via port {port}...")
+            if port == 465:
+                server = smtplib.SMTP_SSL(config.SMTP_SERVER, port, timeout=10)
+            else:
+                server = smtplib.SMTP(config.SMTP_SERVER, port, timeout=10)
+                if port == 587:
+                    server.starttls()
+            server.login(config.EMAIL_EXPEDITEUR, config.MOT_DE_PASSE_APP)
+            server.send_message(msg)
+            server.quit()
+            logger.info("✅ Email début workflow envoyé!\n")
+            return
+        except Exception as e:
+            logger.warning(f"⚠️  Port {port}: {str(e)[:80]}")
+
+    logger.error("❌ Échec envoi email début workflow sur tous les ports\n")

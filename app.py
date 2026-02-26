@@ -412,15 +412,34 @@ async def _main_inner(args):
         # === SUIVI ÉDITORIAL ===
         today_str = datetime.now().strftime('%Y-%m-%d')
         # 1. Créer workflow pour chaque nouveau tome (hors modifications de date)
+        #    date_declenchement = date de sortie JP (pas aujourd'hui) — le workflow démarre le jour J
         for v in toutes_nouveautes:
             if not v.get('date_modifiee'):
-                db.creer_workflow_volume(v['asin'], v['nom'], v.get('tome'), today_str)
-        # 2. Vérifier les actions en retard (toutes séries, pas seulement ce run)
+                date_jp_raw = v.get('date') or v.get('date_sortie_jp') or today_str
+                # Convertir "2026/3/26" → "2026-03-26"
+                try:
+                    parts = date_jp_raw.replace('-', '/').split('/')
+                    date_declenchement = f"{parts[0]}-{int(parts[1]):02d}-{int(parts[2]):02d}"
+                except Exception:
+                    date_declenchement = today_str
+                db.creer_workflow_volume(v['asin'], v['nom'], v.get('tome'), date_declenchement)
+        # 2. Notifier "Il est temps de contacter NWK" le jour de sortie JP (email unique)
+        workflows_jour_j = db.get_workflows_a_notifier(today_str)
+        if workflows_jour_j:
+            logger.info(f"📬 {len(workflows_jour_j)} tome(s) sorti(s) aujourd'hui — email NWK à envoyer")
+            for w in workflows_jour_j:
+                db.marquer_email_ouverture_envoye(w['asin'])
+            if not args.no_email:
+                try:
+                    notifications.envoyer_email_debut_workflow(config.EMAIL_DESTINATAIRE, workflows_jour_j)
+                except Exception as e:
+                    logger.warning(f"⚠️  Erreur email début workflow: {e}")
+        # 3. Vérifier les actions en retard (toutes séries, pas seulement ce run)
         # nb_relances est incrémenté uniquement quand l'utilisateur note "relancé" dans le viewer
         actions_retard = db.get_actions_en_retard(delai_jours=10)
         if actions_retard:
-            logger.info(f"⏰ {len(actions_retard)} action(s) suivi éditorial en retard (relance envoyée)")
-        # 3. Envoyer email relances (sauf --no-email)
+            logger.info(f"⏰ {len(actions_retard)} action(s) suivi éditorial en retard")
+        # 4. Envoyer email relances (sauf --no-email)
         if actions_retard and not args.no_email:
             try:
                 notifications.envoyer_email_relances_workflow(config.EMAIL_DESTINATAIRE, actions_retard)

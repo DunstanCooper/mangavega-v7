@@ -1623,6 +1623,7 @@
                         termine,
                         pause_jusqu_au: pauseJusquAu,
                         relance_date: relanceLocale,
+                        date_declenchement: d.workflow.date_declenchement || '',
                     });
                 }
             });
@@ -1698,11 +1699,14 @@
 
             tbody.innerHTML = filtered.map(r => {
                 const isPaused = !r.termine && !!r.pause_jusqu_au;
+                const isAttente = !r.termine && r.jours < 0;  // sortie JP future
                 const rowBg = r.termine ? 'rgba(46,204,113,0.05)' :
                               isPaused   ? 'rgba(52,152,219,0.06)' :
+                              isAttente  ? 'rgba(100,100,100,0.04)' :
                               r.jours > 10 ? 'rgba(231,76,60,0.08)' :
                               r.jours > 7  ? 'rgba(255,165,0,0.08)' : '';
-                const jourstyle = isPaused ? 'color:#3498db;' :
+                const jourstyle = isPaused  ? 'color:#3498db;' :
+                                  isAttente ? 'color:#999;font-style:italic;' :
                                   r.jours > 10 ? 'color:#e74c3c;font-weight:600;' :
                                   r.jours > 7  ? 'color:#f39c12;font-weight:600;' : 'color:#888;';
                 // Pastilles de progression (6 étapes)
@@ -1733,7 +1737,7 @@
                     <td style="padding:8px 12px;text-align:center;">T${r.tome}</td>
                     <td style="padding:8px 12px;font-size:0.82rem;">${esc(r.label)}</td>
                     <td style="padding:8px 12px;text-align:center;">${pastilles}</td>
-                    <td style="padding:8px 12px;text-align:center;${jourstyle}">${r.termine ? '—' : r.jours + 'j'}</td>
+                    <td style="padding:8px 12px;text-align:center;${jourstyle}">${r.termine ? '—' : isAttente ? `Sortie ${r.date_declenchement}` : r.jours + 'j'}</td>
                     <td style="padding:8px 12px;text-align:center;color:#888;">${r.nb_relances}</td>
                     <td style="padding:8px 12px;white-space:nowrap;">${actionHtml}</td>
                 </tr>`;

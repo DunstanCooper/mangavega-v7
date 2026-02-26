@@ -121,17 +121,23 @@ class DatabaseManager:
                 date_completion TEXT,
                 nb_relances INTEGER DEFAULT 0,
                 pause_jusqu_au TEXT,
+                email_ouverture_envoye INTEGER DEFAULT 0,
                 PRIMARY KEY (asin, etape)
             )
         ''')
         conn.commit()
-        # Migration : ajouter la colonne pause_jusqu_au si absente (BDD existante)
-        try:
-            cursor.execute("ALTER TABLE suivi_editorial ADD COLUMN pause_jusqu_au TEXT")
-            conn.commit()
-            logger.info("Migration BDD : colonne pause_jusqu_au ajoutée à suivi_editorial")
-        except Exception:
-            pass  # Colonne déjà présente
+        # Migrations pour BDD existantes
+        for col_sql in [
+            "ALTER TABLE suivi_editorial ADD COLUMN pause_jusqu_au TEXT",
+            "ALTER TABLE suivi_editorial ADD COLUMN email_ouverture_envoye INTEGER DEFAULT 0",
+        ]:
+            try:
+                cursor.execute(col_sql)
+                conn.commit()
+                col_name = col_sql.split("ADD COLUMN ")[1].split()[0]
+                logger.info(f"Migration BDD : colonne {col_name} ajoutée à suivi_editorial")
+            except Exception:
+                pass  # Colonne déjà présente
     
     def set_volume_serie_override(self, asin: str, serie_alternative: str):
         """Définit une série alternative pour un volume spécifique"""
@@ -972,6 +978,47 @@ class DatabaseManager:
             ''', (date_relance, asin, etape))
             conn.commit()
             logger.info(f"   📨 Relance notée [{asin}] étape {etape} le {date_relance} → compteur 10j remis à zéro")
+
+    def get_workflows_a_notifier(self, today: str) -> List[Dict]:
+        """
+        Retourne les étapes mail_nwk dont la date de sortie JP est atteinte
+        et dont l'email d'ouverture n'a pas encore été envoyé.
+        Utilisé pour envoyer "Il est temps de contacter NWK" le jour J.
+        """
+        conn = self._get_conn()
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT s.asin, s.serie_jp, s.tome, s.date_declenchement,
+                   COALESCE(t.nom_fr, s.serie_jp) as nom_fr
+            FROM suivi_editorial s
+            LEFT JOIN traductions t ON t.serie_jp = s.serie_jp
+            WHERE s.etape = 'mail_nwk'
+            AND s.statut = 'en_attente'
+            AND date(s.date_declenchement) <= date(?)
+            AND s.email_ouverture_envoye = 0
+            ORDER BY s.date_declenchement ASC
+        ''', (today,))
+        result = []
+        for row in cursor.fetchall():
+            asin, serie_jp, tome, date_decl, nom_fr = row
+            result.append({
+                'asin': asin,
+                'serie_jp': serie_jp,
+                'nom_fr': nom_fr,
+                'tome': tome,
+                'date_sortie_jp': date_decl,
+            })
+        return result
+
+    def marquer_email_ouverture_envoye(self, asin: str):
+        """Marque l'email d'ouverture de workflow comme envoyé pour cet ASIN."""
+        conn = self._get_conn()
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE suivi_editorial SET email_ouverture_envoye = 1
+            WHERE asin = ? AND etape = 'mail_nwk'
+        ''', (asin,))
+        conn.commit()
 
     def definir_pause_workflow(self, asin: str, etape: str, date_pause: str):
         """Définit une pause sur une étape jusqu'à date_pause (format YYYY-MM-DD)."""
