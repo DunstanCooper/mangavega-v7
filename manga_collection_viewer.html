@@ -136,6 +136,9 @@
         .action-btn.reject:hover { background: rgba(231, 76, 60, 0.4); }
         .action-btn.undo { background: rgba(255, 255, 255, 0.1); color: #aaa; }
         .action-btn.delete { background: rgba(231, 76, 60, 0.2); color: #e74c3c; width: auto; padding: 0 8px; }
+        .action-btn.workflow { background: rgba(52, 152, 219, 0.2); color: #3498db; }
+        .action-btn.workflow:hover { background: rgba(52, 152, 219, 0.4); }
+        .action-btn.workflow-done { background: rgba(46, 204, 113, 0.15); color: #2ecc71; cursor: default; }
 
         .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
         .status-dot.valide { background: #2ecc71; }
@@ -1708,6 +1711,17 @@
             showToast(`Étape "${LABELS_ETAPES[etape]}" marquée faite ✓`, 'success');
         };
 
+        window.initWorkflow = function(asin) {
+            if (!isAdmin) { showToast('Mode admin requis', 'error'); return; }
+            if (suiviEditorial[asin] !== undefined) { showToast('Workflow déjà existant', 'error'); return; }
+            // {} = signal pour sync.py de créer mail_nwk en BDD au prochain run
+            suiviEditorial[asin] = {};
+            markPendingChange();
+            render();          // Rafraîchit la colonne Actions (icône passe en vert)
+            renderEditorial(); // Le workflow n'apparaîtra dans l'onglet Suivi qu'après le prochain scan
+            showToast('Workflow créé — sera activé au prochain scan après sync ✓', 'success');
+        };
+
         function applyFilters() {
             const search = $('searchInput').value.toLowerCase();
             const pub = $('publisherFilter').value;
@@ -1794,10 +1808,16 @@
                     <td><span class="asin-code">${esc(d.asin)}</span></td>
                     <td>${d.url ? `<a href="${d.url}" target="_blank">🔗</a>` : '-'}</td>
                     <td class="actions-cell"><div class="action-btns">
-                        ${s === 'rejete' || s === 'valide' 
+                        ${s === 'rejete' || s === 'valide'
                             ? `<button class="action-btn undo" onclick="setStatut('${safeAsin}','non_traite')" title="Remettre">↩</button>`
                             : `<button class="action-btn validate" onclick="setStatut('${safeAsin}','valide')" title="Valider">✓</button>
                                <button class="action-btn reject" onclick="setStatut('${safeAsin}','rejete')" title="Rejeter">✗</button>`}
+                        ${(() => {
+                            const hasWorkflow = d.workflow || suiviEditorial[d.asin] !== undefined;
+                            if (hasWorkflow) return `<button class="action-btn workflow-done" title="Workflow actif" disabled>📑</button>`;
+                            if (!isAdmin) return '';
+                            return `<button class="action-btn workflow" onclick="initWorkflow('${safeAsin}')" title="Créer un workflow éditorial">📑</button>`;
+                        })()}
                     </div></td>
                 </tr>`;
             }).join('');

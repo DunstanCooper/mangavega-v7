@@ -783,6 +783,20 @@ class DatabaseManager:
             'etapes_faites': etapes_faites,
         }
 
+    def creer_workflow_depuis_asin(self, asin: str, today: str):
+        """
+        Crée la première étape workflow pour un ASIN en cherchant série/tome dans volumes.
+        Utilisé quand le viewer initie un workflow manuellement sur un volume existant.
+        """
+        conn = self._get_conn()
+        cursor = conn.cursor()
+        cursor.execute('SELECT serie_jp, tome FROM volumes WHERE asin = ?', (asin,))
+        row = cursor.fetchone()
+        if row:
+            self.creer_workflow_volume(asin, row[0], row[1], today)
+        else:
+            logger.warning(f"   ⚠️  Workflow init ignoré: ASIN {asin} introuvable en BDD")
+
     def _get_etapes_faites(self, asin: str) -> List[str]:
         conn = self._get_conn()
         cursor = conn.cursor()

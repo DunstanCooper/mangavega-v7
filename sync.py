@@ -195,12 +195,23 @@ def charger_corrections(db: 'DatabaseManager' = None):
             # Importer les completions de workflow depuis le Gist vers la BDD
             gist_suivi = config.GIST_CORRECTIONS.get('suivi_editorial', {})
             if gist_suivi:
+                today_str = datetime.now().strftime('%Y-%m-%d')
+                nb_init = 0
                 for asin, completions in gist_suivi.items():
-                    if isinstance(completions, dict):
+                    if not isinstance(completions, dict):
+                        continue
+                    if not completions:
+                        # {} = initiation manuelle depuis le viewer — créer le workflow si absent
+                        db.creer_workflow_depuis_asin(asin, today_str)
+                        nb_init += 1
+                    else:
                         for etape, date_completion in completions.items():
                             if date_completion and isinstance(date_completion, str):
                                 db.marquer_etape_faite(asin, etape, date_completion)
-                logger.info(f"📑 {len(gist_suivi)} workflow(s) suivi éditorial importé(s) depuis Gist")
+                msg = f"📑 {len(gist_suivi)} workflow(s) suivi éditorial depuis Gist"
+                if nb_init:
+                    msg += f" ({nb_init} initialisé(s) manuellement)"
+                logger.info(msg)
 
         # Importer corrections.json vers la BDD s'il existe (fichier local)
         if os.path.exists(config.CORRECTIONS_FILE):
