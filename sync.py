@@ -191,7 +191,17 @@ def charger_corrections(db: 'DatabaseManager' = None):
                     logger.info(f"☁️  {imported_editeurs} éditeur(s) officiel(s) importé(s) depuis Gist")
                 else:
                     logger.info(f"📚 {len(gist_editeurs)} éditeur(s) officiel(s) (à jour)")
-        
+
+            # Importer les completions de workflow depuis le Gist vers la BDD
+            gist_suivi = config.GIST_CORRECTIONS.get('suivi_editorial', {})
+            if gist_suivi:
+                for asin, completions in gist_suivi.items():
+                    if isinstance(completions, dict):
+                        for etape, date_completion in completions.items():
+                            if date_completion and isinstance(date_completion, str):
+                                db.marquer_etape_faite(asin, etape, date_completion)
+                logger.info(f"📑 {len(gist_suivi)} workflow(s) suivi éditorial importé(s) depuis Gist")
+
         # Importer corrections.json vers la BDD s'il existe (fichier local)
         if os.path.exists(config.CORRECTIONS_FILE):
             counts = db.importer_statuts_json(config.CORRECTIONS_FILE)

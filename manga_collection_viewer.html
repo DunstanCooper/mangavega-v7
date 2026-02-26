@@ -426,6 +426,7 @@
                 <div class="tab" data-tab="series">📚 Séries (<span id="seriesCount">0</span>)</div>
                 <div class="tab" data-tab="predictions">🔮 Prédictions</div>
                 <div class="tab" data-tab="recap">📊 Récapitulatif</div>
+                <div class="tab" data-tab="editorial">📑 Suivi (<span id="editorialCount">0</span>)</div>
                 <div class="tab admin-only" data-tab="runner" id="tabRunner" style="display:none;">⚡ Script</div>
             </div>
 
@@ -548,6 +549,51 @@
             </div>
 
             <!-- Tab: Récapitulatif -->
+            <!-- Tab: Suivi éditorial -->
+            <div class="tab-content" id="tab-editorial">
+                <div class="stats-grid" style="margin-bottom:20px;">
+                    <div class="stat-card series"><div class="number" id="editorialActifs">0</div><div class="label">Workflows actifs</div></div>
+                    <div class="stat-card rejected"><div class="number" id="editorialRetard">0</div><div class="label">En retard (+10j)</div></div>
+                    <div class="stat-card ok"><div class="number" id="editorialTermines">0</div><div class="label">Terminés</div></div>
+                    <div class="stat-card volumes"><div class="number" id="editorialTotal2">0</div><div class="label">Total suivis</div></div>
+                </div>
+
+                <div class="filters" style="margin-bottom:15px;">
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label>Statut</label>
+                            <select id="editorialFilterStatut" onchange="renderEditorial()">
+                                <option value="">Tous</option>
+                                <option value="retard">En retard (&gt;10j)</option>
+                                <option value="encours">En cours</option>
+                                <option value="termine">Terminés</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Recherche série</label>
+                            <input type="text" id="editorialSearch" placeholder="Nom de la série..." oninput="renderEditorial()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Série</th>
+                                <th>Tome</th>
+                                <th>Étape courante</th>
+                                <th>Progression</th>
+                                <th>Depuis</th>
+                                <th>Relances</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="editorialTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- Tab: Script Runner (admin only) -->
             <div class="tab-content" id="tab-runner">
                 <div style="max-width: 900px; margin: 0 auto;">
@@ -853,6 +899,20 @@
         // {serie_jp: "Titre FR personnalisé"}
         let seriesTraductions = {};
 
+        // SUIVI ÉDITORIAL
+        // {asin: {mail_nwk: "2026-02-26", draft_ad: "2026-03-05"}}  — completions enregistrées
+        let suiviEditorial = {};
+
+        const ETAPES_WORKFLOW = ['mail_nwk', 'draft_ad', 'reponse_nwk', 'contrat_ad', 'signature_nwk', 'facture'];
+        const LABELS_ETAPES = {
+            mail_nwk:      'Mail NWK → offre éditeur JP',
+            draft_ad:      'Réception draft Ayants Droits',
+            reponse_nwk:   'Réponse NWK au draft',
+            contrat_ad:    'Réception contrat à signer',
+            signature_nwk: 'NWK signe + archive',
+            facture:       'Réception + paiement facture',
+        };
+
         // ============================================
         // CONFIGURATION GITHUB + GIST
         // ============================================
@@ -1040,6 +1100,11 @@
                             Object.assign(editeursOfficiels, gistCorrections.editeurs_officiels);
                             console.log('📚 Éditeurs officiels restaurés depuis Gist:', Object.keys(editeursOfficiels).length);
                         }
+                        // Restaurer le suivi éditorial depuis le Gist
+                        if (gistCorrections.suivi_editorial) {
+                            Object.assign(suiviEditorial, gistCorrections.suivi_editorial);
+                            console.log('📑 Suivi éditorial restauré depuis Gist:', Object.keys(suiviEditorial).length, 'ASIN(s)');
+                        }
                     }
                     if (gist.files['series_config.json']) {
                         gistSeriesConfig = JSON.parse(gist.files['series_config.json'].content);
@@ -1084,7 +1149,9 @@
             }
             // Sauvegarder les éditeurs officiels (déterminés par les validations)
             gistCorrections.editeurs_officiels = editeursOfficiels;
-            
+            // Sauvegarder le suivi éditorial
+            gistCorrections.suivi_editorial = suiviEditorial;
+
             // Mettre à jour la config
             gistSeriesConfig.urls_supplementaires = seriesUrlsSupplementaires;
             gistSeriesConfig.series_supprimees = [...removedSeries];
@@ -1434,7 +1501,8 @@
             applyFilters();
             renderSeriesCards();
             renderRecapTable();
-            
+            renderEditorial();
+
         }
 
         function updateStats() {
@@ -1470,6 +1538,175 @@
             // Cette fonction n'est plus utilisée - le syncBanner gère tout
             // Gardée pour compatibilité mais ne fait rien
         }
+
+        // ============================================
+        // SUIVI ÉDITORIAL
+        // ============================================
+
+        function getEtapeCouranteWorkflow(asin) {
+            // Calcule l'étape courante à partir des completions du Gist + données JSON
+            const completions = suiviEditorial[asin] || {};
+            // Chercher d'abord dans les données JSON (vient de la BDD)
+            const vol = allData.find(d => d.asin === asin);
+            if (vol && vol.workflow) {
+                // Enrichir avec les completions locales (non encore synchronisées)
+                const workflow = vol.workflow;
+                // Trouver l'étape courante en tenant compte des completions locales
+                for (const etape of ETAPES_WORKFLOW) {
+                    if (!completions[etape]) {
+                        return {
+                            asin,
+                            etape,
+                            label: LABELS_ETAPES[etape] || etape,
+                            jours: workflow.etape_courante === etape ? (workflow.jours_ecoules || 0) : 0,
+                            nb_relances: workflow.nb_relances || 0,
+                            etapes_faites: Object.keys(completions).filter(e => completions[e]),
+                            serie_jp: vol.serie_jp || '',
+                            serie_fr: vol.serie_fr || vol.serie_jp || '',
+                            tome: vol.tome || '?',
+                            termine: false,
+                        };
+                    }
+                }
+                return { asin, etape: 'facture', label: 'Terminé', jours: 0, nb_relances: 0,
+                         etapes_faites: ETAPES_WORKFLOW, serie_jp: vol.serie_jp || '',
+                         serie_fr: vol.serie_fr || '', tome: vol.tome || '?', termine: true };
+            }
+            return null;
+        }
+
+        function buildEditorialRows() {
+            // Agréger depuis allData (volumes avec workflow dans le JSON)
+            const rows = [];
+            const seen = new Set();
+            // 1. Volumes avec workflow dans le JSON
+            allData.forEach(d => {
+                if (d.workflow && !seen.has(d.asin)) {
+                    seen.add(d.asin);
+                    const completions = suiviEditorial[d.asin] || {};
+                    // Recalculer l'étape courante avec completions locales
+                    let etapeCourante = null;
+                    for (const etape of ETAPES_WORKFLOW) {
+                        if (!completions[etape]) { etapeCourante = etape; break; }
+                    }
+                    const termine = !etapeCourante;
+                    const jours = termine ? 0 : (etapeCourante === d.workflow.etape_courante
+                        ? (d.workflow.jours_ecoules || 0) : 0);
+                    rows.push({
+                        asin: d.asin,
+                        serie_fr: d.serie_fr || d.serie_jp || '',
+                        serie_jp: d.serie_jp || '',
+                        tome: d.tome || '?',
+                        etape: etapeCourante || 'facture',
+                        label: termine ? '✅ Terminé' : (LABELS_ETAPES[etapeCourante] || etapeCourante),
+                        jours: jours,
+                        nb_relances: d.workflow.nb_relances || 0,
+                        etapes_faites: Object.keys(completions).filter(e => completions[e]),
+                        termine,
+                    });
+                }
+            });
+            // 2. Completions locales non encore dans le JSON (nouveau workflow créé dans le viewer)
+            Object.keys(suiviEditorial).forEach(asin => {
+                if (!seen.has(asin)) {
+                    const completions = suiviEditorial[asin];
+                    let etapeCourante = null;
+                    for (const etape of ETAPES_WORKFLOW) {
+                        if (!completions[etape]) { etapeCourante = etape; break; }
+                    }
+                    const vol = allData.find(d => d.asin === asin) || {};
+                    rows.push({
+                        asin,
+                        serie_fr: vol.serie_fr || vol.serie_jp || asin,
+                        serie_jp: vol.serie_jp || '',
+                        tome: vol.tome || '?',
+                        etape: etapeCourante || 'facture',
+                        label: etapeCourante ? (LABELS_ETAPES[etapeCourante] || etapeCourante) : '✅ Terminé',
+                        jours: 0,
+                        nb_relances: 0,
+                        etapes_faites: Object.keys(completions).filter(e => completions[e]),
+                        termine: !etapeCourante,
+                    });
+                }
+            });
+            return rows;
+        }
+
+        function renderEditorial() {
+            const rows = buildEditorialRows();
+            const filterStatut = $('editorialFilterStatut')?.value || '';
+            const search = ($('editorialSearch')?.value || '').toLowerCase();
+
+            let actifs = 0, retard = 0, termines = 0;
+            rows.forEach(r => {
+                if (r.termine) termines++;
+                else { actifs++; if (r.jours > 10) retard++; }
+            });
+            if ($('editorialActifs')) $('editorialActifs').textContent = actifs;
+            if ($('editorialRetard')) $('editorialRetard').textContent = retard;
+            if ($('editorialTermines')) $('editorialTermines').textContent = termines;
+            if ($('editorialTotal2')) $('editorialTotal2').textContent = rows.length;
+            if ($('editorialCount')) $('editorialCount').textContent = actifs;
+
+            const filtered = rows.filter(r => {
+                if (search && !`${r.serie_fr} ${r.serie_jp}`.toLowerCase().includes(search)) return false;
+                if (filterStatut === 'retard' && (r.termine || r.jours <= 10)) return false;
+                if (filterStatut === 'encours' && (r.termine || r.jours > 10)) return false;
+                if (filterStatut === 'termine' && !r.termine) return false;
+                return true;
+            });
+
+            // Trier : en retard d'abord, puis en cours, puis terminés
+            filtered.sort((a, b) => {
+                if (a.termine !== b.termine) return a.termine ? 1 : -1;
+                return b.jours - a.jours;
+            });
+
+            const tbody = $('editorialTableBody');
+            if (!tbody) return;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#888;padding:30px;">Aucun workflow éditorial actif</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(r => {
+                const rowBg = r.termine ? 'rgba(46,204,113,0.05)' :
+                              r.jours > 10 ? 'rgba(231,76,60,0.08)' :
+                              r.jours > 7  ? 'rgba(255,165,0,0.08)' : '';
+                const jourstyle = r.jours > 10 ? 'color:#e74c3c;font-weight:600;' :
+                                  r.jours > 7  ? 'color:#f39c12;font-weight:600;' : 'color:#888;';
+                // Pastilles de progression (6 étapes)
+                const pastilles = ETAPES_WORKFLOW.map(e => {
+                    const fait = r.etapes_faites.includes(e);
+                    const courant = !r.termine && e === r.etape;
+                    return `<span title="${LABELS_ETAPES[e]}" style="display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 1px;background:${fait ? '#2ecc71' : courant ? '#f39c12' : 'rgba(255,255,255,0.15)'}; border:1px solid ${fait ? '#27ae60' : courant ? '#d68910' : 'rgba(255,255,255,0.2)'};"></span>`;
+                }).join('');
+                const btnFait = r.termine ? '' : `<button onclick="marquerEtapeFaite('${r.asin}','${r.etape}')"
+                    style="padding:4px 10px;background:#27ae60;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:0.78rem;" ${isAdmin ? '' : 'disabled title="Mode admin requis"'}>✓ Fait</button>`;
+                return `<tr style="background:${rowBg};">
+                    <td style="padding:8px 12px;">${esc(r.serie_fr)}</td>
+                    <td style="padding:8px 12px;text-align:center;">T${r.tome}</td>
+                    <td style="padding:8px 12px;font-size:0.82rem;">${esc(r.label)}</td>
+                    <td style="padding:8px 12px;text-align:center;">${pastilles}</td>
+                    <td style="padding:8px 12px;text-align:center;${jourstyle}">${r.termine ? '—' : r.jours + 'j'}</td>
+                    <td style="padding:8px 12px;text-align:center;color:#888;">${r.nb_relances}</td>
+                    <td style="padding:8px 12px;">${btnFait}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        window.marquerEtapeFaite = function(asin, etape) {
+            if (!isAdmin) { showToast('Mode admin requis', 'error'); return; }
+            const today = new Date().toISOString().slice(0, 10);
+            const dateStr = prompt(`Date de complétion pour "${LABELS_ETAPES[etape] || etape}" :`, today);
+            if (!dateStr) return;
+            if (!suiviEditorial[asin]) suiviEditorial[asin] = {};
+            suiviEditorial[asin][etape] = dateStr;
+            markPendingChange();
+            renderEditorial();
+            showToast(`Étape "${LABELS_ETAPES[etape]}" marquée faite ✓`, 'success');
+        };
 
         function applyFilters() {
             const search = $('searchInput').value.toLowerCase();

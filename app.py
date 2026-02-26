@@ -408,7 +408,26 @@ async def _main_inner(args):
         # Recherche les numéros de tome pour les volumes validés manuellement 
         # qui ont un tome = ? ou N/A (souvent des URLs ajoutées manuellement)
         tomes_corriges = await pipeline.corriger_tomes_manquants(session, db, logger)
-    
+
+        # === SUIVI ÉDITORIAL ===
+        today_str = datetime.now().strftime('%Y-%m-%d')
+        # 1. Créer workflow pour chaque nouveau tome (hors modifications de date)
+        for v in toutes_nouveautes:
+            if not v.get('date_modifiee'):
+                db.creer_workflow_volume(v['asin'], v['nom'], v.get('tome'), today_str)
+        # 2. Vérifier les actions en retard (toutes séries, pas seulement ce run)
+        actions_retard = db.get_actions_en_retard(delai_jours=10)
+        for action in actions_retard:
+            db.incrementer_relances(action['asin'], action['etape'])
+        if actions_retard:
+            logger.info(f"⏰ {len(actions_retard)} action(s) suivi éditorial en retard (relance envoyée)")
+        # 3. Envoyer email relances (sauf --no-email)
+        if actions_retard and not args.no_email:
+            try:
+                notifications.envoyer_email_relances_workflow(config.EMAIL_DESTINATAIRE, actions_retard)
+            except Exception as e:
+                logger.warning(f"⚠️  Erreur email relances workflow: {e}")
+
     fin = datetime.now()
     duree = (fin - debut).total_seconds()
     
@@ -435,6 +454,7 @@ async def _main_inner(args):
         asins_rejetes = db.get_asins_rejetes()
         asins_valides = db.get_asins_valides()
         volume_overrides = db.get_all_volume_serie_overrides()
+        workflows_actifs = db.get_tous_workflows_actifs()
         
         # Enrichir les volumes avec leur statut et nom_fr
         volumes_avec_statut = []
@@ -465,6 +485,9 @@ async def _main_inner(args):
                 p_copy['statut'] = 'valide'
             else:
                 p_copy['statut'] = 'non_traite'
+            # Ajouter l'état workflow si existant
+            if asin in workflows_actifs:
+                p_copy['workflow'] = workflows_actifs[asin]
             volumes_avec_statut.append(p_copy)
         
         # Calculer les stats basées uniquement sur les ASINs présents dans ce run

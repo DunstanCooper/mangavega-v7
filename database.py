@@ -109,6 +109,20 @@ class DatabaseManager:
                 date_maj             TEXT
             )
         ''')
+        # Suivi éditorial : workflow par tome (6 étapes séquentielles)
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS suivi_editorial (
+                asin TEXT NOT NULL,
+                serie_jp TEXT NOT NULL,
+                tome INTEGER,
+                etape TEXT NOT NULL,
+                statut TEXT DEFAULT 'en_attente',
+                date_declenchement TEXT NOT NULL,
+                date_completion TEXT,
+                nb_relances INTEGER DEFAULT 0,
+                PRIMARY KEY (asin, etape)
+            )
+        ''')
         conn.commit()
     
     def set_volume_serie_override(self, asin: str, serie_alternative: str):
@@ -691,6 +705,228 @@ class DatabaseManager:
         
         return None
     
+    # ========================================================================
+    # MÉTHODES POUR LE SUIVI ÉDITORIAL (workflow par tome)
+    # ========================================================================
+
+    ETAPES_WORKFLOW = [
+        'mail_nwk',
+        'draft_ad',
+        'reponse_nwk',
+        'contrat_ad',
+        'signature_nwk',
+        'facture',
+    ]
+
+    LABELS_ETAPES = {
+        'mail_nwk':      'Mail NWK → offre éditeur JP',
+        'draft_ad':      'Réception draft Ayants Droits',
+        'reponse_nwk':   'Réponse NWK au draft',
+        'contrat_ad':    'Réception contrat à signer',
+        'signature_nwk': 'NWK signe + archive',
+        'facture':       'Réception + paiement facture',
+    }
+
+    def creer_workflow_volume(self, asin: str, serie_jp: str, tome, today: str):
+        """Crée la première étape (mail_nwk) pour un nouveau tome, si elle n'existe pas déjà."""
+        conn = self._get_conn()
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT OR IGNORE INTO suivi_editorial
+            (asin, serie_jp, tome, etape, statut, date_declenchement, nb_relances)
+            VALUES (?, ?, ?, 'mail_nwk', 'en_attente', ?, 0)
+        ''', (asin, serie_jp, tome, today))
+        if cursor.rowcount > 0:
+            logger.info(f"   📑 Workflow créé: {serie_jp[:30]} T{tome} [{asin}]")
+        conn.commit()
+
+    def get_etape_courante_workflow(self, asin: str) -> Optional[Dict]:
+        """Retourne l'étape courante (en_attente) du workflow pour un ASIN, ou None."""
+        conn = self._get_conn()
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT etape, statut, date_declenchement, date_completion, nb_relances, serie_jp, tome
+            FROM suivi_editorial
+            WHERE asin = ? AND statut = 'en_attente'
+            ORDER BY CASE etape
+                WHEN 'mail_nwk'      THEN 1
+                WHEN 'draft_ad'      THEN 2
+                WHEN 'reponse_nwk'   THEN 3
+                WHEN 'contrat_ad'    THEN 4
+                WHEN 'signature_nwk' THEN 5
+                WHEN 'facture'       THEN 6
+                ELSE 99
+            END
+            LIMIT 1
+        ''', (asin,))
+        row = cursor.fetchone()
+        if not row:
+            return None
+        etape = row[0]
+        date_decl = row[2]
+        try:
+            from datetime import date
+            jours = (date.today() - datetime.strptime(date_decl, '%Y-%m-%d').date()).days
+        except Exception:
+            jours = 0
+        etapes_faites = self._get_etapes_faites(asin)
+        return {
+            'etape': etape,
+            'label': self.LABELS_ETAPES.get(etape, etape),
+            'statut': row[1],
+            'date_declenchement': date_decl,
+            'date_completion': row[3],
+            'nb_relances': row[4],
+            'serie_jp': row[5],
+            'tome': row[6],
+            'jours_ecoules': jours,
+            'etapes_faites': etapes_faites,
+        }
+
+    def _get_etapes_faites(self, asin: str) -> List[str]:
+        conn = self._get_conn()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT etape FROM suivi_editorial WHERE asin = ? AND statut = 'fait'",
+            (asin,)
+        )
+        return [row[0] for row in cursor.fetchall()]
+
+    def marquer_etape_faite(self, asin: str, etape: str, date_completion: str):
+        """
+        Marque une étape comme faite et crée automatiquement l'étape suivante.
+        Idempotent : si déjà fait avec la même date, ne fait rien.
+        """
+        conn = self._get_conn()
+        cursor = conn.cursor()
+        # Vérifier que l'étape existe et est en_attente (ou pas encore créée depuis Gist)
+        cursor.execute(
+            "SELECT statut, date_completion FROM suivi_editorial WHERE asin = ? AND etape = ?",
+            (asin, etape)
+        )
+        row = cursor.fetchone()
+        if row and row[0] == 'fait' and row[1] == date_completion:
+            return  # Déjà fait, idempotent
+        if row:
+            cursor.execute('''
+                UPDATE suivi_editorial
+                SET statut = 'fait', date_completion = ?
+                WHERE asin = ? AND etape = ?
+            ''', (date_completion, asin, etape))
+        else:
+            # L'étape n'existe pas en BDD (import depuis Gist pour une étape future)
+            # Récupérer info de base depuis une autre étape du même ASIN
+            cursor.execute(
+                "SELECT serie_jp, tome FROM suivi_editorial WHERE asin = ? LIMIT 1",
+                (asin,)
+            )
+            base = cursor.fetchone()
+            if base:
+                serie_jp, tome = base
+                cursor.execute('''
+                    INSERT OR REPLACE INTO suivi_editorial
+                    (asin, serie_jp, tome, etape, statut, date_declenchement, date_completion, nb_relances)
+                    VALUES (?, ?, ?, ?, 'fait', ?, ?, 0)
+                ''', (asin, serie_jp, tome, etape, date_completion, date_completion))
+        # Créer l'étape suivante si elle n'existe pas encore
+        try:
+            idx = self.ETAPES_WORKFLOW.index(etape)
+            if idx + 1 < len(self.ETAPES_WORKFLOW):
+                etape_suivante = self.ETAPES_WORKFLOW[idx + 1]
+                cursor.execute(
+                    "SELECT 1 FROM suivi_editorial WHERE asin = ? AND etape = ?",
+                    (asin, etape_suivante)
+                )
+                if not cursor.fetchone():
+                    cursor.execute(
+                        "SELECT serie_jp, tome FROM suivi_editorial WHERE asin = ? LIMIT 1",
+                        (asin,)
+                    )
+                    base = cursor.fetchone()
+                    if base:
+                        cursor.execute('''
+                            INSERT INTO suivi_editorial
+                            (asin, serie_jp, tome, etape, statut, date_declenchement, nb_relances)
+                            VALUES (?, ?, ?, ?, 'en_attente', ?, 0)
+                        ''', (asin, base[0], base[1], etape_suivante, date_completion))
+                        logger.info(f"   📑 Étape suivante créée: {etape_suivante} pour [{asin}]")
+        except ValueError:
+            pass
+        conn.commit()
+
+    def get_actions_en_retard(self, delai_jours: int = 10) -> List[Dict]:
+        """Retourne toutes les étapes en_attente dont la date de déclenchement dépasse delai_jours."""
+        conn = self._get_conn()
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT asin, serie_jp, tome, etape, date_declenchement, nb_relances
+            FROM suivi_editorial
+            WHERE statut = 'en_attente'
+            AND date(date_declenchement, '+' || ? || ' days') < date('now')
+            ORDER BY date_declenchement ASC
+        ''', (delai_jours,))
+        result = []
+        for row in cursor.fetchall():
+            asin, serie_jp, tome, etape, date_decl, nb_relances = row
+            try:
+                from datetime import date
+                jours = (date.today() - datetime.strptime(date_decl, '%Y-%m-%d').date()).days
+            except Exception:
+                jours = delai_jours + 1
+            result.append({
+                'asin': asin,
+                'serie_jp': serie_jp,
+                'tome': tome,
+                'etape': etape,
+                'label': self.LABELS_ETAPES.get(etape, etape),
+                'date_declenchement': date_decl,
+                'jours_ecoules': jours,
+                'nb_relances': nb_relances,
+            })
+        return result
+
+    def incrementer_relances(self, asin: str, etape: str):
+        """Incrémente le compteur de relances pour une étape."""
+        conn = self._get_conn()
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE suivi_editorial SET nb_relances = nb_relances + 1
+            WHERE asin = ? AND etape = ?
+        ''', (asin, etape))
+        conn.commit()
+
+    def get_tous_workflows_actifs(self) -> Dict[str, Dict]:
+        """
+        Retourne un dict {asin: workflow_info} pour tous les ASIN ayant une étape en_attente.
+        Utilisé pour enrichir l'export manga_collection.json.
+        """
+        conn = self._get_conn()
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT asin, etape, date_declenchement, nb_relances
+            FROM suivi_editorial
+            WHERE statut = 'en_attente'
+        ''')
+        workflows = {}
+        for row in cursor.fetchall():
+            asin, etape, date_decl, nb_relances = row
+            try:
+                from datetime import date
+                jours = (date.today() - datetime.strptime(date_decl, '%Y-%m-%d').date()).days
+            except Exception:
+                jours = 0
+            if asin not in workflows:
+                etapes_faites = self._get_etapes_faites(asin)
+                workflows[asin] = {
+                    'etape_courante': etape,
+                    'label': self.LABELS_ETAPES.get(etape, etape),
+                    'date_declenchement': date_decl,
+                    'jours_ecoules': jours,
+                    'nb_relances': nb_relances,
+                    'etapes_faites': etapes_faites,
+                }
+        return workflows
+
     # ========================================================================
     # MÉTHODES POUR LES STATUTS MANUELS (validé/rejeté)
     # ========================================================================

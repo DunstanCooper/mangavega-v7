@@ -216,4 +216,86 @@ def envoyer_email(destinataire: str, nouvelles_publications: List[Dict]):
     logger.error("❌ Échec d'envoi sur tous les ports\n")
 
 
+def envoyer_email_relances_workflow(destinataire: str, actions_retard: List[Dict]):
+    """Envoie un email de relance pour les étapes du workflow éditorial en retard."""
+    if not actions_retard:
+        return
+
+    VIEWER_URL = "https://dunstancooper.github.io/mangavega-v7/manga_collection_viewer.html"
+
+    lignes_html = ""
+    for a in actions_retard:
+        serie = a.get('serie_jp', '')[:35]
+        tome = a.get('tome', '?')
+        label = a.get('label', a.get('etape', ''))
+        jours = a.get('jours_ecoules', 0)
+        relances = a.get('nb_relances', 0)
+        bg = '#ffeaea' if jours > 10 else '#fff8e1'
+        lignes_html += f'''
+        <tr style="background:{bg};">
+            <td style="padding:8px 12px;border-bottom:1px solid #eee;">{serie}</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center;">T{tome}</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #eee;">{label}</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center;color:#e53e3e;font-weight:600;">{jours}j</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center;color:#999;">{relances}</td>
+        </tr>'''
+
+    html = f'''<!DOCTYPE html>
+<html><head><meta charset="utf-8"></head>
+<body style="font-family:Arial,sans-serif;background:#f5f5f5;margin:0;padding:20px;">
+<table width="600" style="margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+<tr><td style="background:linear-gradient(135deg,#e53e3e,#c0392b);padding:24px 30px;">
+    <h1 style="color:#fff;margin:0;font-size:1.3rem;">⏰ Relances Suivi Éditorial</h1>
+    <p style="color:rgba(255,255,255,0.85);margin:6px 0 0;font-size:0.9rem;">
+        {len(actions_retard)} action(s) en attente depuis plus de 10 jours
+    </p>
+</td></tr>
+<tr><td style="padding:24px 30px;">
+    <table width="100%" style="border-collapse:collapse;font-size:0.85rem;">
+        <thead>
+            <tr style="background:#f7f7f7;">
+                <th style="padding:8px 12px;text-align:left;border-bottom:2px solid #ddd;">Série</th>
+                <th style="padding:8px 12px;text-align:center;border-bottom:2px solid #ddd;">Tome</th>
+                <th style="padding:8px 12px;text-align:left;border-bottom:2px solid #ddd;">Étape</th>
+                <th style="padding:8px 12px;text-align:center;border-bottom:2px solid #ddd;">Délai</th>
+                <th style="padding:8px 12px;text-align:center;border-bottom:2px solid #ddd;">Relances</th>
+            </tr>
+        </thead>
+        <tbody>{lignes_html}</tbody>
+    </table>
+    <div style="margin-top:20px;text-align:center;">
+        <a href="{VIEWER_URL}" style="display:inline-block;background:#e53e3e;color:#fff;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:600;">
+            📑 Ouvrir le Suivi éditorial →
+        </a>
+    </div>
+</td></tr>
+</table>
+</body></html>'''
+
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = f"⏰ Relances workflow éditorial — {len(actions_retard)} action(s) en attente"
+    msg['From'] = config.EMAIL_EXPEDITEUR
+    msg['To'] = destinataire
+    msg.attach(MIMEText(html, 'html'))
+
+    for port in config.SMTP_PORTS:
+        try:
+            logger.info(f"📧 Envoi relances workflow via port {port}...")
+            if port == 465:
+                server = smtplib.SMTP_SSL(config.SMTP_SERVER, port, timeout=10)
+            else:
+                server = smtplib.SMTP(config.SMTP_SERVER, port, timeout=10)
+                if port == 587:
+                    server.starttls()
+            server.login(config.EMAIL_EXPEDITEUR, config.MOT_DE_PASSE_APP)
+            server.send_message(msg)
+            server.quit()
+            logger.info("✅ Email relances workflow envoyé!\n")
+            return
+        except Exception as e:
+            logger.warning(f"⚠️  Port {port}: {str(e)[:80]}")
+
+    logger.error("❌ Échec envoi relances workflow sur tous les ports\n")
+
+
 
