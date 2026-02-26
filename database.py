@@ -34,8 +34,6 @@ class Database:
         conn = self._get_conn()
         try:
             c = conn.cursor()
-            c.execute("PRAGMA journal_mode=WAL")
-
             c.execute("""
                 CREATE TABLE IF NOT EXISTS alertes (
                     nom TEXT,
