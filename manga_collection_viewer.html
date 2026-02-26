@@ -588,7 +588,7 @@
                                 <th>Série</th>
                                 <th>Tome</th>
                                 <th>Éditeur</th>
-                                <th>Date JP</th>
+                                <th id="editorialSortDateJP" onclick="sortEditorial('date_sortie_jp')" style="cursor:pointer;" title="Trier par date de sortie JP">Date JP ↕</th>
                                 <th>Étape courante</th>
                                 <th>Progression</th>
                                 <th>Depuis</th>
@@ -910,8 +910,9 @@
         // {asin: {mail_nwk: "2026-02-26", draft_ad: "2026-03-05"}}  — completions enregistrées
         let suiviEditorial = {};
 
-        const ETAPES_WORKFLOW = ['mail_nwk', 'draft_ad', 'reponse_nwk', 'contrat_ad', 'signature_nwk', 'facture'];
+        const ETAPES_WORKFLOW = ['droits_nwk', 'mail_nwk', 'draft_ad', 'reponse_nwk', 'contrat_ad', 'signature_nwk', 'facture'];
         const LABELS_ETAPES = {
+            droits_nwk:    'Demander à NWK d\u2019acheter les droits',
             mail_nwk:      'Mail NWK → offre éditeur JP',
             draft_ad:      'Réception draft Ayants Droits',
             reponse_nwk:   'Réponse NWK au draft',
@@ -919,6 +920,10 @@
             signature_nwk: 'NWK signe + archive',
             facture:       'Réception + paiement facture',
         };
+
+        // Tri suivi éditorial
+        let editorialSortField = 'date_sortie_jp';
+        let editorialSortOrder = 'asc';
 
         // ============================================
         // CONFIGURATION GITHUB + GIST
@@ -1113,6 +1118,10 @@
                             Object.assign(suiviEditorial, gistCorrections.suivi_editorial);
                             console.log('📑 Suivi éditorial restauré depuis Gist:', Object.keys(suiviEditorial).length, 'ASIN(s)');
                         }
+                        // Masquer dans le viewer les workflows déjà marqués pour suppression
+                        if (Array.isArray(gistCorrections.suivi_supprimes)) {
+                            gistCorrections.suivi_supprimes.forEach(asin => { delete suiviEditorial[asin]; });
+                        }
                     }
                     if (gist.files['series_config.json']) {
                         gistSeriesConfig = JSON.parse(gist.files['series_config.json'].content);
@@ -1159,6 +1168,7 @@
             gistCorrections.editeurs_officiels = editeursOfficiels;
             // Sauvegarder le suivi éditorial
             gistCorrections.suivi_editorial = suiviEditorial;
+            if (!gistCorrections.suivi_supprimes) gistCorrections.suivi_supprimes = [];
 
             // Mettre à jour la config
             gistSeriesConfig.urls_supplementaires = seriesUrlsSupplementaires;
@@ -1551,6 +1561,21 @@
         // SUIVI ÉDITORIAL
         // ============================================
 
+        // Normalise "2026/1/16" ou "2026-01-16" → "2026-01-16" (ISO, pour comparaisons)
+        function normalizeDateISO(s) {
+            if (!s) return '';
+            const parts = s.replace(/\//g, '-').split('-');
+            if (parts.length !== 3) return s;
+            return `${parts[0]}-${parts[1].padStart(2,'0')}-${parts[2].padStart(2,'0')}`;
+        }
+        // Convertit "2026-01-16" ou "2026/1/16" → "16/01/2026" (affichage)
+        function formatDateJP(s) {
+            if (!s) return '—';
+            const parts = s.replace(/\//g, '-').split('-');
+            if (parts.length !== 3) return s;
+            return `${parts[2].padStart(2,'0')}/${parts[1].padStart(2,'0')}/${parts[0]}`;
+        }
+
         function getEtapeCouranteWorkflow(asin) {
             // Calcule l'étape courante à partir des completions du Gist + données JSON
             const completions = suiviEditorial[asin] || {};
@@ -1592,10 +1617,14 @@
                 if (d.workflow && !seen.has(d.asin)) {
                     seen.add(d.asin);
                     const completions = suiviEditorial[d.asin] || {};
-                    // Recalculer l'étape courante avec completions locales
+                    // Fusionner étapes faites depuis JSON (BDD) et completions locales (Gist)
+                    const etapesFaitesJson = d.workflow.etapes_faites || [];
+                    const etapesFaitesLocales = Object.keys(completions).filter(e => completions[e] && !e.endsWith('__pause') && !e.endsWith('__relance'));
+                    const etapesFaitesMerged = [...new Set([...etapesFaitesJson, ...etapesFaitesLocales])];
+                    // Recalculer l'étape courante avec completions fusionnées
                     let etapeCourante = null;
                     for (const etape of ETAPES_WORKFLOW) {
-                        if (!completions[etape]) { etapeCourante = etape; break; }
+                        if (!etapesFaitesMerged.includes(etape)) { etapeCourante = etape; break; }
                     }
                     const termine = !etapeCourante;
                     // Recalculer jours : si relance locale noter → date_declenchement = date relance
@@ -1611,8 +1640,16 @@
                     } else {
                         jours = 0;
                     }
-                    const pauseJusquAu = termine ? null :
-                        (completions[etapeCourante + '__pause'] || d.workflow.pause_jusqu_au || null);
+                    // Pause : priorité à l'override local ('repris' = annulé, date = forcé, undefined = JSON auto-pause)
+                    let pauseJusquAu = null;
+                    if (!termine) {
+                        const explicitPause = completions[etapeCourante + '__pause'];
+                        if (explicitPause !== undefined) {
+                            pauseJusquAu = (explicitPause && explicitPause !== 'repris') ? explicitPause : null;
+                        } else {
+                            pauseJusquAu = d.workflow.pause_jusqu_au || null;
+                        }
+                    }
                     rows.push({
                         asin: d.asin,
                         serie_fr: d.serie_fr || d.serie_jp || '',
@@ -1622,12 +1659,12 @@
                         label: termine ? '✅ Terminé' : (LABELS_ETAPES[etapeCourante] || etapeCourante),
                         jours: jours,
                         nb_relances: d.workflow.nb_relances || 0,
-                        etapes_faites: Object.keys(completions).filter(e => completions[e] && !e.endsWith('__pause') && !e.endsWith('__relance')),
+                        etapes_faites: etapesFaitesMerged,
                         termine,
                         pause_jusqu_au: pauseJusquAu,
                         relance_date: relanceLocale,
                         date_declenchement: d.workflow.date_declenchement || '',
-                        date_sortie_jp: d.workflow.date_sortie_jp || '',
+                        date_sortie_jp: normalizeDateISO(d.workflow.date_sortie_jp || d.date_sortie_jp || ''),
                         editeur: d.workflow.editeur || '',
                     });
                 }
@@ -1641,7 +1678,17 @@
                         if (!completions[etape]) { etapeCourante = etape; break; }
                     }
                     const vol = allData.find(d => d.asin === asin) || {};
-                    const pauseJusquAu = etapeCourante ? (completions[etapeCourante + '__pause'] || null) : null;
+                    let pauseJusquAu = null;
+                    if (etapeCourante) {
+                        const explicitPause = completions[etapeCourante + '__pause'];
+                        if (explicitPause !== undefined) {
+                            pauseJusquAu = (explicitPause && explicitPause !== 'repris') ? explicitPause : null;
+                        } else if (etapeCourante === 'droits_nwk') {
+                            // Auto-pause droits_nwk si livre pas encore sorti (avec normalisation de format)
+                            const dateJP = normalizeDateISO((vol.date_sortie_jp || vol.date || '').slice(0, 10));
+                            if (dateJP && dateJP > new Date().toISOString().slice(0, 10)) pauseJusquAu = dateJP;
+                        }
+                    }
                     rows.push({
                         asin,
                         serie_fr: vol.serie_fr || vol.serie_jp || asin,
@@ -1690,11 +1737,23 @@
                 return true;
             });
 
-            // Trier : en retard d'abord, puis en cours, puis terminés
+            // Trier selon editorialSortField ou défaut
             filtered.sort((a, b) => {
+                if (editorialSortField === 'date_sortie_jp') {
+                    const da = normalizeDateISO(a.date_sortie_jp) || '9999-99-99';
+                    const db2 = normalizeDateISO(b.date_sortie_jp) || '9999-99-99';
+                    const cmp = da < db2 ? -1 : da > db2 ? 1 : 0;
+                    return editorialSortOrder === 'asc' ? cmp : -cmp;
+                }
                 if (a.termine !== b.termine) return a.termine ? 1 : -1;
                 return b.jours - a.jours;
             });
+            // Mettre à jour l'indicateur de tri dans le header
+            const thDateJP = document.getElementById('editorialSortDateJP');
+            if (thDateJP) {
+                const arrow = editorialSortField === 'date_sortie_jp' ? (editorialSortOrder === 'asc' ? ' ↑' : ' ↓') : ' ↕';
+                thDateJP.textContent = 'Date JP' + arrow;
+            }
 
             const tbody = $('editorialTableBody');
             if (!tbody) return;
@@ -1728,7 +1787,7 @@
                 if (!r.termine) {
                     const safeAsin = r.asin.replace(/'/g, "\\'");
                     if (isPaused) {
-                        actionHtml = `<span style="font-size:0.78rem;color:#3498db;">⏸ jusqu'au ${r.pause_jusqu_au}</span>`
+                        actionHtml = `<span style="font-size:0.78rem;color:#3498db;">⏸ jusqu'au ${formatDateJP(r.pause_jusqu_au)}</span>`
                             + ` <button onclick="reprendrePause('${safeAsin}','${r.etape}')" style="margin-left:5px;padding:3px 8px;background:#3498db;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:0.75rem;" ${isAdmin ? '' : 'disabled title="Mode admin requis"'}>▶ Reprendre</button>`;
                     } else {
                         const btnFait = `<button onclick="marquerEtapeFaite('${safeAsin}','${r.etape}')" style="padding:4px 10px;background:#27ae60;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:0.78rem;" ${isAdmin ? '' : 'disabled title="Mode admin requis"'}>✓ Fait</button>`;
@@ -1739,17 +1798,21 @@
                         actionHtml = btnFait + btnPause + btnRelance;
                     }
                 }
-                const dateSortieDisplay = r.date_sortie_jp ? r.date_sortie_jp.split('-').reverse().join('/') : '—';
+                const dateSortieDisplay = formatDateJP(r.date_sortie_jp);
+                const safeAsinDel = r.asin.replace(/'/g, "\\'");
+                const btnSupprimer = isAdmin
+                    ? ` <button onclick="supprimerWorkflow('${safeAsinDel}')" style="margin-left:6px;padding:3px 7px;background:transparent;color:#e74c3c;border:1px solid #e74c3c;border-radius:5px;cursor:pointer;font-size:0.72rem;" title="Supprimer ce workflow">🗑️</button>`
+                    : '';
                 return `<tr style="background:${rowBg};">
                     <td style="padding:8px 12px;">${esc(r.serie_fr)}</td>
                     <td style="padding:8px 12px;text-align:center;">T${r.tome}</td>
                     <td style="padding:8px 12px;font-size:0.82rem;color:#aaa;">${esc(r.editeur) || '—'}</td>
                     <td style="padding:8px 12px;text-align:center;font-size:0.82rem;color:#aaa;">${dateSortieDisplay}</td>
-                    <td style="padding:8px 12px;font-size:0.82rem;">${esc(r.label)}</td>
+                    <td style="padding:8px 12px;font-size:0.82rem;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${esc(r.label)}">${esc(r.label)}</td>
                     <td style="padding:8px 12px;text-align:center;">${pastilles}</td>
                     <td style="padding:8px 12px;text-align:center;${jourstyle}">${r.termine ? '—' : isAttente ? `Sortie ${r.date_declenchement}` : r.jours + 'j'}</td>
                     <td style="padding:8px 12px;text-align:center;color:#888;">${r.nb_relances}</td>
-                    <td style="padding:8px 12px;white-space:nowrap;">${actionHtml}</td>
+                    <td style="padding:8px 12px;white-space:nowrap;">${actionHtml}${btnSupprimer}</td>
                 </tr>`;
             }).join('');
         }
@@ -1806,12 +1869,37 @@
 
         window.reprendrePause = function(asin, etape) {
             if (!isAdmin) { showToast('Mode admin requis', 'error'); return; }
-            if (suiviEditorial[asin] && suiviEditorial[asin][etape + '__pause']) {
-                delete suiviEditorial[asin][etape + '__pause'];
-                markPendingChange();
-                renderEditorial();
-                showToast('Pause annulée — suivi repris ✓', 'success');
+            if (!suiviEditorial[asin]) suiviEditorial[asin] = {};
+            // 'repris' = marqueur d'annulation de pause (locale ou issue du JSON)
+            suiviEditorial[asin][etape + '__pause'] = 'repris';
+            markPendingChange();
+            renderEditorial();
+            showToast('Pause annulée — suivi repris ✓', 'success');
+        };
+
+        function sortEditorial(field) {
+            if (editorialSortField === field) {
+                editorialSortOrder = editorialSortOrder === 'asc' ? 'desc' : 'asc';
+            } else {
+                editorialSortField = field;
+                editorialSortOrder = 'asc';
             }
+            renderEditorial();
+        }
+
+        window.supprimerWorkflow = function(asin) {
+            if (!isAdmin) { showToast('Mode admin requis', 'error'); return; }
+            const row = (buildEditorialRows()).find(r => r.asin === asin);
+            const label = row ? `${row.serie_fr} T${row.tome}` : asin;
+            if (!confirm(`Supprimer le workflow pour « ${label} » ?\n\nL'ASIN sera exclu du suivi éditorial de façon permanente (sera purgé de la BDD après sync + scan).`)) return;
+            // Retirer du suivi local
+            delete suiviEditorial[asin];
+            // Ajouter à la liste des suppressions pour sync.py
+            if (!gistCorrections.suivi_supprimes) gistCorrections.suivi_supprimes = [];
+            if (!gistCorrections.suivi_supprimes.includes(asin)) gistCorrections.suivi_supprimes.push(asin);
+            markPendingChange();
+            renderEditorial();
+            showToast(`Workflow supprimé — sync pour valider ✓`, 'success');
         };
 
         function applyFilters() {

@@ -213,9 +213,12 @@ def charger_corrections(db: 'DatabaseManager' = None):
                                 continue
                             try:
                                 if etape.endswith('__pause'):
-                                    # Clé pause : ex "draft_ad__pause" → "2026-03-15"
+                                    # Clé pause : "draft_ad__pause" → "2026-03-15" ou "repris" (annulation)
                                     etape_reelle = etape[:-7]  # retirer "__pause"
-                                    db.definir_pause_workflow(asin, etape_reelle, valeur)
+                                    if valeur == 'repris':
+                                        db.effacer_pause_workflow(asin, etape_reelle)
+                                    else:
+                                        db.definir_pause_workflow(asin, etape_reelle, valeur)
                                 elif etape.endswith('__relance'):
                                     # Clé relance : ex "mail_nwk__relance" → "2026-02-26"
                                     etape_reelle = etape[:-9]  # retirer "__relance"
@@ -229,6 +232,19 @@ def charger_corrections(db: 'DatabaseManager' = None):
                 if nb_init:
                     msg += f" ({nb_init} initialisé(s) manuellement)"
                 logger.info(msg)
+
+            # Supprimer les workflows marqués à supprimer depuis le Gist
+            gist_supprimes = config.GIST_CORRECTIONS.get('suivi_supprimes', [])
+            if gist_supprimes and isinstance(gist_supprimes, list) and db:
+                nb_supprimes = 0
+                for asin in gist_supprimes:
+                    try:
+                        db.supprimer_workflow(asin)
+                        nb_supprimes += 1
+                    except Exception as e:
+                        logger.warning(f"   ⚠️  Suppression workflow {asin[:12]}: {e}")
+                if nb_supprimes:
+                    logger.info(f"🗑️  {nb_supprimes} workflow(s) supprimé(s) depuis Gist")
 
         # Importer corrections.json vers la BDD s'il existe (fichier local)
         if os.path.exists(config.CORRECTIONS_FILE):

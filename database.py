@@ -137,6 +137,22 @@ class Database:
                 except sqlite3.OperationalError:
                     pass  # Column already exists
 
+            # Migration: insérer droits_nwk/fait pour les workflows existants qui ont déjà mail_nwk
+            try:
+                c.execute("""
+                    INSERT OR IGNORE INTO suivi_editorial
+                        (asin, serie_jp, tome, etape, statut, date_declenchement, nb_relances)
+                    SELECT m.asin, m.serie_jp, m.tome, 'droits_nwk', 'fait', m.date_declenchement, 0
+                    FROM suivi_editorial m
+                    WHERE m.etape = 'mail_nwk'
+                    AND NOT EXISTS (
+                        SELECT 1 FROM suivi_editorial d WHERE d.asin = m.asin AND d.etape = 'droits_nwk'
+                    )
+                """)
+                conn.commit()
+            except sqlite3.OperationalError:
+                pass
+
         finally:
             conn.close()
 
@@ -851,26 +867,36 @@ class Database:
     # Suivi editorial - workflow
     # ------------------------------------------------------------------
 
-    ETAPES_WORKFLOW = ['mail_nwk', 'draft_ad', 'reponse_nwk', 'contrat_ad', 'signature_nwk', 'facture']
+    ETAPES_WORKFLOW = ['droits_nwk', 'mail_nwk', 'draft_ad', 'reponse_nwk', 'contrat_ad', 'signature_nwk', 'facture']
 
     LABELS_ETAPES = {
-        'mail_nwk': 'Mail NWK \u2192 offre \u00e9diteur JP',
-        'draft_ad': 'R\u00e9ception draft Ayants Droits',
-        'reponse_nwk': 'R\u00e9ponse NWK au draft',
-        'contrat_ad': 'R\u00e9ception contrat \u00e0 signer',
+        'droits_nwk':    'Demander \u00e0 NWK d\u2019acheter les droits',
+        'mail_nwk':      'Mail NWK \u2192 offre \u00e9diteur JP',
+        'draft_ad':      'R\u00e9ception draft Ayants Droits',
+        'reponse_nwk':   'R\u00e9ponse NWK au draft',
+        'contrat_ad':    'R\u00e9ception contrat \u00e0 signer',
         'signature_nwk': 'NWK signe + archive',
-        'facture': 'R\u00e9ception + paiement facture',
+        'facture':       'R\u00e9ception + paiement facture',
     }
 
     def creer_workflow_volume(self, asin: str, serie_jp: str, tome, today: str, editeur: str = '', date_sortie_jp: str = ''):
         conn = self._get_conn()
         try:
             c = conn.cursor()
+            date_jp = date_sortie_jp or today
+            # Auto-pause si précommande : bloquer droits_nwk jusqu'à la date de sortie JP
+            pause = None
+            if date_jp:
+                try:
+                    if datetime.strptime(date_jp[:10], '%Y-%m-%d').date() > date.today():
+                        pause = date_jp[:10]
+                except (ValueError, TypeError):
+                    pass
             c.execute(
                 """INSERT OR IGNORE INTO suivi_editorial
-                (asin, serie_jp, tome, etape, statut, date_declenchement, nb_relances, date_sortie_jp, editeur)
-                VALUES (?, ?, ?, 'mail_nwk', 'en_attente', ?, 0, ?, ?)""",
-                (asin, serie_jp, tome, today, date_sortie_jp or today, editeur)
+                (asin, serie_jp, tome, etape, statut, date_declenchement, nb_relances, date_sortie_jp, editeur, pause_jusqu_au)
+                VALUES (?, ?, ?, 'droits_nwk', 'en_attente', ?, 0, ?, ?, ?)""",
+                (asin, serie_jp, tome, today, date_jp, editeur, pause)
             )
             conn.commit()
             logger.info('   \U0001f4d1 Workflow cr\u00e9\u00e9: ' + serie_jp[:30] + ' T' + str(tome) + ' [' + asin + ']')
@@ -903,6 +929,7 @@ class Database:
                 FROM suivi_editorial
                 WHERE asin = ? AND statut = 'en_attente'
                 ORDER BY CASE etape
+                    WHEN 'droits_nwk'    THEN 0
                     WHEN 'mail_nwk'      THEN 1
                     WHEN 'draft_ad'      THEN 2
                     WHEN 'reponse_nwk'   THEN 3
@@ -1087,7 +1114,7 @@ class Database:
                        COALESCE(NULLIF(v.date_sortie_jp, ''), NULLIF(m.date_sortie_jp, ''), '') as date_sortie_jp,
                        COALESCE(NULLIF(v.editeur, ''), NULLIF(m.editeur, ''), NULLIF(s.editeur, ''), '') as editeur
                 FROM suivi_editorial s
-                LEFT JOIN suivi_editorial m ON m.asin = s.asin AND m.etape = 'mail_nwk'
+                LEFT JOIN suivi_editorial m ON m.asin = s.asin AND m.etape = 'droits_nwk'
                 LEFT JOIN volumes v ON v.asin = s.asin
                 WHERE s.statut = 'en_attente'
             """)
@@ -1167,12 +1194,13 @@ class Database:
                     OR t.titre_japonais = REPLACE(REPLACE(s.serie_jp, ' [LN]', ''), ' [MANGA]', '')
                 )
                 LEFT JOIN series_editeurs se ON se.serie_id = s.serie_jp
-                WHERE s.etape = 'mail_nwk'
+                WHERE s.etape = 'droits_nwk'
                 AND s.statut = 'en_attente'
                 AND date(s.date_declenchement) <= date(?)
                 AND s.email_ouverture_envoye = 0
+                AND (s.pause_jusqu_au IS NULL OR date(s.pause_jusqu_au) <= date(?))
                 ORDER BY COALESCE(s.editeur, se.editeur_officiel) ASC, s.date_declenchement ASC
-            """, (today,))
+            """, (today, today))
             results = []
             for row in c.fetchall():
                 results.append({
@@ -1192,10 +1220,34 @@ class Database:
         try:
             c = conn.cursor()
             c.execute(
-                "UPDATE suivi_editorial SET email_ouverture_envoye = 1 WHERE asin = ? AND etape = 'mail_nwk'",
+                "UPDATE suivi_editorial SET email_ouverture_envoye = 1 WHERE asin = ? AND etape = 'droits_nwk'",
                 (asin,)
             )
             conn.commit()
+        finally:
+            conn.close()
+
+    def supprimer_workflow(self, asin: str):
+        """Supprime un workflow : insère un tombstone 'droits_nwk/supprime' pour empêcher la re-création."""
+        conn = self._get_conn()
+        try:
+            c = conn.cursor()
+            # Récupérer les infos pour le tombstone
+            c.execute("SELECT serie_jp, tome FROM suivi_editorial WHERE asin = ? LIMIT 1", (asin,))
+            row = c.fetchone()
+            serie_jp = row[0] if row else ''
+            tome = row[1] if row else None
+            # Supprimer toutes les étapes
+            c.execute("DELETE FROM suivi_editorial WHERE asin = ?", (asin,))
+            # Tombstone : empêche INSERT OR IGNORE de recréer droits_nwk
+            c.execute(
+                """INSERT OR REPLACE INTO suivi_editorial
+                (asin, serie_jp, tome, etape, statut, date_declenchement, nb_relances)
+                VALUES (?, ?, ?, 'droits_nwk', 'supprime', date('now'), 0)""",
+                (asin, serie_jp, tome)
+            )
+            conn.commit()
+            logger.info('   \U0001f5d1\ufe0f  Workflow supprim\u00e9: [' + asin + ']')
         finally:
             conn.close()
 
