@@ -705,7 +705,7 @@
                                 <th onclick="sortPredictions('lastTome')" style="cursor:pointer;">Dernier tome ↕</th>
                                 <th onclick="sortPredictions('lastDate')" style="cursor:pointer;">Dernière sortie ↕</th>
                                 <th onclick="sortPredictions('avgInterval')" style="cursor:pointer;">Intervalle moy. ↕</th>
-                                <th onclick="sortPredictions('nextTome1')" style="cursor:pointer;" style="color:#2ecc71;">T+1 ↕</th>
+                                <th onclick="sortPredictions('nextTome1')" style="cursor:pointer; color:#2ecc71;">T+1 ↕</th>
                                 <th>T+2</th>
                                 <th>T+3</th>
                                 <th>T+4</th>
@@ -1088,6 +1088,7 @@
         function markPendingChange() {
             pendingChanges++;
             console.log('markPendingChange appelé, pendingChanges:', pendingChanges, 'isAdmin:', isAdmin);
+            predictionsData = []; // Invalider le cache prédictions (statuts modifiés)
             updateSyncBanner();
         }
 
@@ -2151,9 +2152,10 @@
                 const displayName = sData.serie_fr || cleanName;
                 const typeStr = getTypeSuffix(serieKey) || (sData.volumeType || '');
                 
-                // Extraire les volumes avec tome numérique ET date valide
+                // Extraire les volumes avec tome numérique ET date valide (hors rejetés)
                 const datedTomes = [];
                 vols.forEach(v => {
+                    if ((volumeStatuts[v.asin] || 'non_traite') === 'rejete') return;
                     const tome = parseFloat(v.tome);
                     if (isNaN(tome) || tome <= 0) return;
                     if (!v.date) return;
