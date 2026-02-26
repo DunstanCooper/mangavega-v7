@@ -424,12 +424,13 @@ async def rechercher_manga(session: aiohttp.ClientSession, db: DatabaseManager, 
         """
         Exécute le Bulk depuis un ASIN, ajoute les résultats à candidats{}.
         Retourne True si de nouveaux volumes ont été trouvés.
+        bulk_effectue est levé uniquement si la section Bulk est effectivement trouvée,
+        permettant de retenter avec un autre ASIN si la page n'a pas de section Bulk statique.
         """
         nonlocal bulk_effectue
         if bulk_effectue:
             return False
-        
-        bulk_effectue = True
+
         logger.info(f"🔄 Exploration Bulk depuis [{asin_source}]...\n")
         
         sources_bulk = ["bulk", "publisher"]
@@ -442,10 +443,16 @@ async def rechercher_manga(session: aiohttp.ClientSession, db: DatabaseManager, 
             sources=sources_bulk
         )
         
+        # Section trouvée → marquer comme effectué (sinon on retente avec le prochain ASIN)
+        if result_bulk.get("bulk") or result_bulk.get("frequently_bought"):
+            bulk_effectue = True
+        else:
+            logger.info(f"   ℹ️  Pas de section Bulk statique sur [{asin_source}], retentable depuis un autre ASIN")
+
         # Récupérer le mapping ASIN→tome depuis le Bulk
         for b_asin, b_tome in result_bulk.get("bulk_tomes", {}).items():
             bulk_tomes_mapping[b_asin] = b_tome
-        
+
         trouva_nouveau = False
         for source_name in ["bulk", "publisher", "frequently_bought"]:
             for vol_asin in result_bulk.get(source_name, []):
