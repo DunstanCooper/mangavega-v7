@@ -24,7 +24,7 @@ class Database:
         self.init_table_editeurs()
 
     def _get_conn(self) -> sqlite3.Connection:
-        return sqlite3.connect(self.db_path)
+        return sqlite3.connect(self.db_path, timeout=30)
 
     # ------------------------------------------------------------------
     # init_db
@@ -34,6 +34,7 @@ class Database:
         conn = self._get_conn()
         try:
             c = conn.cursor()
+            c.execute("PRAGMA journal_mode=WAL")
 
             c.execute("""
                 CREATE TABLE IF NOT EXISTS alertes (
