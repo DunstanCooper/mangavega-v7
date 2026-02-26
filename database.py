@@ -1080,9 +1080,11 @@ class Database:
             c = conn.cursor()
             c.execute("""
                 SELECT s.asin, s.etape, s.date_declenchement, s.nb_relances, s.pause_jusqu_au,
-                       m.date_sortie_jp, COALESCE(s.editeur, m.editeur, '') as editeur
+                       COALESCE(m.date_sortie_jp, v.date_sortie_jp, '') as date_sortie_jp,
+                       COALESCE(m.editeur, s.editeur, v.editeur, '') as editeur
                 FROM suivi_editorial s
                 LEFT JOIN suivi_editorial m ON m.asin = s.asin AND m.etape = 'mail_nwk'
+                LEFT JOIN volumes v ON v.asin = s.asin
                 WHERE s.statut = 'en_attente'
             """)
             rows = c.fetchall()
