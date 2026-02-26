@@ -229,7 +229,7 @@ class DatabaseManager:
         """
         conn = self._get_conn()
         cursor = conn.cursor()
-        cursor.execute('SELECT asin, url FROM volumes WHERE serie_jp = ?', (serie_jp,))
+        cursor.execute('SELECT asin, url FROM volumes WHERE serie_jp = ? ORDER BY tome IS NULL, CAST(tome AS INTEGER) ASC', (serie_jp,))
         return {row[0]: row[1] for row in cursor.fetchall()}
     
     # =========================================================================
