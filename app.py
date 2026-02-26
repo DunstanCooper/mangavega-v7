@@ -416,9 +416,8 @@ async def _main_inner(args):
             if not v.get('date_modifiee'):
                 db.creer_workflow_volume(v['asin'], v['nom'], v.get('tome'), today_str)
         # 2. Vérifier les actions en retard (toutes séries, pas seulement ce run)
+        # nb_relances est incrémenté uniquement quand l'utilisateur note "relancé" dans le viewer
         actions_retard = db.get_actions_en_retard(delai_jours=10)
-        for action in actions_retard:
-            db.incrementer_relances(action['asin'], action['etape'])
         if actions_retard:
             logger.info(f"⏰ {len(actions_retard)} action(s) suivi éditorial en retard (relance envoyée)")
         # 3. Envoyer email relances (sauf --no-email)

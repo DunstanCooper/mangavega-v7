@@ -1595,8 +1595,19 @@
                         if (!completions[etape]) { etapeCourante = etape; break; }
                     }
                     const termine = !etapeCourante;
-                    const jours = termine ? 0 : (etapeCourante === d.workflow.etape_courante
-                        ? (d.workflow.jours_ecoules || 0) : 0);
+                    // Recalculer jours : si relance locale noter → date_declenchement = date relance
+                    const relanceLocale = etapeCourante ? (completions[etapeCourante + '__relance'] || null) : null;
+                    let jours;
+                    if (termine) {
+                        jours = 0;
+                    } else if (relanceLocale) {
+                        const msJour = 86400000;
+                        jours = Math.floor((Date.now() - new Date(relanceLocale).getTime()) / msJour);
+                    } else if (etapeCourante === d.workflow.etape_courante) {
+                        jours = d.workflow.jours_ecoules || 0;
+                    } else {
+                        jours = 0;
+                    }
                     const pauseJusquAu = termine ? null :
                         (completions[etapeCourante + '__pause'] || d.workflow.pause_jusqu_au || null);
                     rows.push({
@@ -1608,9 +1619,10 @@
                         label: termine ? '✅ Terminé' : (LABELS_ETAPES[etapeCourante] || etapeCourante),
                         jours: jours,
                         nb_relances: d.workflow.nb_relances || 0,
-                        etapes_faites: Object.keys(completions).filter(e => completions[e] && !e.endsWith('__pause')),
+                        etapes_faites: Object.keys(completions).filter(e => completions[e] && !e.endsWith('__pause') && !e.endsWith('__relance')),
                         termine,
                         pause_jusqu_au: pauseJusquAu,
+                        relance_date: relanceLocale,
                     });
                 }
             });
@@ -1633,9 +1645,10 @@
                         label: etapeCourante ? (LABELS_ETAPES[etapeCourante] || etapeCourante) : '✅ Terminé',
                         jours: 0,
                         nb_relances: 0,
-                        etapes_faites: Object.keys(completions).filter(e => completions[e] && !e.endsWith('__pause')),
+                        etapes_faites: Object.keys(completions).filter(e => completions[e] && !e.endsWith('__pause') && !e.endsWith('__relance')),
                         termine: !etapeCourante,
                         pause_jusqu_au: pauseJusquAu,
+                        relance_date: etapeCourante ? (completions[etapeCourante + '__relance'] || null) : null,
                     });
                 }
             });
@@ -1707,8 +1720,12 @@
                         actionHtml = `<span style="font-size:0.78rem;color:#3498db;">⏸ jusqu'au ${r.pause_jusqu_au}</span>`
                             + ` <button onclick="reprendrePause('${safeAsin}','${r.etape}')" style="margin-left:5px;padding:3px 8px;background:#3498db;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:0.75rem;" ${isAdmin ? '' : 'disabled title="Mode admin requis"'}>▶ Reprendre</button>`;
                     } else {
-                        actionHtml = `<button onclick="marquerEtapeFaite('${safeAsin}','${r.etape}')" style="padding:4px 10px;background:#27ae60;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:0.78rem;" ${isAdmin ? '' : 'disabled title="Mode admin requis"'}>✓ Fait</button>`
-                            + ` <button onclick="mettreEnPause('${safeAsin}','${r.etape}')" style="margin-left:4px;padding:4px 8px;background:#3498db;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:0.75rem;" title="Mettre en pause" ${isAdmin ? '' : 'disabled'}>⏸</button>`;
+                        const btnFait = `<button onclick="marquerEtapeFaite('${safeAsin}','${r.etape}')" style="padding:4px 10px;background:#27ae60;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:0.78rem;" ${isAdmin ? '' : 'disabled title="Mode admin requis"'}>✓ Fait</button>`;
+                        const btnPause = ` <button onclick="mettreEnPause('${safeAsin}','${r.etape}')" style="margin-left:4px;padding:4px 8px;background:#3498db;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:0.75rem;" title="Mettre en pause" ${isAdmin ? '' : 'disabled'}>⏸</button>`;
+                        const btnRelance = r.jours > 10
+                            ? ` <button onclick="marquerRelanceFaite('${safeAsin}','${r.etape}')" style="margin-left:4px;padding:4px 8px;background:#e67e22;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:0.75rem;" title="J'ai relancé NWK/AD — redémarre le délai de 10j" ${isAdmin ? '' : 'disabled'}>📨 Relancé</button>`
+                            : '';
+                        actionHtml = btnFait + btnPause + btnRelance;
                     }
                 }
                 return `<tr style="background:${rowBg};">
@@ -1744,6 +1761,18 @@
             render();          // Rafraîchit la colonne Actions (icône passe en vert)
             renderEditorial(); // Le workflow n'apparaîtra dans l'onglet Suivi qu'après le prochain scan
             showToast('Workflow créé — sera activé au prochain scan après sync ✓', 'success');
+        };
+
+        window.marquerRelanceFaite = function(asin, etape) {
+            if (!isAdmin) { showToast('Mode admin requis', 'error'); return; }
+            const today = new Date().toISOString().slice(0, 10);
+            const dateStr = prompt(`Date de la relance vers NWK/AD (redémarre le délai de 10j) :`, today);
+            if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return;
+            if (!suiviEditorial[asin]) suiviEditorial[asin] = {};
+            suiviEditorial[asin][etape + '__relance'] = dateStr;
+            markPendingChange();
+            renderEditorial();
+            showToast(`Relance notée le ${dateStr} — délai de 10j redémarré ✓`, 'success');
         };
 
         window.mettreEnPause = function(asin, etape) {

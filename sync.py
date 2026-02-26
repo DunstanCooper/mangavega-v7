@@ -212,6 +212,10 @@ def charger_corrections(db: 'DatabaseManager' = None):
                                 # Clé pause : ex "draft_ad__pause" → "2026-03-15"
                                 etape_reelle = etape[:-7]  # retirer "__pause"
                                 db.definir_pause_workflow(asin, etape_reelle, valeur)
+                            elif etape.endswith('__relance'):
+                                # Clé relance : ex "mail_nwk__relance" → "2026-02-26"
+                                etape_reelle = etape[:-9]  # retirer "__relance"
+                                db.marquer_relance_faite(asin, etape_reelle, valeur)
                             else:
                                 # Clé completion normale
                                 db.marquer_etape_faite(asin, etape, valeur)

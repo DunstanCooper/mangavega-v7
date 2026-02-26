@@ -951,6 +951,28 @@ class DatabaseManager:
                 }
         return workflows
 
+    def marquer_relance_faite(self, asin: str, etape: str, date_relance: str):
+        """
+        Note qu'une relance a été faite vers NWK/AD à date_relance.
+        Remet date_declenchement à date_relance (redécale le compteur de 10j).
+        N'incrémente nb_relances que si la date change (idempotent).
+        """
+        conn = self._get_conn()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT date_declenchement FROM suivi_editorial WHERE asin=? AND etape=? AND statut='en_attente'",
+            (asin, etape)
+        )
+        row = cursor.fetchone()
+        if row and row[0] != date_relance:
+            cursor.execute('''
+                UPDATE suivi_editorial
+                SET date_declenchement = ?, nb_relances = nb_relances + 1
+                WHERE asin = ? AND etape = ? AND statut = 'en_attente'
+            ''', (date_relance, asin, etape))
+            conn.commit()
+            logger.info(f"   📨 Relance notée [{asin}] étape {etape} le {date_relance} → compteur 10j remis à zéro")
+
     def definir_pause_workflow(self, asin: str, etape: str, date_pause: str):
         """Définit une pause sur une étape jusqu'à date_pause (format YYYY-MM-DD)."""
         conn = self._get_conn()
