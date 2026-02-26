@@ -1412,7 +1412,7 @@
                                     firstDetectionParsed: null
                                 };
                             }
-                            const tomeNum = parseInt(item.tome) || 0;
+                            const tomeNum = parseFloat(item.tome) || 0;
                             if (tomeNum > 0 && item.originalStatut !== 'rejete') {
                                 seriesData[serieKey].tomesSet.add(tomeNum);
                                 if (tomeNum > seriesData[serieKey].maxTome) {
@@ -1823,7 +1823,7 @@
 
             filteredData.sort((a, b) => {
                 let va = a[currentSort.field] || '', vb = b[currentSort.field] || '';
-                if (currentSort.field === 'tome') { va = parseInt(va) || 999; vb = parseInt(vb) || 999; }
+                if (currentSort.field === 'tome') { va = parseFloat(va) || 999; vb = parseFloat(vb) || 999; }
                 else if (currentSort.field === 'date') {
                     const toTs = s => { if (!s) return 0; const d = new Date(s); return isNaN(d.getTime()) ? 0 : d.getTime(); };
                     va = toTs(a[currentSort.field]); vb = toTs(b[currentSort.field]);
@@ -1831,8 +1831,8 @@
                 if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
                 const cmp = (va > vb ? 1 : va < vb ? -1 : 0) * (currentSort.order === 'asc' ? 1 : -1);
                 if (cmp === 0 && currentSort.field !== 'tome') {
-                    const tomeA = parseInt(a.tome) || 999;
-                    const tomeB = parseInt(b.tome) || 999;
+                    const tomeA = parseFloat(a.tome) || 999;
+                    const tomeB = parseFloat(b.tome) || 999;
                     return tomeA - tomeB;
                 }
                 return cmp;
@@ -2145,7 +2145,7 @@
                 // Extraire les volumes avec tome numérique ET date valide
                 const datedTomes = [];
                 vols.forEach(v => {
-                    const tome = parseInt(v.tome);
+                    const tome = parseFloat(v.tome);
                     if (isNaN(tome) || tome <= 0) return;
                     if (!v.date) return;
                     const parts = v.date.split('/');
@@ -3213,8 +3213,8 @@
             // Volumes de cette série (d.serie_jp contient la clé brute avec suffixe)
             const seriesVolumes = allData.filter(d => d.serie_jp === serieJp);
             seriesVolumes.sort((a, b) => {
-                const tomeA = parseInt(a.tome) || 999;
-                const tomeB = parseInt(b.tome) || 999;
+                const tomeA = parseFloat(a.tome) || 999;
+                const tomeB = parseFloat(b.tome) || 999;
                 return tomeA - tomeB;
             });
 
@@ -3329,12 +3329,12 @@
             
             // Sauvegarder dans les corrections Gist (tomes)
             if (!gistCorrections.tomes) gistCorrections.tomes = {};
-            gistCorrections.tomes[asin] = parseInt(tomeValue) || tomeValue;
+            gistCorrections.tomes[asin] = parseFloat(tomeValue) || tomeValue;
             
             // Mettre à jour dans allData
             const vol = allData.find(d => d.asin === asin);
             if (vol) {
-                vol.tome = parseInt(tomeValue) || tomeValue;
+                vol.tome = parseFloat(tomeValue) || tomeValue;
                 
                 // Recalculer les stats de la série dans seriesData
                 const serieKey = vol.serie_jp;
@@ -3344,7 +3344,7 @@
                     let maxTome = 0;
                     vols.forEach(v => {
                         if ((volumeStatuts[v.asin] || 'non_traite') === 'rejete') return;
-                        const t = parseInt(v.tome);
+                        const t = parseFloat(v.tome);
                         if (!isNaN(t) && t > 0) {
                             tomesSet.add(t);
                             if (t > maxTome) maxTome = t;
@@ -3602,7 +3602,7 @@
                 
                 newSeriesData[serieKey].volumes.push(d);
                 
-                const tome = parseInt(d.tome);
+                const tome = parseFloat(d.tome);
                 if (!isNaN(tome) && tome > 0) {
                     newSeriesData[serieKey].tomesSet.add(tome);
                     if (tome > newSeriesData[serieKey].lastTome) {
@@ -3653,7 +3653,7 @@
                     showToast('Tome réinitialisé', 'info');
                 }
             } else {
-                const tomeNum = parseInt(newTome);
+                const tomeNum = parseFloat(newTome);
                 if (isNaN(tomeNum) || tomeNum < 1) {
                     showToast('Numéro invalide', 'error');
                     return;

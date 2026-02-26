@@ -1013,7 +1013,9 @@ async def rechercher_manga(session: aiohttp.ClientSession, db: DatabaseManager, 
         format_livre = infos.get('format', '')
         if filtre != "both" and format_livre:
             if filtre == "ln_only":
-                if '文庫' not in format_livre and 'Bunko' not in format_livre:
+                # Formats acceptés pour LN : 文庫 (bunko), ペーパーバック (paperback)
+                if ('文庫' not in format_livre and 'Bunko' not in format_livre
+                        and 'ペーパーバック' not in format_livre and 'Paperback' not in format_livre):
                     logger.info(f"  📚 [{asin}] Format non-LN: {format_livre[:30]} → skip")
                     continue
             else:

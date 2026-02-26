@@ -391,10 +391,11 @@ async def extraire_volumes_depuis_page(session: aiohttp.ClientSession, url_ou_as
                             asins_trouves.add(vol_asin)
                             # Extraire le label de tome (ex: "1巻", "Vol. 1")
                             label = item.get_text()
-                            tome_match = re.search(r'(?:Vol\.?\s*|第?\s*)(\d+)\s*巻?|(\d+)\s*巻', label)
+                            tome_match = re.search(r'(?:Vol\.?\s*|第?\s*)(\d+(?:[.,]\d+)?)\s*巻?|(\d+(?:[.,]\d+)?)\s*巻', label)
                             if tome_match:
-                                tome_num = int(tome_match.group(1) or tome_match.group(2))
-                                bulk_tomes[vol_asin] = tome_num
+                                raw = tome_match.group(1) or tome_match.group(2)
+                                v = float(raw.replace(',', '.'))
+                                bulk_tomes[vol_asin] = int(v) if v == int(v) else v
                     # Fallback : si items non trouvés, extraire les liens bruts (ancien code)
                     if not bulk_asins:
                         for link in box.find_all("a", href=True):
@@ -431,10 +432,11 @@ async def extraire_volumes_depuis_page(session: aiohttp.ClientSession, url_ou_as
                                 bulk_asins.append(vol_asin)
                                 asins_trouves.add(vol_asin)
                                 label = item.get_text()
-                                tome_match = re.search(r'(?:Vol\.?\s*|第?\s*)(\d+)\s*巻?|(\d+)\s*巻', label)
+                                tome_match = re.search(r'(?:Vol\.?\s*|第?\s*)(\d+(?:[.,]\d+)?)\s*巻?|(\d+(?:[.,]\d+)?)\s*巻', label)
                                 if tome_match:
-                                    tome_num = int(tome_match.group(1) or tome_match.group(2))
-                                    bulk_tomes[vol_asin] = tome_num
+                                    raw = tome_match.group(1) or tome_match.group(2)
+                                    v = float(raw.replace(',', '.'))
+                                    bulk_tomes[vol_asin] = int(v) if v == int(v) else v
                     # Fallback liens bruts
                     if not bulk_asins:
                         for link in parent.find_all("a", href=True):

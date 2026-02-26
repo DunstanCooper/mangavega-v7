@@ -488,7 +488,13 @@ FORMATS_SPECIAUX = {
 _JP = r'[ぁ-んァ-ヿ一-龯ー々〆]'
 
 
-def extraire_numero_tome(titre: str) -> Optional[int]:
+def _tome_val(s: str):
+    """Convertit une chaîne de numéro de tome en int ou float selon le cas."""
+    v = float(s.replace(',', '.'))
+    return int(v) if v == int(v) else v
+
+
+def extraire_numero_tome(titre: str):
     """
     Extrait le numéro de tome depuis un titre Amazon japonais.
     
@@ -527,17 +533,17 @@ def extraire_numero_tome(titre: str) -> Optional[int]:
     match = re.search(r'第\s*(\d+)\s*[巻集]', titre)
     if match:
         return int(match.group(1))
-    
-    # 2. X巻 (format japonais simple, hors lots)
+
+    # 2. X巻 ou X.5巻 (format japonais simple, hors lots)
     if '巻セット' not in titre:
-        match = re.search(r'0*(\d+)\s*巻', titre)
+        match = re.search(r'0*(\d+(?:[.,]\d+)?)\s*巻', titre)
         if match:
-            return int(match.group(1))
-    
-    # 3. (X) / （X） (parenthèses — le plus courant)
-    match = re.search(r'[（(]\s*0*(\d+)\s*[)）]', titre)
+            return _tome_val(match.group(1))
+
+    # 3. (X) / （X） / (X.5) — parenthèses, avec ou sans décimale
+    match = re.search(r'[（(]\s*0*(\d+(?:[.,]\d+)?)\s*[)）]', titre)
     if match:
-        return int(match.group(1))
+        return _tome_val(match.group(1))
     
     # 4. X（完）— tome final avec marqueur de fin
     match = re.search(r'[\s　](\d{1,2})[（(]完[)）]', titre)
