@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List
 
 import config
-from utils import strip_type_suffix
+from utils import strip_type_suffix, normaliser_editeur
 
 logger = config.logger
 
@@ -184,7 +184,7 @@ def charger_corrections(db: 'DatabaseManager' = None):
                 imported_editeurs = 0
                 for serie_jp, editeur in gist_editeurs.items():
                     editeur_actuel = db.get_editeur_officiel(serie_jp)
-                    if editeur_actuel != editeur:
+                    if editeur_actuel != normaliser_editeur(editeur):
                         db.set_editeur_officiel(serie_jp, editeur)
                         imported_editeurs += 1
                 if imported_editeurs > 0:
