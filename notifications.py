@@ -4,6 +4,8 @@
 MangaVega Tracker - Notifications email
 """
 
+import imaplib
+import os
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -13,6 +15,56 @@ from typing import List, Dict
 import config
 
 logger = config.logger
+
+BROUILLONS_DIR = os.path.join(os.path.dirname(__file__), 'brouillons')
+
+
+def _deposer_brouillon_workflow(msg) -> bool:
+    """
+    Tente de déposer le message comme brouillon dans M365 via IMAP APPEND.
+    Retourne True si succès, False sinon.
+    Nécessite IMAP_MOT_DE_PASSE dans .env.
+    """
+    if not config.IMAP_MOT_DE_PASSE:
+        return False
+    try:
+        imap = imaplib.IMAP4_SSL(config.IMAP_SERVER, config.IMAP_PORT)
+        imap.login(config.EMAIL_DESTINATAIRE_WORKFLOW, config.IMAP_MOT_DE_PASSE)
+        # M365 en français → "Brouillons", en anglais → "Drafts"
+        dossier = None
+        for nom in ['Brouillons', 'Drafts']:
+            res = imap.select(f'"{nom}"')
+            if res[0] == 'OK':
+                dossier = nom
+                break
+        if not dossier:
+            # Lister les dossiers pour trouver le bon nom
+            _, dossiers = imap.list()
+            for d in dossiers or []:
+                d_str = d.decode() if isinstance(d, bytes) else d
+                if 'draft' in d_str.lower() or 'brouillon' in d_str.lower():
+                    dossier = d_str.split('"/"')[-1].strip().strip('"')
+                    imap.select(f'"{dossier}"')
+                    break
+        if dossier:
+            imap.append(f'"{dossier}"', r'(\Draft)', None, msg.as_bytes())
+            logger.info(f"📥 Brouillon créé dans M365 ({dossier})")
+            imap.logout()
+            return True
+        imap.logout()
+    except Exception as e:
+        logger.warning(f"⚠️  IMAP M365 échoué ({e}) → fallback .eml")
+    return False
+
+
+def _sauvegarder_eml(msg, nom_fichier: str):
+    """Sauvegarde le message en fichier .eml dans le dossier brouillons/."""
+    os.makedirs(BROUILLONS_DIR, exist_ok=True)
+    chemin = os.path.join(BROUILLONS_DIR, nom_fichier)
+    with open(chemin, 'wb') as f:
+        f.write(msg.as_bytes())
+    logger.info(f"📄 Brouillon sauvegardé : {chemin}")
+    logger.info(f"   → Double-clic pour ouvrir dans Outlook, ou glisser dans Outlook Web")
 
 
 def generer_email_html(nouvelles_publications: List[Dict]) -> str:
@@ -216,71 +268,61 @@ def envoyer_email(destinataire: str, nouvelles_publications: List[Dict]):
     logger.error("❌ Échec d'envoi sur tous les ports\n")
 
 
-def envoyer_email_relances_workflow(destinataire: str, actions_retard: List[Dict]):
-    """Envoie un email de relance pour les étapes du workflow éditorial en retard."""
-    if not actions_retard:
-        return
+def _editeur_romaji(editeur_jp: str) -> str:
+    """Convertit un nom d'éditeur japonais en romaji via utils.EDITEURS_ROMAJI."""
+    if not editeur_jp:
+        return 'Éditeur non renseigné'
+    try:
+        import utils as _u
+        # Correspondance exacte d'abord
+        if editeur_jp in _u.EDITEURS_ROMAJI:
+            return _u.EDITEURS_ROMAJI[editeur_jp]
+        # Correspondance partielle (cherche la clé JP la plus longue contenue dans editeur_jp)
+        match = max(
+            ((jp, rom) for jp, rom in _u.EDITEURS_ROMAJI.items() if jp in editeur_jp),
+            key=lambda x: len(x[0]),
+            default=None
+        )
+        if match:
+            return match[1]
+    except Exception:
+        pass
+    return editeur_jp  # Fallback : garder le nom JP
 
-    VIEWER_URL = "https://dunstancooper.github.io/mangavega-v7/manga_collection_viewer.html"
 
-    lignes_html = ""
-    for a in actions_retard:
-        serie = a.get('serie_jp', '')[:35]
-        tome = a.get('tome', '?')
-        label = a.get('label', a.get('etape', ''))
-        jours = a.get('jours_ecoules', 0)
-        relances = a.get('nb_relances', 0)
-        bg = '#ffeaea' if jours > 10 else '#fff8e1'
-        lignes_html += f'''
-        <tr style="background:{bg};">
-            <td style="padding:8px 12px;border-bottom:1px solid #eee;">{serie}</td>
-            <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center;">T{tome}</td>
-            <td style="padding:8px 12px;border-bottom:1px solid #eee;">{label}</td>
-            <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center;color:#e53e3e;font-weight:600;">{jours}j</td>
-            <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center;color:#999;">{relances}</td>
-        </tr>'''
+def _type_serie(serie_jp: str) -> str:
+    """Retourne ' (LN)' ou ' (Manga)' selon le suffixe dans serie_jp."""
+    if '[LN]' in (serie_jp or ''):
+        return ' (LN)'
+    if '[MANGA]' in (serie_jp or ''):
+        return ' (Manga)'
+    return ''
 
-    html = f'''<!DOCTYPE html>
-<html><head><meta charset="utf-8"></head>
-<body style="font-family:Arial,sans-serif;background:#f5f5f5;margin:0;padding:20px;">
-<table width="600" style="margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
-<tr><td style="background:linear-gradient(135deg,#e53e3e,#c0392b);padding:24px 30px;">
-    <h1 style="color:#fff;margin:0;font-size:1.3rem;">⏰ Relances Suivi Éditorial</h1>
-    <p style="color:rgba(255,255,255,0.85);margin:6px 0 0;font-size:0.9rem;">
-        {len(actions_retard)} action(s) en attente depuis plus de 10 jours
-    </p>
-</td></tr>
-<tr><td style="padding:24px 30px;">
-    <table width="100%" style="border-collapse:collapse;font-size:0.85rem;">
-        <thead>
-            <tr style="background:#f7f7f7;">
-                <th style="padding:8px 12px;text-align:left;border-bottom:2px solid #ddd;">Série</th>
-                <th style="padding:8px 12px;text-align:center;border-bottom:2px solid #ddd;">Tome</th>
-                <th style="padding:8px 12px;text-align:left;border-bottom:2px solid #ddd;">Étape</th>
-                <th style="padding:8px 12px;text-align:center;border-bottom:2px solid #ddd;">Délai</th>
-                <th style="padding:8px 12px;text-align:center;border-bottom:2px solid #ddd;">Relances</th>
-            </tr>
-        </thead>
-        <tbody>{lignes_html}</tbody>
-    </table>
-    <div style="margin-top:20px;text-align:center;">
-        <a href="{VIEWER_URL}" style="display:inline-block;background:#e53e3e;color:#fff;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:600;">
-            📑 Ouvrir le Suivi éditorial →
-        </a>
-    </div>
-</td></tr>
-</table>
-</body></html>'''
 
-    msg = MIMEMultipart('alternative')
-    msg['Subject'] = f"⏰ Relances workflow éditorial — {len(actions_retard)} action(s) en attente"
-    msg['From'] = config.EMAIL_EXPEDITEUR
-    msg['To'] = destinataire
-    msg.attach(MIMEText(html, 'html'))
+def _grouper_par_editeur(items: List[Dict]) -> dict:
+    """Groupe une liste de volumes/actions par éditeur romaji (ordre alphabétique)."""
+    from collections import defaultdict
+    groupes: dict = defaultdict(list)
+    for item in items:
+        editeur_jp = (item.get('editeur') or '').strip()
+        editeur = _editeur_romaji(editeur_jp)
+        groupes[editeur].append(item)
+    return dict(sorted(groupes.items()))
 
+
+def _format_date_fr(date_iso: str) -> str:
+    """Convertit 2026-03-26 en 26/03/2026."""
+    try:
+        return datetime.strptime(date_iso, '%Y-%m-%d').strftime('%d/%m/%Y')
+    except Exception:
+        return date_iso
+
+
+def _envoyer_smtp(msg, label: str):
+    """Envoi SMTP avec fallback sur les ports configurés."""
     for port in config.SMTP_PORTS:
         try:
-            logger.info(f"📧 Envoi relances workflow via port {port}...")
+            logger.info(f"📧 Envoi {label} via port {port}...")
             if port == 465:
                 server = smtplib.SMTP_SSL(config.SMTP_SERVER, port, timeout=10)
             else:
@@ -290,12 +332,89 @@ def envoyer_email_relances_workflow(destinataire: str, actions_retard: List[Dict
             server.login(config.EMAIL_EXPEDITEUR, config.MOT_DE_PASSE_APP)
             server.send_message(msg)
             server.quit()
-            logger.info("✅ Email relances workflow envoyé!\n")
+            logger.info(f"✅ {label} envoyé!\n")
             return
         except Exception as e:
             logger.warning(f"⚠️  Port {port}: {str(e)[:80]}")
+    logger.error(f"❌ Échec envoi {label} sur tous les ports\n")
 
-    logger.error("❌ Échec envoi relances workflow sur tous les ports\n")
+
+def envoyer_email_workflow(destinataire: str, volumes_nouveaux: List[Dict], actions_retard: List[Dict]):
+    """
+    Email combiné : nouvelles demandes (jour J) + relances (> 10j), groupés par éditeur.
+    Chaque ligne indique le contexte : nouveau ou dernière relance.
+    """
+    if not volumes_nouveaux and not actions_retard:
+        return
+
+    # Construire la liste unifiée avec marqueur de type
+    items: List[Dict] = []
+    for v in volumes_nouveaux:
+        items.append({**v, '_type': 'nouveau'})
+    for a in actions_retard:
+        items.append({**a, '_type': 'relance'})
+
+    groupes = _grouper_par_editeur(items)
+
+    nb_n = len(volumes_nouveaux)
+    nb_r = len(actions_retard)
+
+    lignes = ["Bonjour Nicolas,", ""]
+    if nb_n and nb_r:
+        lignes.append("Voici les nouvelles demandes et les relances en cours :")
+    elif nb_n:
+        lignes.append("Il faudrait faire les offres pour :")
+    else:
+        lignes.append("As-tu pu envoyer les offres pour :")
+    lignes.append("")
+
+    for editeur, group_items in groupes.items():
+        lignes.append(f"{editeur} :")
+        for item in group_items:
+            titre = item.get('nom_fr') or item.get('serie_jp', '')
+            type_s = _type_serie(item.get('serie_jp', ''))
+            tome = item.get('tome', '?')
+            date_sortie = _format_date_fr(item.get('date_sortie_jp') or item.get('date_declenchement', ''))
+            if item['_type'] == 'nouveau':
+                contexte = "il vient de sortir et s'ajoute à la liste"
+            else:
+                date_contact = _format_date_fr(item.get('date_declenchement', ''))
+                contexte = f"je t'avais fait un mail sur ce tome le {date_contact}"
+            lignes.append(f"- {titre}{type_s} T{tome}, sortie le {date_sortie} — {contexte}")
+        lignes.append("")
+
+    lignes += ["Merci,", "", "Eloi"]
+
+    if nb_n and nb_r:
+        sujet = f"Offres éditoriales — {datetime.now().strftime('%d/%m/%Y')}"
+    elif nb_n:
+        sujet = f"Offres à demander — {datetime.now().strftime('%d/%m/%Y')}"
+    else:
+        sujet = f"Relance offres — {datetime.now().strftime('%d/%m/%Y')}"
+
+    date_fichier = datetime.now().strftime('%Y-%m-%d_%Hh%M')
+    nom_fichier = f"workflow_nwk_{date_fichier}.eml"
+
+    msg = MIMEText("\n".join(lignes), 'plain', 'utf-8')
+    msg['Subject'] = sujet
+    msg['From'] = config.EMAIL_DESTINATAIRE_WORKFLOW
+    msg['To'] = destinataire
+
+    # 1. Essayer de créer un brouillon IMAP dans M365
+    if _deposer_brouillon_workflow(msg):
+        return
+    # 2. Fallback : sauvegarder en .eml
+    _sauvegarder_eml(msg, nom_fichier)
+
+
+def envoyer_email_relances_workflow(destinataire: str, actions_retard: List[Dict]):
+    """Conservé pour compatibilité — délègue à envoyer_email_workflow."""
+    envoyer_email_workflow(destinataire, [], actions_retard)
+
+
+def envoyer_email_debut_workflow(destinataire: str, volumes: List[Dict]):
+    """Conservé pour compatibilité — délègue à envoyer_email_workflow."""
+    envoyer_email_workflow(destinataire, volumes, [])
 
 
 def envoyer_email_fin_pause(destinataire: str, pauses_expirees: List[Dict]):
@@ -380,89 +499,27 @@ def envoyer_email_fin_pause(destinataire: str, pauses_expirees: List[Dict]):
 def envoyer_email_debut_workflow(destinataire: str, volumes: List[Dict]):
     """
     Envoie un email le jour de sortie JP d'un tome :
-    "Il est temps de demander à NWK de faire une offre pour ce titre !"
+    demande à NWK de faire les offres, groupé par éditeur.
     """
     if not volumes:
         return
 
-    VIEWER_URL = "https://dunstancooper.github.io/mangavega-v7/manga_collection_viewer.html"
+    groupes = _grouper_par_editeur(volumes)
 
-    lignes_html = ""
-    for v in volumes:
-        serie = (v.get('nom_fr') or v.get('serie_jp', ''))[:40]
-        tome = v.get('tome', '?')
-        date_jp = v.get('date_sortie_jp', '')
-        lignes_html += f'''
-        <tr>
-            <td style="padding:10px 14px;border-bottom:1px solid #eee;font-weight:600;">{serie}</td>
-            <td style="padding:10px 14px;border-bottom:1px solid #eee;text-align:center;">T{tome}</td>
-            <td style="padding:10px 14px;border-bottom:1px solid #eee;text-align:center;color:#555;">{date_jp}</td>
-        </tr>'''
+    lignes = ["Bonjour Nicolas,", "", "Il faudrait faire les offres pour :", ""]
+    for editeur, vols in groupes.items():
+        lignes.append(f"{editeur} :")
+        for v in vols:
+            titre = v.get('nom_fr') or v.get('serie_jp', '')
+            type_s = _type_serie(v.get('serie_jp', ''))
+            tome = v.get('tome', '?')
+            date_jp = _format_date_fr(v.get('date_sortie_jp', ''))
+            lignes.append(f"- {titre}{type_s} T{tome}, sortie le {date_jp}")
+        lignes.append("")
+    lignes += ["Merci,", "", "Eloi"]
 
-    nb = len(volumes)
-    titre_email = f"📚 {nb} tome(s) sorti(s) au Japon — Il est temps de contacter NWK"
-
-    html = f'''<!DOCTYPE html>
-<html><head><meta charset="utf-8"></head>
-<body style="font-family:Arial,sans-serif;background:#f5f5f5;margin:0;padding:20px;">
-<table width="620" style="margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
-<tr><td style="background:linear-gradient(135deg,#667eea,#764ba2);padding:28px 32px;">
-    <h1 style="color:#fff;margin:0;font-size:1.4rem;">📚 Il est temps de contacter NWK !</h1>
-    <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;font-size:0.95rem;">
-        {nb} tome(s) sorti(s) au Japon aujourd'hui — démarrez les démarches éditoriales
-    </p>
-</td></tr>
-<tr><td style="padding:28px 32px;">
-    <p style="color:#444;margin:0 0 20px;font-size:0.95rem;">
-        Les tomes suivants sont disponibles au Japon. Transmettez à NWK pour qu'il/elle
-        sollicite une offre auprès de l'éditeur japonais.
-    </p>
-    <table width="100%" style="border-collapse:collapse;font-size:0.88rem;">
-        <thead>
-            <tr style="background:#f0f0f8;">
-                <th style="padding:10px 14px;text-align:left;border-bottom:2px solid #ddd;">Titre</th>
-                <th style="padding:10px 14px;text-align:center;border-bottom:2px solid #ddd;">Tome</th>
-                <th style="padding:10px 14px;text-align:center;border-bottom:2px solid #ddd;">Sortie JP</th>
-            </tr>
-        </thead>
-        <tbody>{lignes_html}</tbody>
-    </table>
-    <div style="margin-top:24px;padding:16px;background:#f8f4ff;border-radius:8px;border-left:4px solid #667eea;">
-        <p style="margin:0;font-size:0.88rem;color:#555;">
-            <strong>Action requise :</strong> Contacter NWK pour demander une offre auprès de l'éditeur JP.
-            Une relance automatique sera envoyée si l'étape 1 n'est pas complétée sous 10 jours.
-        </p>
-    </div>
-    <div style="margin-top:20px;text-align:center;">
-        <a href="{VIEWER_URL}#tab-editorial" style="display:inline-block;background:#667eea;color:#fff;padding:11px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:0.9rem;">
-            📑 Ouvrir le Suivi éditorial →
-        </a>
-    </div>
-</td></tr>
-</table>
-</body></html>'''
-
-    msg = MIMEMultipart('alternative')
-    msg['Subject'] = titre_email
+    msg = MIMEText("\n".join(lignes), 'plain', 'utf-8')
+    msg['Subject'] = f"Offres à demander — {datetime.now().strftime('%d/%m/%Y')}"
     msg['From'] = config.EMAIL_EXPEDITEUR
     msg['To'] = destinataire
-    msg.attach(MIMEText(html, 'html'))
-
-    for port in config.SMTP_PORTS:
-        try:
-            logger.info(f"📧 Envoi email début workflow via port {port}...")
-            if port == 465:
-                server = smtplib.SMTP_SSL(config.SMTP_SERVER, port, timeout=10)
-            else:
-                server = smtplib.SMTP(config.SMTP_SERVER, port, timeout=10)
-                if port == 587:
-                    server.starttls()
-            server.login(config.EMAIL_EXPEDITEUR, config.MOT_DE_PASSE_APP)
-            server.send_message(msg)
-            server.quit()
-            logger.info("✅ Email début workflow envoyé!\n")
-            return
-        except Exception as e:
-            logger.warning(f"⚠️  Port {port}: {str(e)[:80]}")
-
-    logger.error("❌ Échec envoi email début workflow sur tous les ports\n")
+    _envoyer_smtp(msg, "email début workflow")

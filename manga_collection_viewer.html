@@ -587,6 +587,8 @@
                             <tr>
                                 <th>Série</th>
                                 <th>Tome</th>
+                                <th>Éditeur</th>
+                                <th>Date JP</th>
                                 <th>Étape courante</th>
                                 <th>Progression</th>
                                 <th>Depuis</th>
@@ -1624,6 +1626,8 @@
                         pause_jusqu_au: pauseJusquAu,
                         relance_date: relanceLocale,
                         date_declenchement: d.workflow.date_declenchement || '',
+                        date_sortie_jp: d.workflow.date_sortie_jp || '',
+                        editeur: d.workflow.editeur || '',
                     });
                 }
             });
@@ -1650,6 +1654,8 @@
                         termine: !etapeCourante,
                         pause_jusqu_au: pauseJusquAu,
                         relance_date: etapeCourante ? (completions[etapeCourante + '__relance'] || null) : null,
+                        date_sortie_jp: '',
+                        editeur: '',
                     });
                 }
             });
@@ -1693,7 +1699,7 @@
             if (!tbody) return;
 
             if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#888;padding:30px;">Aucun workflow éditorial actif</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#888;padding:30px;">Aucun workflow éditorial actif</td></tr>';
                 return;
             }
 
@@ -1732,9 +1738,12 @@
                         actionHtml = btnFait + btnPause + btnRelance;
                     }
                 }
+                const dateSortieDisplay = r.date_sortie_jp ? r.date_sortie_jp.split('-').reverse().join('/') : '—';
                 return `<tr style="background:${rowBg};">
                     <td style="padding:8px 12px;">${esc(r.serie_fr)}</td>
                     <td style="padding:8px 12px;text-align:center;">T${r.tome}</td>
+                    <td style="padding:8px 12px;font-size:0.82rem;color:#aaa;">${esc(r.editeur) || '—'}</td>
+                    <td style="padding:8px 12px;text-align:center;font-size:0.82rem;color:#aaa;">${dateSortieDisplay}</td>
                     <td style="padding:8px 12px;font-size:0.82rem;">${esc(r.label)}</td>
                     <td style="padding:8px 12px;text-align:center;">${pastilles}</td>
                     <td style="padding:8px 12px;text-align:center;${jourstyle}">${r.termine ? '—' : isAttente ? `Sortie ${r.date_declenchement}` : r.jours + 'j'}</td>

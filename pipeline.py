@@ -590,7 +590,12 @@ async def rechercher_manga(session: aiohttp.ClientSession, db: DatabaseManager, 
         
         soup = BeautifulSoup(html, 'lxml')
         items = soup.select('.s-result-item')
-        
+
+        # Détecter la dernière vraie page via la pagination Amazon :
+        # si le bouton "次へ" (s-pagination-next) est absent ou désactivé → dernière page
+        btn_next = soup.select_one('.s-pagination-next')
+        derniere_vraie_page = (btn_next is None) or ('s-pagination-disabled' in btn_next.get('class', []))
+
         if not items:
             # Page vide → exploration terminée
             if page_num > 1:
@@ -713,7 +718,19 @@ async def rechercher_manga(session: aiohttp.ClientSession, db: DatabaseManager, 
         
         logger.info("-" * 80)
         logger.info(f"📊 Page {page_num}: {page_stats['nouveaux']} nouveau(x) | {page_stats['deja_vus']} déjà vu(s)")
-        
+
+        # Arrêt si Amazon signale qu'il n'y a pas de page suivante :
+        # 1. Bouton "次へ" absent ou désactivé (signal officiel Amazon)
+        # 2. Fallback : page creuse < 8 items (Amazon retourne ~16-24 items/page normalement)
+        if derniere_vraie_page:
+            db.set_featured_progression(nom_bdd, page_num, complete=True)
+            logger.info(f"   📄 Page {page_num}: pas de page suivante (pagination) → exploration terminée")
+            break
+        if page_num > 1 and len(items) < 8:
+            db.set_featured_progression(nom_bdd, page_num, complete=True)
+            logger.info(f"   📄 Page {page_num} creuse ({len(items)} items < 8) → exploration terminée")
+            break
+
         # Mettre à jour la progression
         if page_num > page_max_atteinte:
             page_max_atteinte = page_num

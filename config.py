@@ -50,8 +50,12 @@ if os.path.exists(_env_path):
 # EMAIL (lus depuis le .env — ne jamais mettre d'email/mot de passe ici)
 # ============================================================================
 EMAIL_DESTINATAIRE = os.environ.get('EMAIL_DESTINATAIRE', '')
+EMAIL_DESTINATAIRE_WORKFLOW = os.environ.get('EMAIL_DESTINATAIRE_WORKFLOW', '') or os.environ.get('EMAIL_DESTINATAIRE', '')
 EMAIL_EXPEDITEUR = os.environ.get('EMAIL_EXPEDITEUR', '')
 MOT_DE_PASSE_APP = os.environ.get('MOT_DE_PASSE_APP', '')
+IMAP_MOT_DE_PASSE = os.environ.get('IMAP_MOT_DE_PASSE', '')  # M365 pour brouillons IMAP
+IMAP_SERVER = 'outlook.office365.com'
+IMAP_PORT = 993
 SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORTS = [465, 587, 25, 2525]
 

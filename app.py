@@ -422,29 +422,24 @@ async def _main_inner(args):
                     date_declenchement = f"{parts[0]}-{int(parts[1]):02d}-{int(parts[2]):02d}"
                 except Exception:
                     date_declenchement = today_str
-                db.creer_workflow_volume(v['asin'], v['nom'], v.get('tome'), date_declenchement)
-        # 2. Notifier "Il est temps de contacter NWK" le jour de sortie JP (email unique)
+                editeur_vol = db.get_editeur_officiel(v['nom']) or ''
+                db.creer_workflow_volume(v['asin'], v['nom'], v.get('tome'), date_declenchement, editeur_vol)
+        # 2. Notifier le jour de sortie JP (marquer email envoyé avant l'envoi pour éviter les doublons)
         workflows_jour_j = db.get_workflows_a_notifier(today_str)
         if workflows_jour_j:
-            logger.info(f"📬 {len(workflows_jour_j)} tome(s) sorti(s) aujourd'hui — email NWK à envoyer")
+            logger.info(f"📬 {len(workflows_jour_j)} tome(s) sorti(s) aujourd'hui — ajoutés à l'email NWK")
             for w in workflows_jour_j:
                 db.marquer_email_ouverture_envoye(w['asin'])
-            if not args.no_email:
-                try:
-                    notifications.envoyer_email_debut_workflow(config.EMAIL_DESTINATAIRE, workflows_jour_j)
-                except Exception as e:
-                    logger.warning(f"⚠️  Erreur email début workflow: {e}")
-        # 3. Vérifier les actions en retard (toutes séries, pas seulement ce run)
-        # nb_relances est incrémenté uniquement quand l'utilisateur note "relancé" dans le viewer
+        # 3. Vérifier les actions en retard (toutes séries)
         actions_retard = db.get_actions_en_retard(delai_jours=10)
         if actions_retard:
             logger.info(f"⏰ {len(actions_retard)} action(s) suivi éditorial en retard")
-        # 4. Envoyer email relances (sauf --no-email)
-        if actions_retard and not args.no_email:
+        # 4. Email combiné : nouveautés jour J + relances en retard (un seul mail groupé par éditeur)
+        if (workflows_jour_j or actions_retard) and not args.no_email:
             try:
-                notifications.envoyer_email_relances_workflow(config.EMAIL_DESTINATAIRE, actions_retard)
+                notifications.envoyer_email_workflow(config.EMAIL_DESTINATAIRE_WORKFLOW, workflows_jour_j, actions_retard)
             except Exception as e:
-                logger.warning(f"⚠️  Erreur email relances workflow: {e}")
+                logger.warning(f"⚠️  Erreur email workflow éditorial: {e}")
         # 4. Vérifier les pauses expirées → email fin de pause + effacer la pause
         pauses_expirees = db.get_pauses_expirees()
         if pauses_expirees:
@@ -453,7 +448,7 @@ async def _main_inner(args):
                 db.effacer_pause_workflow(p['asin'], p['etape'])
             if not args.no_email:
                 try:
-                    notifications.envoyer_email_fin_pause(config.EMAIL_DESTINATAIRE, pauses_expirees)
+                    notifications.envoyer_email_fin_pause(config.EMAIL_DESTINATAIRE_WORKFLOW, pauses_expirees)
                 except Exception as e:
                     logger.warning(f"⚠️  Erreur email fin de pause: {e}")
 
