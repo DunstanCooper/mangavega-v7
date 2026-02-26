@@ -3,6 +3,7 @@
 """MangaVega Tracker - Gestionnaire de base de données SQLite
 """
 
+import os
 import sqlite3
 from datetime import datetime, date
 from typing import Optional, List, Dict, Set
@@ -12,9 +13,11 @@ from utils import normaliser_editeur
 
 logger = config.logger
 
+_DEFAULT_DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'manga_alerts.db')
+
 
 class Database:
-    def __init__(self, db_path: str):
+    def __init__(self, db_path: str = _DEFAULT_DB_PATH):
         self.db_path = db_path
         self.init_db()
         self.init_table_volumes()
