@@ -232,7 +232,7 @@ def api_backup():
 
 @app.route('/api/test-email', methods=['POST'])
 def api_test_email():
-    """Envoie un email de test avec TOUS les workflows droits_nwk actifs (ignore email_ouverture_envoye)."""
+    """Envoie un email de test : workflows droits_nwk dont la pause est expirée/absente + retards (ignore email_ouverture_envoye)."""
     try:
         sys.path.insert(0, str(BASE_DIR))
         import config
@@ -241,7 +241,7 @@ def api_test_email():
 
         db = DatabaseManager()
 
-        # Tous les workflows droits_nwk en_attente (sans filtrer email_ouverture_envoye ni pause)
+        # Workflows droits_nwk en_attente dont la pause est expirée ou inexistante (ignore email_ouverture_envoye)
         conn = db._get_conn()
         try:
             c = conn.cursor()
@@ -257,6 +257,7 @@ def api_test_email():
                 )
                 LEFT JOIN series_editeurs se ON se.serie_id = s.serie_jp
                 WHERE s.etape = 'droits_nwk' AND s.statut = 'en_attente'
+                AND (s.pause_jusqu_au IS NULL OR date(s.pause_jusqu_au) <= date('now'))
                 ORDER BY COALESCE(s.editeur, se.editeur_officiel) ASC, s.date_declenchement ASC
             """)
             volumes_test = [
@@ -271,7 +272,7 @@ def api_test_email():
         actions_retard = db.get_actions_en_retard(delai_jours=10)
 
         if not volumes_test and not actions_retard:
-            return jsonify({'message': 'Aucun workflow actif — email non envoyé'})
+            return jsonify({'message': 'Aucun workflow éligible aujourd\'hui (pauses actives exclues) — email non envoyé'})
 
         notifications.envoyer_email_workflow(config.EMAIL_DESTINATAIRE_WORKFLOW, volumes_test, actions_retard)
         return jsonify({
