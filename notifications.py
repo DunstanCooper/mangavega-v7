@@ -412,9 +412,6 @@ def envoyer_email_relances_workflow(destinataire: str, actions_retard: List[Dict
     envoyer_email_workflow(destinataire, [], actions_retard)
 
 
-def envoyer_email_debut_workflow(destinataire: str, volumes: List[Dict]):
-    """Conservé pour compatibilité — délègue à envoyer_email_workflow."""
-    envoyer_email_workflow(destinataire, volumes, [])
 
 
 def envoyer_email_fin_pause(destinataire: str, pauses_expirees: List[Dict]):
