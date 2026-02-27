@@ -230,6 +230,61 @@ def api_backup():
         return jsonify({'error': str(e)}), 500
 
 
+@app.route('/api/test-email', methods=['POST'])
+def api_test_email():
+    """Envoie un email de test avec TOUS les workflows droits_nwk actifs (ignore email_ouverture_envoye)."""
+    try:
+        sys.path.insert(0, str(BASE_DIR))
+        import config
+        from database import DatabaseManager
+        import notifications
+
+        db = DatabaseManager()
+
+        # Tous les workflows droits_nwk en_attente (sans filtrer email_ouverture_envoye ni pause)
+        conn = db._get_conn()
+        try:
+            c = conn.cursor()
+            c.execute("""
+                SELECT s.asin, s.serie_jp, s.tome, s.date_declenchement,
+                       COALESCE(t.titre_francais, s.serie_jp) as nom_fr,
+                       COALESCE(s.editeur, se.editeur_officiel, '') as editeur,
+                       COALESCE(s.date_sortie_jp, s.date_declenchement, '') as date_sortie_jp
+                FROM suivi_editorial s
+                LEFT JOIN traductions t ON (
+                    t.titre_japonais = s.serie_jp
+                    OR t.titre_japonais = REPLACE(REPLACE(s.serie_jp, ' [LN]', ''), ' [MANGA]', '')
+                )
+                LEFT JOIN series_editeurs se ON se.serie_id = s.serie_jp
+                WHERE s.etape = 'droits_nwk' AND s.statut = 'en_attente'
+                ORDER BY COALESCE(s.editeur, se.editeur_officiel) ASC, s.date_declenchement ASC
+            """)
+            volumes_test = [
+                {'asin': r[0], 'serie_jp': r[1], 'tome': r[2],
+                 'date_declenchement': r[3], 'nom_fr': r[4],
+                 'editeur': r[5], 'date_sortie_jp': r[6]}
+                for r in c.fetchall()
+            ]
+        finally:
+            conn.close()
+
+        actions_retard = db.get_actions_en_retard(delai_jours=10)
+
+        if not volumes_test and not actions_retard:
+            return jsonify({'message': 'Aucun workflow actif — email non envoyé'})
+
+        notifications.envoyer_email_workflow(config.EMAIL_DESTINATAIRE_WORKFLOW, volumes_test, actions_retard)
+        return jsonify({
+            'success': True,
+            'message': f'Email de test envoyé : {len(volumes_test)} workflow(s), {len(actions_retard)} en retard',
+            'workflows': [f"{v.get('nom_fr', v.get('serie_jp'))} T{v.get('tome', '?')}" for v in volumes_test],
+            'retards': [f"{a.get('nom_fr', a.get('serie_jp'))} T{a.get('tome', '?')} ({a.get('etape')})" for a in actions_retard],
+        })
+    except Exception as e:
+        import traceback
+        return jsonify({'error': str(e), 'detail': traceback.format_exc()}), 500
+
+
 @app.route('/api/log')
 def api_log():
     """Retourne les dernières lignes du log."""

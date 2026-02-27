@@ -649,9 +649,19 @@
                         <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:20px; border:1px solid rgba(254,202,87,0.3);">
                             <div style="font-size:1rem; font-weight:600; color:#feca57; margin-bottom:8px;">💾 Sauvegarder</div>
                             <div style="color:#888; font-size:0.78rem; margin-bottom:15px;">Crée une copie horodatée de la BDD dans le dossier backups/. Garde les 10 dernières.</div>
-                            <button id="btnBackup" onclick="localBackup()" 
+                            <button id="btnBackup" onclick="localBackup()"
                                 style="padding:10px 22px; background:linear-gradient(135deg,#feca57,#f39c12); border:none; border-radius:8px; color:#1a1a2e; font-size:0.9rem; font-weight:600; cursor:pointer; width:100%;">
                                 💾 Backup BDD
+                            </button>
+                        </div>
+
+                        <!-- Test email workflow -->
+                        <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:20px; border:1px solid rgba(231,76,60,0.3);">
+                            <div style="font-size:1rem; font-weight:600; color:#e74c3c; margin-bottom:8px;">📧 Test email NWK</div>
+                            <div style="color:#888; font-size:0.78rem; margin-bottom:15px;">Envoie immédiatement l'email NWK avec tous les workflows <code>droits_nwk</code> actifs + retards, sans modifier les flags en BDD.</div>
+                            <button id="btnTestEmail" onclick="localTestEmail()"
+                                style="padding:10px 22px; background:linear-gradient(135deg,#e74c3c,#c0392b); border:none; border-radius:8px; color:#fff; font-size:0.9rem; font-weight:600; cursor:pointer; width:100%;">
+                                📧 Envoyer email de test
                             </button>
                         </div>
                     </div>
@@ -2581,6 +2591,31 @@
                 showRunnerMsg(`<span style="color:#e74c3c;">❌ Erreur: ${e.message}</span>`);
             } finally {
                 btn.disabled = false; btn.textContent = '💾 Backup BDD';
+            }
+        }
+
+        async function localTestEmail() {
+            if (!localServerOnline) { showToast('Serveur local hors ligne', 'error'); return; }
+            if (!isAdmin) { showToast('Mode admin requis', 'error'); return; }
+            const btn = $('btnTestEmail');
+            btn.disabled = true; btn.textContent = '⏳ Envoi en cours...';
+            try {
+                const resp = await fetch(`${LOCAL_API}/test-email`, { method: 'POST' });
+                const data = await resp.json();
+                if (data.success) {
+                    const wf = (data.workflows || []).map(s => `<li>${esc(s)}</li>`).join('');
+                    const rt = (data.retards || []).map(s => `<li style="color:#e74c3c;">${esc(s)}</li>`).join('');
+                    showRunnerMsg(`<span style="color:#2ecc71;">📧 ${esc(data.message)}</span>
+                        ${wf ? `<ul style="margin:8px 0 0 15px;font-size:0.82rem;">${wf}</ul>` : ''}
+                        ${rt ? `<ul style="margin:4px 0 0 15px;font-size:0.82rem;">${rt}</ul>` : ''}`);
+                    showToast('Email de test envoyé ✓', 'success');
+                } else {
+                    showRunnerMsg(`<span style="color:#aaa;">ℹ️ ${esc(data.message || data.error)}</span>`);
+                }
+            } catch (e) {
+                showRunnerMsg(`<span style="color:#e74c3c;">❌ Erreur: ${esc(e.message)}</span>`);
+            } finally {
+                btn.disabled = false; btn.textContent = '📧 Envoyer email de test';
             }
         }
 
