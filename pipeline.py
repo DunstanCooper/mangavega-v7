@@ -31,6 +31,21 @@ from scraper import (
 logger = config.logger
 
 
+def _normaliser_date(date_str: str) -> str:
+    """Convertit une date en format canonique YYYY/MM/DD.
+    Accepte YYYY/M/D (japonais) et 'Month DD, YYYY' (anglais Amazon)."""
+    if not date_str or date_str == 'Date inconnue':
+        return date_str
+    clean = date_str.replace('\u200e', '').strip()
+    try:
+        return datetime.strptime(clean, "%Y/%m/%d").strftime("%Y/%m/%d")
+    except ValueError:
+        try:
+            return datetime.strptime(clean, "%B %d, %Y").strftime("%Y/%m/%d")
+        except ValueError:
+            return date_str
+
+
 async def rechercher_volumes_via_bulk_etendu(session: aiohttp.ClientSession, db: 'DatabaseManager',
                                               nom_serie: str, volumes_connus: List[Dict],
                                               asins_connus: Set[str], asins_rejetes: Set[str],
@@ -169,7 +184,7 @@ async def rechercher_volumes_via_bulk_etendu(session: aiohttp.ClientSession, db:
                 nouveaux_volumes.append({
                     'nom': nom_serie,
                     'tome': tome,
-                    'date': infos.get('date', ''),
+                    'date': _normaliser_date(infos.get('date', '')),
                     'asin': asin_vol,
                     'url': vol_url,
                     'editeur': infos.get('editeur', 'Inconnu'),
@@ -952,7 +967,7 @@ async def rechercher_manga(session: aiohttp.ClientSession, db: DatabaseManager, 
             elif asin in featured_metadata:
                 feat = featured_metadata[asin]
                 feat_tome = feat.get('tome', 'N/A')
-                feat_date = feat.get('date', 'Date inconnue')
+                feat_date = _normaliser_date(feat.get('date', 'Date inconnue'))
                 feat_editeur = feat.get('editeur', 'Inconnu')
                 feat_titre = feat.get('titre', '')
                 logger.info(f"      📋 Utilisation des infos Featured: T{feat_tome}, {feat_date}, {feat_editeur}")
@@ -1105,19 +1120,8 @@ async def rechercher_manga(session: aiohttp.ClientSession, db: DatabaseManager, 
             continue
         
         try:
-            date_clean = infos['date'].replace('\u200e', '').strip()
-            # Format japonais standard : YYYY/M/D
-            try:
-                date_parsee = datetime.strptime(date_clean, "%Y/%m/%d")
-            except ValueError:
-                # Format anglais fallback : "January 9, 2026" (si page servie en EN)
-                try:
-                    date_parsee = datetime.strptime(date_clean, "%B %d, %Y")
-                except ValueError:
-                    raise  # Remonter pour le except ValueError extérieur
-
-            # Normaliser au format canonique YYYY/MM/DD (même si Amazon retourne du format anglais)
-            date_clean = date_parsee.strftime("%Y/%m/%d")
+            date_clean = _normaliser_date(infos['date'])
+            date_parsee = datetime.strptime(date_clean, "%Y/%m/%d")  # Lève ValueError si non parseable
             infos['date'] = date_clean
             papier_info['date'] = date_clean  # Mettre à jour papier_info (construit avant normalisation)
             # Mettre à jour la table volumes avec la date normalisée
