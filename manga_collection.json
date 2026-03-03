@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-03T15:43:25.351823",
+  "generated_at": "2026-03-03T16:12:48.846947",
   "version": "7.0.0",
   "total_volumes": 338,
   "total_series": 54,
@@ -1184,7 +1184,7 @@
           "droits_nwk"
         ],
         "pause_jusqu_au": null,
-        "date_sortie_jp": "March 26, 2026",
+        "date_sortie_jp": "2026/03/26",
         "editeur": "Kadokawa"
       }
     },
