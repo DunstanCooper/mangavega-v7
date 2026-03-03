@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-03T16:12:48.846947",
+  "generated_at": "2026-03-03T16:27:21.739024",
   "version": "7.0.0",
   "total_volumes": 338,
   "total_series": 54,
@@ -1163,14 +1163,13 @@
     {
       "nom": "氷菓 [MANGA]",
       "nom_fr": "Hyouka",
-      "tome": "17",
-      "date": "March 26, 2026",
+      "tome": 17,
+      "date": "2026/3/26",
       "editeur": "Kadokawa",
       "url": "https://www.amazon.co.jp/dp/4041172594",
       "asin": "4041172594",
-      "couverture": "",
+      "couverture": "https://m.media-amazon.com/images/I/410cxRhNf8L._SY445_SX342_ML2_.jpg",
       "est_nouveaute": false,
-      "deja_alerte": true,
       "serie_recherchee": "氷菓 [MANGA]",
       "date_detection": "2026-03-03",
       "statut": "valide",
@@ -1184,7 +1183,7 @@
           "droits_nwk"
         ],
         "pause_jusqu_au": null,
-        "date_sortie_jp": "2026/03/26",
+        "date_sortie_jp": "2026/3/26",
         "editeur": "Kadokawa"
       }
     },
