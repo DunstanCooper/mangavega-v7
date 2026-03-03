@@ -656,7 +656,7 @@ def git_push():
     Utilisé en fin de run pour sauvegarder les changements.
     """
     try:
-        files_to_push = ['manga_alerts.db', 'mangas_liste.json']
+        files_to_push = ['manga_alerts.db', 'mangas_liste.json', 'manga_collection.json']
         
         # Vérifier qu'on est dans un repo git
         result = subprocess.run(['git', 'status', '--porcelain'], capture_output=True, text=True, timeout=10)
