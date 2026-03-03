@@ -1119,6 +1119,14 @@ async def rechercher_manga(session: aiohttp.ClientSession, db: DatabaseManager, 
             # Normaliser au format canonique YYYY/MM/DD (même si Amazon retourne du format anglais)
             date_clean = date_parsee.strftime("%Y/%m/%d")
             infos['date'] = date_clean
+            papier_info['date'] = date_clean  # Mettre à jour papier_info (construit avant normalisation)
+            # Mettre à jour la table volumes avec la date normalisée
+            db.sauvegarder_volume(
+                serie_jp=nom, serie_fr=titre_fr_serie or config.TRADUCTIONS_FR.get(nom),
+                tome=tome_int, asin=asin, url=url_norm,
+                date_sortie_jp=date_clean, titre_volume=infos.get('titre', '')[:200],
+                editeur=editeur_volume
+            )
 
             # Précommandes : changement de date ?
             if force_refetch and date_alerte_enregistree:
