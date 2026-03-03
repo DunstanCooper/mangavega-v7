@@ -1115,7 +1115,11 @@ async def rechercher_manga(session: aiohttp.ClientSession, db: DatabaseManager, 
                     date_parsee = datetime.strptime(date_clean, "%B %d, %Y")
                 except ValueError:
                     raise  # Remonter pour le except ValueError extérieur
-            
+
+            # Normaliser au format canonique YYYY/MM/DD (même si Amazon retourne du format anglais)
+            date_clean = date_parsee.strftime("%Y/%m/%d")
+            infos['date'] = date_clean
+
             # Précommandes : changement de date ?
             if force_refetch and date_alerte_enregistree:
                 nouvelle_date = date_clean

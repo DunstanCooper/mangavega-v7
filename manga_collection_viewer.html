@@ -139,6 +139,29 @@
         .action-btn.workflow { background: rgba(52, 152, 219, 0.2); color: #3498db; }
         .action-btn.workflow:hover { background: rgba(52, 152, 219, 0.4); }
         .action-btn.workflow-done { background: rgba(46, 204, 113, 0.15); color: #2ecc71; cursor: default; }
+        .workflow-active-badge { display:inline-block; padding:3px 8px; background:rgba(46,204,113,0.2); color:#2ecc71; border:1px solid rgba(46,204,113,0.4); border-radius:12px; font-size:0.75rem; font-weight:600; white-space:nowrap; }
+
+        /* Contraintes colonnes onglet Volumes */
+        #tab-volumes .table-container table { table-layout: fixed; }
+        #tab-volumes .table-container th:nth-child(2),
+        #tab-volumes .table-container td:nth-child(2) { width: 32%; max-width: 32%; }
+        #tab-volumes .table-container th:nth-child(4),
+        #tab-volumes .table-container td:nth-child(4) { width: 90px; white-space: nowrap; }
+
+        /* Toggle vue Séries */
+        .view-toggle-btn { padding:5px 12px; border-radius:6px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:#aaa; cursor:pointer; font-size:0.8rem; transition:all 0.15s; }
+        .view-toggle-btn.active { background:rgba(72,219,251,0.15); color:#48dbfb; border-color:rgba(72,219,251,0.4); }
+        .view-toggle-btn:hover:not(.active) { background:rgba(255,255,255,0.1); color:#fff; }
+
+        /* Table mode Séries (Notion-style) */
+        #seriesTableView { display:none; }
+        #seriesTableView table { width:100%; border-collapse:collapse; }
+        #seriesTableView th { padding:8px 12px; text-align:left; font-size:0.78rem; font-weight:500; color:#888; border-bottom:1px solid rgba(255,255,255,0.08); cursor:pointer; white-space:nowrap; user-select:none; }
+        #seriesTableView th:hover { color:#ddd; }
+        #seriesTableView td { padding:7px 12px; font-size:0.83rem; border-bottom:1px solid rgba(255,255,255,0.04); vertical-align:middle; }
+        #seriesTableView tr:hover td { background:rgba(255,255,255,0.03); }
+        #seriesTableView .serie-title-cell strong { color:#eee; }
+        #seriesTableView .serie-title-cell .jp { font-size:0.7rem; color:#555; margin-top:1px; }
 
         .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
         .status-dot.valide { background: #2ecc71; }
@@ -515,6 +538,12 @@
             <!-- Tab: Series -->
             <div class="tab-content" id="tab-series">
 
+                <!-- Toggle vue tuiles / table -->
+                <div style="display:flex;justify-content:flex-end;margin-bottom:12px;gap:6px;">
+                    <button id="seriesViewTiles" onclick="setSeriesView('tiles')" class="view-toggle-btn active">⊞ Tuiles</button>
+                    <button id="seriesViewTable" onclick="setSeriesView('table')" class="view-toggle-btn">☰ Table</button>
+                </div>
+
                 <!-- Search + Sort -->
                 <div class="filters" style="margin-bottom: 15px;">
                     <div class="filters-grid" style="grid-template-columns: 1fr auto auto;">
@@ -549,6 +578,24 @@
 
                 <!-- Series Grid -->
                 <div class="series-grid" id="seriesGrid"></div>
+
+                <!-- Series Table (mode Notion) -->
+                <div id="seriesTableView">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th onclick="sortSeriesTable('name')">Titre ↕</th>
+                                <th onclick="sortSeriesTable('type')">Type</th>
+                                <th onclick="sortSeriesTable('tomes')">Tomes ↕</th>
+                                <th onclick="sortSeriesTable('dernier')">Dernier</th>
+                                <th onclick="sortSeriesTable('date')">Date sortie ↕</th>
+                                <th>Éditeur</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="seriesTableBody"></tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Tab: Récapitulatif -->
@@ -585,13 +632,13 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Série</th>
+                                <th onclick="sortEditorial('serie')" style="cursor:pointer;" id="editorialSortSerie">Série ↕</th>
                                 <th>Tome</th>
                                 <th>Éditeur</th>
                                 <th id="editorialSortDateJP" onclick="sortEditorial('date_sortie_jp')" style="cursor:pointer;" title="Trier par date de sortie JP">Date JP ↕</th>
-                                <th>Étape courante</th>
+                                <th onclick="sortEditorial('etape')" style="cursor:pointer;" id="editorialSortEtape">Étape courante ↕</th>
                                 <th>Progression</th>
-                                <th>Depuis</th>
+                                <th onclick="sortEditorial('jours')" style="cursor:pointer;" id="editorialSortJours">Depuis ↕</th>
                                 <th>Relances</th>
                                 <th>Action</th>
                             </tr>
@@ -1756,15 +1803,31 @@
                     const cmp = da < db2 ? -1 : da > db2 ? 1 : 0;
                     return editorialSortOrder === 'asc' ? cmp : -cmp;
                 }
+                if (editorialSortField === 'serie') {
+                    const cmp = (a.serie_fr || a.serie_jp || '').localeCompare(b.serie_fr || b.serie_jp || '');
+                    return editorialSortOrder === 'asc' ? cmp : -cmp;
+                }
+                if (editorialSortField === 'etape') {
+                    const cmp = (a.label || '').localeCompare(b.label || '');
+                    return editorialSortOrder === 'asc' ? cmp : -cmp;
+                }
+                if (editorialSortField === 'jours') {
+                    const cmp = a.jours - b.jours;
+                    return editorialSortOrder === 'asc' ? cmp : -cmp;
+                }
+                // Défaut : terminés en bas, puis par jours
                 if (a.termine !== b.termine) return a.termine ? 1 : -1;
                 return b.jours - a.jours;
             });
-            // Mettre à jour l'indicateur de tri dans le header
-            const thDateJP = document.getElementById('editorialSortDateJP');
-            if (thDateJP) {
-                const arrow = editorialSortField === 'date_sortie_jp' ? (editorialSortOrder === 'asc' ? ' ↑' : ' ↓') : ' ↕';
-                thDateJP.textContent = 'Date JP' + arrow;
-            }
+            // Mettre à jour les indicateurs de tri sur tous les headers triables
+            ['editorialSortSerie', 'editorialSortDateJP', 'editorialSortEtape', 'editorialSortJours'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const field = { editorialSortSerie: 'serie', editorialSortDateJP: 'date_sortie_jp', editorialSortEtape: 'etape', editorialSortJours: 'jours' }[id];
+                const label = { editorialSortSerie: 'Série', editorialSortDateJP: 'Date JP', editorialSortEtape: 'Étape courante', editorialSortJours: 'Depuis' }[id];
+                const arrow = editorialSortField === field ? (editorialSortOrder === 'asc' ? ' ↑' : ' ↓') : ' ↕';
+                el.textContent = label + arrow;
+            });
 
             const tbody = $('editorialTableBody');
             if (!tbody) return;
@@ -1998,7 +2061,7 @@
                     <td><span class="status-dot ${s}"></span></td>
                     <td>${serieDisplay}</td>
                     <td><span class="tome-badge editable" onclick="editTome('${safeAsin}')" title="Cliquer pour modifier">${d.tome}</span></td>
-                    <td>${esc(d.date || '-')}</td>
+                    <td>${formatDateJP(d.date) || '-'}</td>
                     <td><span class="${pubBadgeClass}" title="${pubBadgeTitle}">${esc(d.editeur)}</span></td>
                     <td><span class="asin-code">${esc(d.asin)}</span></td>
                     <td>${d.url ? `<a href="${d.url}" target="_blank">🔗</a>` : '-'}</td>
@@ -2009,9 +2072,9 @@
                                <button class="action-btn reject" onclick="setStatut('${safeAsin}','rejete')" title="Rejeter">✗</button>`}
                         ${(() => {
                             const hasWorkflow = d.workflow || suiviEditorial[d.asin] !== undefined;
-                            if (hasWorkflow) return `<button class="action-btn workflow-done" title="Workflow actif" disabled>📑</button>`;
+                            if (hasWorkflow) return `<span class="workflow-active-badge">📑 Suivi</span>`;
                             if (!isAdmin) return '';
-                            return `<button class="action-btn workflow" onclick="initWorkflow('${safeAsin}')" title="Créer un workflow éditorial">📑</button>`;
+                            return `<button class="action-btn workflow" onclick="initWorkflow('${safeAsin}')" title="Ajouter au suivi éditorial" style="width:auto;padding:0 8px;font-size:0.75rem;">+ Suivre</button>`;
                         })()}
                     </div></td>
                 </tr>`;
@@ -2019,6 +2082,112 @@
 
             renderPagination();
         }
+
+        // ============================================
+        // ONGLET SERIES — MODE TABLE
+        // ============================================
+        let seriesView = 'tiles';
+        let seriesTableSortKey = 'name';
+        let seriesTableSortAsc = true;
+
+        function setSeriesView(mode) {
+            seriesView = mode;
+            const grid = $('seriesGrid');
+            const tbl = $('seriesTableView');
+            const btnTiles = $('seriesViewTiles');
+            const btnTable = $('seriesViewTable');
+            if (mode === 'tiles') {
+                if (grid) grid.style.display = '';
+                if (tbl) tbl.style.display = 'none';
+                if (btnTiles) { btnTiles.classList.add('active'); }
+                if (btnTable) { btnTable.classList.remove('active'); }
+            } else {
+                if (grid) grid.style.display = 'none';
+                if (tbl) tbl.style.display = '';
+                if (btnTiles) { btnTiles.classList.remove('active'); }
+                if (btnTable) { btnTable.classList.add('active'); }
+                renderSeriesTable();
+            }
+        }
+        window.setSeriesView = setSeriesView;
+
+        function sortSeriesTable(key) {
+            if (seriesTableSortKey === key) seriesTableSortAsc = !seriesTableSortAsc;
+            else { seriesTableSortKey = key; seriesTableSortAsc = true; }
+            renderSeriesTable();
+        }
+        window.sortSeriesTable = sortSeriesTable;
+
+        function renderSeriesTable() {
+            const tbody = $('seriesTableBody');
+            if (!tbody) return;
+            const search = ($('seriesSearchInput')?.value || '').toLowerCase();
+            const filterValue = $('seriesFilterSelect')?.value || 'all';
+
+            let seriesList = Object.values(seriesData);
+            if (search) seriesList = seriesList.filter(s =>
+                (s.serie_jp || '').toLowerCase().includes(search) || (s.serie_fr || '').toLowerCase().includes(search));
+            if (filterValue === 'missing') seriesList = seriesList.filter(s => s.hasMissingTomes);
+            else if (filterValue === 'complete') seriesList = seriesList.filter(s => !s.hasMissingTomes);
+
+            seriesList = seriesList.map(s => {
+                const lastTome = parseInt(s.lastTome) || 0;
+                const nbTomes = s.nbTomes || 0;
+                return { ...s, hasMissingTomes: lastTome > 0 && nbTomes > 0 && nbTomes !== lastTome, missingCount: Math.max(0, lastTome - nbTomes) };
+            });
+
+            seriesList.sort((a, b) => {
+                let va, vb;
+                if (seriesTableSortKey === 'name') { va = a.serie_fr || a.serie_jp || ''; vb = b.serie_fr || b.serie_jp || ''; }
+                else if (seriesTableSortKey === 'type') { va = a.volumeType || ''; vb = b.volumeType || ''; }
+                else if (seriesTableSortKey === 'tomes') { va = a.nbTomes || 0; vb = b.nbTomes || 0; }
+                else if (seriesTableSortKey === 'dernier') { va = parseInt(a.lastTome) || 0; vb = parseInt(b.lastTome) || 0; }
+                else if (seriesTableSortKey === 'date') { va = a.lastDate || ''; vb = b.lastDate || ''; }
+                else { va = ''; vb = ''; }
+                if (typeof va === 'string') { const c = va.localeCompare(vb); return seriesTableSortAsc ? c : -c; }
+                return seriesTableSortAsc ? va - vb : vb - va;
+            });
+
+            tbody.innerHTML = seriesList.map(s => {
+                const name = s.serie_fr || s.serie_jp || '';
+                const typeBadge = s.volumeType === 'LN'
+                    ? `<span class="type-badge ln" style="font-size:0.7rem;">📖 LN</span>`
+                    : `<span class="type-badge manga" style="font-size:0.7rem;">📕 Manga</span>`;
+                const editeurOfficiel = editeursOfficiels[s.serieKey || s.serie_jp] || editeursOfficiels[s.serie_jp];
+                const editeurDisplay = editeurOfficiel
+                    ? `<span style="color:#2ecc71;font-size:0.8rem;">✓ ${esc(editeurOfficiel)}</span>`
+                    : `<span style="color:#888;font-size:0.8rem;">${esc(s.editeur || '—')}</span>`;
+                const missingBadge = s.hasMissingTomes
+                    ? `<span style="color:#e74c3c;font-size:0.7rem;margin-left:6px;">⚠️ ${s.missingCount} manquant(s)</span>` : '';
+                const safeKey = (s.serieKey || s.serie_jp || '').replace(/'/g, "\\'");
+                return `<tr>
+                    <td class="serie-title-cell" onclick="openSeriesDetail('${safeKey}')" style="cursor:pointer;max-width:260px;">
+                        <strong>${esc(name)}</strong>
+                        ${s.serie_fr ? `<div class="jp">${esc(s.serie_jp || '')}</div>` : ''}
+                        ${missingBadge}
+                    </td>
+                    <td>${typeBadge}</td>
+                    <td style="text-align:center;">${s.nbTomes || 0}</td>
+                    <td style="text-align:center;">${s.lastTome || '—'}</td>
+                    <td style="white-space:nowrap;">${formatDateJP(s.lastDate) || '—'}</td>
+                    <td>${editeurDisplay}</td>
+                    <td onclick="event.stopPropagation();" style="white-space:nowrap;">
+                        <button class="btn btn-secondary" style="padding:2px 7px;font-size:0.72rem;" onclick="editSeriesTitle('${safeKey}')" title="Modifier titre FR">✏️</button>
+                        <button class="btn btn-primary" style="padding:2px 7px;font-size:0.72rem;" onclick="addUrlToSeries('${safeKey}')" title="Ajouter URL">🔗+</button>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            // Mettre à jour les flèches de tri dans les headers
+            const keys = ['name', 'type', 'tomes', 'dernier', 'date'];
+            const labels = ['Titre', 'Type', 'Tomes', 'Dernier', 'Date sortie'];
+            document.querySelectorAll('#seriesTableView th').forEach((th, i) => {
+                if (i >= keys.length) return;
+                const arrow = seriesTableSortKey === keys[i] ? (seriesTableSortAsc ? ' ↑' : ' ↓') : ' ↕';
+                th.textContent = labels[i] + arrow;
+            });
+        }
+        window.renderSeriesTable = renderSeriesTable;
 
         function renderSeriesCards() {
             const search = ($('seriesSearchInput')?.value || '').toLowerCase();
@@ -2218,6 +2387,9 @@
             if (seriesList.length === 0) {
                 grid.innerHTML = '<p style="color:#888;text-align:center;padding:40px;">Aucune série trouvée</p>';
             }
+
+            // Si mode table actif, mettre à jour la table aussi
+            if (seriesView === 'table') renderSeriesTable();
         }
 
         // ============================================
