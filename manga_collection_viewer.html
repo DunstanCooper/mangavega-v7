@@ -1391,7 +1391,8 @@
                             serie_recherchee: d.serie_recherchee || '',  // Série qui a trouvé ce volume
                             source: d.source || '',  // Source de la découverte
                             date_detection: d.date_detection || '',  // Date de première détection
-                            titre_volume: d.titre_volume || d.titre || ''  // Titre complet du volume
+                            titre_volume: d.titre_volume || d.titre || '',  // Titre complet du volume
+                            workflow: d.workflow || null
                         };
                         volumeStatuts[asin] = item.originalStatut;
                         
