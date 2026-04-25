@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-24T11:02:21.284982",
+  "generated_at": "2026-04-25T11:02:37.917630",
   "version": "7.0.0",
   "total_volumes": 349,
   "total_series": 54,
@@ -21,7 +21,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "リビルドワールド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -36,7 +36,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "リビルドワールド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -51,7 +51,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "リビルドワールド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -66,7 +66,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "リビルドワールド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -81,7 +81,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "リビルドワールド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -96,7 +96,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "リビルドワールド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -111,7 +111,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "リビルドワールド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -126,7 +126,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "リビルドワールド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -141,7 +141,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "リビルドワールド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -156,7 +156,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "リビルドワールド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -171,7 +171,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "リビルドワールド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -186,7 +186,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "リビルドワールド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -201,7 +201,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "リビルドワールド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -216,7 +216,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "リビルドワールド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -231,13 +231,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "リビルドワールド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "mail_nwk",
         "label": "Mail NWK → offre éditeur JP",
         "date_declenchement": "2026-02-26",
-        "jours_ecoules": 57,
+        "jours_ecoules": 58,
         "nb_relances": 0,
         "etapes_faites": [
           "droits_nwk"
@@ -259,7 +259,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -274,7 +274,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -289,7 +289,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -304,7 +304,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -319,7 +319,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -334,7 +334,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -349,7 +349,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -364,7 +364,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -379,7 +379,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -394,7 +394,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -409,7 +409,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -424,7 +424,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -439,7 +439,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -454,7 +454,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -469,7 +469,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -484,7 +484,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -499,7 +499,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -514,7 +514,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -529,7 +529,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -544,7 +544,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -559,7 +559,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -574,13 +574,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "機動戦士Ζガンダム Define [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "mail_nwk",
         "label": "Mail NWK → offre éditeur JP",
         "date_declenchement": "2026-02-26",
-        "jours_ecoules": 57,
+        "jours_ecoules": 58,
         "nb_relances": 0,
         "etapes_faites": [
           "droits_nwk"
@@ -602,7 +602,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -617,7 +617,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -632,7 +632,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -647,7 +647,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -662,7 +662,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -677,7 +677,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -692,7 +692,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -707,7 +707,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -722,7 +722,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -737,7 +737,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -752,7 +752,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -767,7 +767,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -782,7 +782,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -797,7 +797,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -812,7 +812,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -827,7 +827,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -842,7 +842,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -857,7 +857,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -872,7 +872,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -887,7 +887,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -902,7 +902,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -917,7 +917,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "満州アヘンスクワッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -932,7 +932,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "氷菓 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -947,7 +947,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "氷菓 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -962,7 +962,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "氷菓 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -977,7 +977,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "氷菓 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -992,7 +992,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "氷菓 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1007,7 +1007,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "氷菓 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1022,7 +1022,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "氷菓 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1037,7 +1037,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "氷菓 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1052,7 +1052,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "氷菓 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1067,7 +1067,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "氷菓 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1082,7 +1082,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "氷菓 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1097,7 +1097,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "氷菓 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1112,7 +1112,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "氷菓 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1127,7 +1127,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "氷菓 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1142,7 +1142,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "氷菓 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1157,7 +1157,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "氷菓 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1172,13 +1172,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "氷菓 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "mail_nwk",
         "label": "Mail NWK → offre éditeur JP",
         "date_declenchement": "2026-02-26",
-        "jours_ecoules": 57,
+        "jours_ecoules": 58,
         "nb_relances": 0,
         "etapes_faites": [
           "droits_nwk"
@@ -1200,7 +1200,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "時々ボソッとロシア語でデレる隣のアーリャさん (角川スニーカー文庫) [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1215,7 +1215,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "時々ボソッとロシア語でデレる隣のアーリャさん (角川スニーカー文庫) [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1230,7 +1230,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "時々ボソッとロシア語でデレる隣のアーリャさん (角川スニーカー文庫) [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1245,7 +1245,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "時々ボソッとロシア語でデレる隣のアーリャさん (角川スニーカー文庫) [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1260,7 +1260,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "時々ボソッとロシア語でデレる隣のアーリャさん (角川スニーカー文庫) [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1275,7 +1275,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "時々ボソッとロシア語でデレる隣のアーリャさん (角川スニーカー文庫) [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1290,7 +1290,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "時々ボソッとロシア語でデレる隣のアーリャさん (角川スニーカー文庫) [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1305,7 +1305,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "時々ボソッとロシア語でデレる隣のアーリャさん (角川スニーカー文庫) [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1320,7 +1320,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "時々ボソッとロシア語でデレる隣のアーリャさん (角川スニーカー文庫) [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1335,7 +1335,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "時々ボソッとロシア語でデレる隣のアーリャさん (角川スニーカー文庫) [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1350,7 +1350,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "時々ボソッとロシア語でデレる隣のアーリャさん (角川スニーカー文庫) [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1365,7 +1365,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "時々ボソッとロシア語でデレる隣のアーリャさん (角川スニーカー文庫) [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1380,7 +1380,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "時々ボソッとロシア語でデレる隣のアーリャさん (角川スニーカー文庫) [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1395,13 +1395,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "時々ボソッとロシア語でデレる隣のアーリャさん (角川スニーカー文庫) [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2026-03-03",
-        "jours_ecoules": 52,
+        "jours_ecoules": 53,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": null,
@@ -1421,7 +1421,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ギフテッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1436,7 +1436,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ギフテッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1451,7 +1451,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ギフテッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1466,7 +1466,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ギフテッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1481,7 +1481,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ギフテッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1496,7 +1496,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ギフテッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1511,7 +1511,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ギフテッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1526,7 +1526,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ギフテッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1541,7 +1541,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ギフテッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1556,7 +1556,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "ギフテッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1571,7 +1571,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "ギフテッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1586,13 +1586,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "ギフテッド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "non_traite",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2026-06-12",
-        "jours_ecoules": -49,
+        "jours_ecoules": -48,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": "2026-06-12",
@@ -1612,7 +1612,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "みなと商事コインランドリー [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1627,7 +1627,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "みなと商事コインランドリー [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1642,7 +1642,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "みなと商事コインランドリー [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1657,7 +1657,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "みなと商事コインランドリー [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1672,7 +1672,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "みなと商事コインランドリー [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1687,7 +1687,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "みなと商事コインランドリー [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1702,13 +1702,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "みなと商事コインランドリー [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "non_traite",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2026-05-27",
-        "jours_ecoules": -33,
+        "jours_ecoules": -32,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": "2026-05-27",
@@ -1728,7 +1728,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "夫婦以上、恋人未満。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1743,7 +1743,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "夫婦以上、恋人未満。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1758,7 +1758,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "夫婦以上、恋人未満。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1773,7 +1773,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "夫婦以上、恋人未満。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1788,7 +1788,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "夫婦以上、恋人未満。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1803,7 +1803,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "夫婦以上、恋人未満。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1818,7 +1818,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "夫婦以上、恋人未満。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1833,7 +1833,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "夫婦以上、恋人未満。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1848,7 +1848,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "夫婦以上、恋人未満。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1863,7 +1863,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "夫婦以上、恋人未満。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1878,7 +1878,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "夫婦以上、恋人未満。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1893,7 +1893,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "夫婦以上、恋人未満。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1908,7 +1908,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "夫婦以上、恋人未満。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1923,7 +1923,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "矢野くんの普通の日々 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1938,7 +1938,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "矢野くんの普通の日々 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1953,7 +1953,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "矢野くんの普通の日々 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1968,7 +1968,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "矢野くんの普通の日々 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1983,7 +1983,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "矢野くんの普通の日々 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -1998,7 +1998,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "矢野くんの普通の日々 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2013,7 +2013,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "矢野くんの普通の日々 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2028,7 +2028,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "矢野くんの普通の日々 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2043,7 +2043,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "矢野くんの普通の日々 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2058,7 +2058,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "矢野くんの普通の日々 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2073,7 +2073,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "矢野くんの普通の日々 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2088,7 +2088,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "矢野くんの普通の日々 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2103,7 +2103,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "死亡遊戯で飯を食う。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2118,7 +2118,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "死亡遊戯で飯を食う。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2133,7 +2133,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "死亡遊戯で飯を食う。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2148,7 +2148,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "死亡遊戯で飯を食う。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2163,13 +2163,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "死亡遊戯で飯を食う。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "mail_nwk",
         "label": "Mail NWK → offre éditeur JP",
         "date_declenchement": "2026-02-26",
-        "jours_ecoules": 57,
+        "jours_ecoules": 58,
         "nb_relances": 0,
         "etapes_faites": [
           "droits_nwk"
@@ -2191,7 +2191,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "わたしの幸せな結婚 [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2206,7 +2206,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "わたしの幸せな結婚 [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2221,7 +2221,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "わたしの幸せな結婚 [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2236,7 +2236,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "わたしの幸せな結婚 [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2251,7 +2251,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "わたしの幸せな結婚 [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2266,7 +2266,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "わたしの幸せな結婚 [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2281,7 +2281,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "わたしの幸せな結婚 [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2296,7 +2296,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "わたしの幸せな結婚 [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2311,7 +2311,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "わたしの幸せな結婚 [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2326,13 +2326,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "わたしの幸せな結婚 [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "mail_nwk",
         "label": "Mail NWK → offre éditeur JP",
         "date_declenchement": "2026-02-26",
-        "jours_ecoules": 57,
+        "jours_ecoules": 58,
         "nb_relances": 0,
         "etapes_faites": [
           "droits_nwk"
@@ -2354,7 +2354,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "マグメル深海水族館 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2369,7 +2369,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "マグメル深海水族館 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2384,7 +2384,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "マグメル深海水族館 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2399,7 +2399,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "マグメル深海水族館 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2414,7 +2414,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "マグメル深海水族館 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2429,7 +2429,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "マグメル深海水族館 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2444,7 +2444,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "マグメル深海水族館 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2459,7 +2459,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "マグメル深海水族館 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2474,7 +2474,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "マグメル深海水族館 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2489,7 +2489,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "マグメル深海水族館 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2504,7 +2504,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "対ありでした。 ～お嬢さまは格闘ゲームなんてしない～ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2519,7 +2519,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "対ありでした。 ～お嬢さまは格闘ゲームなんてしない～ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2534,7 +2534,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "対ありでした。 ～お嬢さまは格闘ゲームなんてしない～ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2549,7 +2549,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "対ありでした。 ～お嬢さまは格闘ゲームなんてしない～ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2564,7 +2564,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "対ありでした。 ～お嬢さまは格闘ゲームなんてしない～ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2579,7 +2579,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "対ありでした。 ～お嬢さまは格闘ゲームなんてしない～ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2594,7 +2594,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "対ありでした。 ～お嬢さまは格闘ゲームなんてしない～ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2609,7 +2609,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "対ありでした。 ～お嬢さまは格闘ゲームなんてしない～ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2624,7 +2624,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "対ありでした。 ～お嬢さまは格闘ゲームなんてしない～ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2639,8 +2639,139 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "対ありでした。 ～お嬢さまは格闘ゲームなんてしない～ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
+    },
+    {
+      "nom": "令和のダラさん [MANGA]",
+      "nom_fr": "Dame Dara de Reiwa",
+      "tome": "1",
+      "date": "2022/11/22",
+      "editeur": "Kadokawa",
+      "url": "https://www.amazon.co.jp/dp/4046818514",
+      "asin": "4046818514",
+      "couverture": "",
+      "est_nouveaute": false,
+      "deja_alerte": false,
+      "serie_recherchee": "令和のダラさん [MANGA]",
+      "date_detection": "2026-04-25",
+      "statut": "valide"
+    },
+    {
+      "nom": "令和のダラさん [MANGA]",
+      "nom_fr": "Dame Dara de Reiwa",
+      "tome": "2",
+      "date": "2023/5/23",
+      "editeur": "Kadokawa",
+      "url": "https://www.amazon.co.jp/dp/404682414X",
+      "asin": "404682414X",
+      "couverture": "",
+      "est_nouveaute": false,
+      "deja_alerte": false,
+      "serie_recherchee": "令和のダラさん [MANGA]",
+      "date_detection": "2026-04-25",
+      "statut": "valide"
+    },
+    {
+      "nom": "令和のダラさん [MANGA]",
+      "nom_fr": "Dame Dara de Reiwa",
+      "tome": "3",
+      "date": "2023/11/21",
+      "editeur": "Kadokawa",
+      "url": "https://www.amazon.co.jp/dp/4046831936",
+      "asin": "4046831936",
+      "couverture": "",
+      "est_nouveaute": false,
+      "deja_alerte": false,
+      "serie_recherchee": "令和のダラさん [MANGA]",
+      "date_detection": "2026-04-25",
+      "statut": "valide"
+    },
+    {
+      "nom": "令和のダラさん [MANGA]",
+      "nom_fr": "Dame Dara de Reiwa",
+      "tome": "4",
+      "date": "2024/6/21",
+      "editeur": "Kadokawa",
+      "url": "https://www.amazon.co.jp/dp/4046837527",
+      "asin": "4046837527",
+      "couverture": "",
+      "est_nouveaute": false,
+      "deja_alerte": false,
+      "serie_recherchee": "令和のダラさん [MANGA]",
+      "date_detection": "2026-04-25",
+      "statut": "valide"
+    },
+    {
+      "nom": "令和のダラさん [MANGA]",
+      "nom_fr": "Dame Dara de Reiwa",
+      "tome": "5",
+      "date": "2024/12/23",
+      "editeur": "Kadokawa",
+      "url": "https://www.amazon.co.jp/dp/4046844078",
+      "asin": "4046844078",
+      "couverture": "",
+      "est_nouveaute": false,
+      "deja_alerte": false,
+      "serie_recherchee": "令和のダラさん [MANGA]",
+      "date_detection": "2026-04-25",
+      "statut": "valide"
+    },
+    {
+      "nom": "令和のダラさん [MANGA]",
+      "nom_fr": "Dame Dara de Reiwa",
+      "tome": "6",
+      "date": "2025/6/23",
+      "editeur": "Kadokawa",
+      "url": "https://www.amazon.co.jp/dp/4046848979",
+      "asin": "4046848979",
+      "couverture": "",
+      "est_nouveaute": false,
+      "deja_alerte": true,
+      "serie_recherchee": "令和のダラさん [MANGA]",
+      "date_detection": "2026-04-25",
+      "statut": "valide"
+    },
+    {
+      "nom": "令和のダラさん [MANGA]",
+      "nom_fr": "Dame Dara de Reiwa",
+      "tome": "7",
+      "date": "2025/12/23",
+      "editeur": "Kadokawa",
+      "url": "https://www.amazon.co.jp/dp/4046855401",
+      "asin": "4046855401",
+      "couverture": "",
+      "est_nouveaute": false,
+      "deja_alerte": true,
+      "serie_recherchee": "令和のダラさん [MANGA]",
+      "date_detection": "2026-04-25",
+      "statut": "valide"
+    },
+    {
+      "nom": "令和のダラさん [MANGA]",
+      "nom_fr": "Dame Dara de Reiwa",
+      "tome": "8",
+      "date": "2026/06/23",
+      "editeur": "MFC",
+      "url": "https://www.amazon.co.jp/dp/404660249X",
+      "asin": "404660249X",
+      "couverture": "",
+      "est_nouveaute": false,
+      "deja_alerte": true,
+      "serie_recherchee": "令和のダラさん [MANGA]",
+      "date_detection": "2026-04-25",
+      "statut": "non_traite",
+      "workflow": {
+        "etape_courante": "droits_nwk",
+        "label": "Demander à NWK d’acheter les droits",
+        "date_declenchement": "2026-06-23",
+        "jours_ecoules": -59,
+        "nb_relances": 0,
+        "etapes_faites": [],
+        "pause_jusqu_au": "2026-06-23",
+        "date_sortie_jp": "2026/06/23",
+        "editeur": "MFC"
+      }
     },
     {
       "nom": "夜分に吸血失礼します [MANGA]",
@@ -2654,7 +2785,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "夜分に吸血失礼します [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2669,7 +2800,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "夜分に吸血失礼します [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2684,7 +2815,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "夜分に吸血失礼します [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2699,7 +2830,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "夜分に吸血失礼します [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2714,7 +2845,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "夜分に吸血失礼します [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2729,7 +2860,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "夜分に吸血失礼します [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2744,7 +2875,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "夜分に吸血失礼します [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2759,13 +2890,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "夜分に吸血失礼します [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "mail_nwk",
         "label": "Mail NWK → offre éditeur JP",
         "date_declenchement": "2026-02-26",
-        "jours_ecoules": 57,
+        "jours_ecoules": 58,
         "nb_relances": 0,
         "etapes_faites": [
           "droits_nwk"
@@ -2787,7 +2918,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "峠鬼 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2802,7 +2933,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "峠鬼 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2817,7 +2948,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "峠鬼 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2832,7 +2963,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "峠鬼 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2847,7 +2978,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "峠鬼 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2862,7 +2993,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "峠鬼 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2877,7 +3008,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "峠鬼 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -2892,139 +3023,8 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "峠鬼 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
-    },
-    {
-      "nom": "令和のダラさん [MANGA]",
-      "nom_fr": "Dame Dara de Reiwa",
-      "tome": "1",
-      "date": "2022/11/22",
-      "editeur": "Kadokawa",
-      "url": "https://www.amazon.co.jp/dp/4046818514",
-      "asin": "4046818514",
-      "couverture": "",
-      "est_nouveaute": false,
-      "deja_alerte": false,
-      "serie_recherchee": "令和のダラさん [MANGA]",
-      "date_detection": "2026-04-24",
-      "statut": "valide"
-    },
-    {
-      "nom": "令和のダラさん [MANGA]",
-      "nom_fr": "Dame Dara de Reiwa",
-      "tome": "2",
-      "date": "2023/5/23",
-      "editeur": "Kadokawa",
-      "url": "https://www.amazon.co.jp/dp/404682414X",
-      "asin": "404682414X",
-      "couverture": "",
-      "est_nouveaute": false,
-      "deja_alerte": false,
-      "serie_recherchee": "令和のダラさん [MANGA]",
-      "date_detection": "2026-04-24",
-      "statut": "valide"
-    },
-    {
-      "nom": "令和のダラさん [MANGA]",
-      "nom_fr": "Dame Dara de Reiwa",
-      "tome": "3",
-      "date": "2023/11/21",
-      "editeur": "Kadokawa",
-      "url": "https://www.amazon.co.jp/dp/4046831936",
-      "asin": "4046831936",
-      "couverture": "",
-      "est_nouveaute": false,
-      "deja_alerte": false,
-      "serie_recherchee": "令和のダラさん [MANGA]",
-      "date_detection": "2026-04-24",
-      "statut": "valide"
-    },
-    {
-      "nom": "令和のダラさん [MANGA]",
-      "nom_fr": "Dame Dara de Reiwa",
-      "tome": "4",
-      "date": "2024/6/21",
-      "editeur": "Kadokawa",
-      "url": "https://www.amazon.co.jp/dp/4046837527",
-      "asin": "4046837527",
-      "couverture": "",
-      "est_nouveaute": false,
-      "deja_alerte": false,
-      "serie_recherchee": "令和のダラさん [MANGA]",
-      "date_detection": "2026-04-24",
-      "statut": "valide"
-    },
-    {
-      "nom": "令和のダラさん [MANGA]",
-      "nom_fr": "Dame Dara de Reiwa",
-      "tome": "5",
-      "date": "2024/12/23",
-      "editeur": "Kadokawa",
-      "url": "https://www.amazon.co.jp/dp/4046844078",
-      "asin": "4046844078",
-      "couverture": "",
-      "est_nouveaute": false,
-      "deja_alerte": false,
-      "serie_recherchee": "令和のダラさん [MANGA]",
-      "date_detection": "2026-04-24",
-      "statut": "valide"
-    },
-    {
-      "nom": "令和のダラさん [MANGA]",
-      "nom_fr": "Dame Dara de Reiwa",
-      "tome": "6",
-      "date": "2025/6/23",
-      "editeur": "Kadokawa",
-      "url": "https://www.amazon.co.jp/dp/4046848979",
-      "asin": "4046848979",
-      "couverture": "",
-      "est_nouveaute": false,
-      "deja_alerte": true,
-      "serie_recherchee": "令和のダラさん [MANGA]",
-      "date_detection": "2026-04-24",
-      "statut": "valide"
-    },
-    {
-      "nom": "令和のダラさん [MANGA]",
-      "nom_fr": "Dame Dara de Reiwa",
-      "tome": "7",
-      "date": "2025/12/23",
-      "editeur": "Kadokawa",
-      "url": "https://www.amazon.co.jp/dp/4046855401",
-      "asin": "4046855401",
-      "couverture": "",
-      "est_nouveaute": false,
-      "deja_alerte": true,
-      "serie_recherchee": "令和のダラさん [MANGA]",
-      "date_detection": "2026-04-24",
-      "statut": "valide"
-    },
-    {
-      "nom": "令和のダラさん [MANGA]",
-      "nom_fr": "Dame Dara de Reiwa",
-      "tome": 8,
-      "date": "2026/06/23",
-      "editeur": "MFC",
-      "url": "https://www.amazon.co.jp/dp/404660249X",
-      "asin": "404660249X",
-      "couverture": "",
-      "est_nouveaute": true,
-      "deja_alerte": false,
-      "serie_recherchee": "令和のダラさん [MANGA]",
-      "date_detection": "2026-04-24",
-      "statut": "non_traite",
-      "workflow": {
-        "etape_courante": "droits_nwk",
-        "label": "Demander à NWK d’acheter les droits",
-        "date_declenchement": "2026-06-23",
-        "jours_ecoules": -60,
-        "nb_relances": 0,
-        "etapes_faites": [],
-        "pause_jusqu_au": "2026-06-23",
-        "date_sortie_jp": "2026/06/23",
-        "editeur": "MFC"
-      }
     },
     {
       "nom": "あくまでクジャクの話です。 [MANGA]",
@@ -3038,7 +3038,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "あくまでクジャクの話です。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3053,7 +3053,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "あくまでクジャクの話です。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3068,7 +3068,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "あくまでクジャクの話です。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3083,7 +3083,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "あくまでクジャクの話です。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3098,7 +3098,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "あくまでクジャクの話です。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3113,7 +3113,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "あくまでクジャクの話です。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3128,13 +3128,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "あくまでクジャクの話です。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "mail_nwk",
         "label": "Mail NWK → offre éditeur JP",
         "date_declenchement": "2026-02-26",
-        "jours_ecoules": 57,
+        "jours_ecoules": 58,
         "nb_relances": 0,
         "etapes_faites": [
           "droits_nwk"
@@ -3156,7 +3156,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "石神戦記 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3171,7 +3171,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "石神戦記 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3186,7 +3186,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "石神戦記 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3201,7 +3201,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "石神戦記 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3216,7 +3216,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "石神戦記 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3231,7 +3231,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "石神戦記 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3246,13 +3246,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "石神戦記 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "non_traite",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2026-05-14",
-        "jours_ecoules": -20,
+        "jours_ecoules": -19,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": "2026-05-14",
@@ -3272,7 +3272,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ひねもすのたり日記 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3287,7 +3287,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ひねもすのたり日記 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3302,7 +3302,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ひねもすのたり日記 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3317,7 +3317,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ひねもすのたり日記 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3332,7 +3332,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ひねもすのたり日記 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3347,7 +3347,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ひねもすのたり日記 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3362,7 +3362,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "ひねもすのたり日記 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3377,7 +3377,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "結界師の一輪華 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3392,7 +3392,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "結界師の一輪華 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3407,7 +3407,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "結界師の一輪華 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3422,7 +3422,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "結界師の一輪華 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3437,7 +3437,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "結界師の一輪華 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3452,7 +3452,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "結界師の一輪華 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3467,8 +3467,124 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "結界師の一輪華 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
+    },
+    {
+      "nom": "イクサガミ [MANGA]",
+      "nom_fr": "Last Samurai Standing",
+      "tome": "1",
+      "date": "2023/4/21",
+      "editeur": "Kodansha",
+      "url": "https://www.amazon.co.jp/dp/4065313341",
+      "asin": "4065313341",
+      "couverture": "",
+      "est_nouveaute": false,
+      "deja_alerte": false,
+      "serie_recherchee": "イクサガミ [MANGA]",
+      "date_detection": "2026-04-25",
+      "statut": "valide"
+    },
+    {
+      "nom": "イクサガミ [MANGA]",
+      "nom_fr": "Last Samurai Standing",
+      "tome": "2",
+      "date": "2023/7/21",
+      "editeur": "Kodansha",
+      "url": "https://www.amazon.co.jp/dp/4065323932",
+      "asin": "4065323932",
+      "couverture": "",
+      "est_nouveaute": false,
+      "deja_alerte": false,
+      "serie_recherchee": "イクサガミ [MANGA]",
+      "date_detection": "2026-04-25",
+      "statut": "valide"
+    },
+    {
+      "nom": "イクサガミ [MANGA]",
+      "nom_fr": "Last Samurai Standing",
+      "tome": "3",
+      "date": "2023/12/21",
+      "editeur": "Kodansha",
+      "url": "https://www.amazon.co.jp/dp/4065340136",
+      "asin": "4065340136",
+      "couverture": "",
+      "est_nouveaute": false,
+      "deja_alerte": false,
+      "serie_recherchee": "イクサガミ [MANGA]",
+      "date_detection": "2026-04-25",
+      "statut": "valide"
+    },
+    {
+      "nom": "イクサガミ [MANGA]",
+      "nom_fr": "Last Samurai Standing",
+      "tome": "4",
+      "date": "2024/5/22",
+      "editeur": "Kodansha",
+      "url": "https://www.amazon.co.jp/dp/4065355834",
+      "asin": "4065355834",
+      "couverture": "",
+      "est_nouveaute": false,
+      "deja_alerte": false,
+      "serie_recherchee": "イクサガミ [MANGA]",
+      "date_detection": "2026-04-25",
+      "statut": "valide"
+    },
+    {
+      "nom": "イクサガミ [MANGA]",
+      "nom_fr": "Last Samurai Standing",
+      "tome": "5",
+      "date": "2025/10/23",
+      "editeur": "Kodansha",
+      "url": "https://www.amazon.co.jp/dp/4065388473",
+      "asin": "4065388473",
+      "couverture": "",
+      "est_nouveaute": false,
+      "deja_alerte": true,
+      "serie_recherchee": "イクサガミ [MANGA]",
+      "date_detection": "2026-04-25",
+      "statut": "valide"
+    },
+    {
+      "nom": "イクサガミ [MANGA]",
+      "nom_fr": "Last Samurai Standing",
+      "tome": "6",
+      "date": "2025/11/21",
+      "editeur": "Kodansha",
+      "url": "https://www.amazon.co.jp/dp/4065414105",
+      "asin": "4065414105",
+      "couverture": "",
+      "est_nouveaute": false,
+      "deja_alerte": true,
+      "serie_recherchee": "イクサガミ [MANGA]",
+      "date_detection": "2026-04-25",
+      "statut": "valide"
+    },
+    {
+      "nom": "イクサガミ [MANGA]",
+      "nom_fr": "Last Samurai Standing",
+      "tome": "7",
+      "date": "2026/06/23",
+      "editeur": "Morning",
+      "url": "https://www.amazon.co.jp/dp/4065439493",
+      "asin": "4065439493",
+      "couverture": "",
+      "est_nouveaute": false,
+      "deja_alerte": true,
+      "serie_recherchee": "イクサガミ [MANGA]",
+      "date_detection": "2026-04-25",
+      "statut": "non_traite",
+      "workflow": {
+        "etape_courante": "droits_nwk",
+        "label": "Demander à NWK d’acheter les droits",
+        "date_declenchement": "2026-06-23",
+        "jours_ecoules": -59,
+        "nb_relances": 0,
+        "etapes_faites": [],
+        "pause_jusqu_au": "2026-06-23",
+        "date_sortie_jp": "2026/06/23",
+        "editeur": "Morning"
+      }
     },
     {
       "nom": "百瀬アキラの初恋破綻中。 [MANGA]",
@@ -3482,7 +3598,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "百瀬アキラの初恋破綻中。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3497,7 +3613,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "百瀬アキラの初恋破綻中。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3512,7 +3628,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "百瀬アキラの初恋破綻中。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3527,7 +3643,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "百瀬アキラの初恋破綻中。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3542,7 +3658,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "百瀬アキラの初恋破綻中。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3557,13 +3673,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "百瀬アキラの初恋破綻中。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "mail_nwk",
         "label": "Mail NWK → offre éditeur JP",
         "date_declenchement": "2026-02-26",
-        "jours_ecoules": 57,
+        "jours_ecoules": 58,
         "nb_relances": 0,
         "etapes_faites": [
           "droits_nwk"
@@ -3585,13 +3701,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "百瀬アキラの初恋破綻中。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "non_traite",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2026-06-18",
-        "jours_ecoules": -55,
+        "jours_ecoules": -54,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": "2026-06-18",
@@ -3611,7 +3727,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ユア・フォルマ [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3626,7 +3742,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ユア・フォルマ [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3641,7 +3757,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ユア・フォルマ [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3656,7 +3772,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ユア・フォルマ [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3671,7 +3787,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ユア・フォルマ [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3686,7 +3802,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ユア・フォルマ [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3701,124 +3817,8 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ユア・フォルマ [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
-    },
-    {
-      "nom": "イクサガミ [MANGA]",
-      "nom_fr": "Last Samurai Standing",
-      "tome": "1",
-      "date": "2023/4/21",
-      "editeur": "Kodansha",
-      "url": "https://www.amazon.co.jp/dp/4065313341",
-      "asin": "4065313341",
-      "couverture": "",
-      "est_nouveaute": false,
-      "deja_alerte": false,
-      "serie_recherchee": "イクサガミ [MANGA]",
-      "date_detection": "2026-04-24",
-      "statut": "valide"
-    },
-    {
-      "nom": "イクサガミ [MANGA]",
-      "nom_fr": "Last Samurai Standing",
-      "tome": "2",
-      "date": "2023/7/21",
-      "editeur": "Kodansha",
-      "url": "https://www.amazon.co.jp/dp/4065323932",
-      "asin": "4065323932",
-      "couverture": "",
-      "est_nouveaute": false,
-      "deja_alerte": false,
-      "serie_recherchee": "イクサガミ [MANGA]",
-      "date_detection": "2026-04-24",
-      "statut": "valide"
-    },
-    {
-      "nom": "イクサガミ [MANGA]",
-      "nom_fr": "Last Samurai Standing",
-      "tome": "3",
-      "date": "2023/12/21",
-      "editeur": "Kodansha",
-      "url": "https://www.amazon.co.jp/dp/4065340136",
-      "asin": "4065340136",
-      "couverture": "",
-      "est_nouveaute": false,
-      "deja_alerte": false,
-      "serie_recherchee": "イクサガミ [MANGA]",
-      "date_detection": "2026-04-24",
-      "statut": "valide"
-    },
-    {
-      "nom": "イクサガミ [MANGA]",
-      "nom_fr": "Last Samurai Standing",
-      "tome": "4",
-      "date": "2024/5/22",
-      "editeur": "Kodansha",
-      "url": "https://www.amazon.co.jp/dp/4065355834",
-      "asin": "4065355834",
-      "couverture": "",
-      "est_nouveaute": false,
-      "deja_alerte": false,
-      "serie_recherchee": "イクサガミ [MANGA]",
-      "date_detection": "2026-04-24",
-      "statut": "valide"
-    },
-    {
-      "nom": "イクサガミ [MANGA]",
-      "nom_fr": "Last Samurai Standing",
-      "tome": "5",
-      "date": "2025/10/23",
-      "editeur": "Kodansha",
-      "url": "https://www.amazon.co.jp/dp/4065388473",
-      "asin": "4065388473",
-      "couverture": "",
-      "est_nouveaute": false,
-      "deja_alerte": true,
-      "serie_recherchee": "イクサガミ [MANGA]",
-      "date_detection": "2026-04-24",
-      "statut": "valide"
-    },
-    {
-      "nom": "イクサガミ [MANGA]",
-      "nom_fr": "Last Samurai Standing",
-      "tome": "6",
-      "date": "2025/11/21",
-      "editeur": "Kodansha",
-      "url": "https://www.amazon.co.jp/dp/4065414105",
-      "asin": "4065414105",
-      "couverture": "",
-      "est_nouveaute": false,
-      "deja_alerte": true,
-      "serie_recherchee": "イクサガミ [MANGA]",
-      "date_detection": "2026-04-24",
-      "statut": "valide"
-    },
-    {
-      "nom": "イクサガミ [MANGA]",
-      "nom_fr": "Last Samurai Standing",
-      "tome": 7,
-      "date": "2026/06/23",
-      "editeur": "Morning",
-      "url": "https://www.amazon.co.jp/dp/4065439493",
-      "asin": "4065439493",
-      "couverture": "",
-      "est_nouveaute": true,
-      "deja_alerte": false,
-      "serie_recherchee": "イクサガミ [MANGA]",
-      "date_detection": "2026-04-24",
-      "statut": "non_traite",
-      "workflow": {
-        "etape_courante": "droits_nwk",
-        "label": "Demander à NWK d’acheter les droits",
-        "date_declenchement": "2026-06-23",
-        "jours_ecoules": -60,
-        "nb_relances": 0,
-        "etapes_faites": [],
-        "pause_jusqu_au": "2026-06-23",
-        "date_sortie_jp": "2026/06/23",
-        "editeur": "Morning"
-      }
     },
     {
       "nom": "放課後帰宅びより [MANGA]",
@@ -3832,7 +3832,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "放課後帰宅びより [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3847,7 +3847,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "放課後帰宅びより [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3862,7 +3862,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "放課後帰宅びより [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3877,7 +3877,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "放課後帰宅びより [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3892,7 +3892,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "放課後帰宅びより [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3907,13 +3907,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "放課後帰宅びより [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "non_traite",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2026-06-11",
-        "jours_ecoules": -48,
+        "jours_ecoules": -47,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": "2026-06-11",
@@ -3933,7 +3933,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "大正學生愛妻家 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3948,7 +3948,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "大正學生愛妻家 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3963,7 +3963,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "大正學生愛妻家 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -3978,13 +3978,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "大正學生愛妻家 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "mail_nwk",
         "label": "Mail NWK → offre éditeur JP",
         "date_declenchement": "2026-02-26",
-        "jours_ecoules": 57,
+        "jours_ecoules": 58,
         "nb_relances": 0,
         "etapes_faites": [
           "droits_nwk"
@@ -4006,7 +4006,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "鍛冶屋ではじめる異世界スローライフ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4021,7 +4021,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "鍛冶屋ではじめる異世界スローライフ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4036,7 +4036,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "鍛冶屋ではじめる異世界スローライフ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4051,7 +4051,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "鍛冶屋ではじめる異世界スローライフ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4066,7 +4066,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "鍛冶屋ではじめる異世界スローライフ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4081,7 +4081,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "鍛冶屋ではじめる異世界スローライフ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4096,7 +4096,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "くまぐらし [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4111,7 +4111,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "くまぐらし [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4126,7 +4126,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "くまぐらし [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4141,7 +4141,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "くまぐらし [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4156,13 +4156,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "くまぐらし [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "mail_nwk",
         "label": "Mail NWK → offre éditeur JP",
         "date_declenchement": "2026-02-26",
-        "jours_ecoules": 57,
+        "jours_ecoules": 58,
         "nb_relances": 0,
         "etapes_faites": [
           "droits_nwk"
@@ -4184,13 +4184,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "くまぐらし [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "non_traite",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2026-05-14",
-        "jours_ecoules": -20,
+        "jours_ecoules": -19,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": "2026-05-14",
@@ -4210,7 +4210,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "針子の乙女 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4225,7 +4225,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "針子の乙女 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4240,7 +4240,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "針子の乙女 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4255,7 +4255,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "針子の乙女 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4270,7 +4270,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "針子の乙女 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4285,13 +4285,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "針子の乙女 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "mail_nwk",
         "label": "Mail NWK → offre éditeur JP",
         "date_declenchement": "2026-02-26",
-        "jours_ecoules": 57,
+        "jours_ecoules": 58,
         "nb_relances": 0,
         "etapes_faites": [
           "droits_nwk"
@@ -4313,7 +4313,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "拝啓見知らぬ旦那様、離婚していただきます [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4328,7 +4328,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "拝啓見知らぬ旦那様、離婚していただきます [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4343,7 +4343,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "拝啓見知らぬ旦那様、離婚していただきます [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4358,7 +4358,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "拝啓見知らぬ旦那様、離婚していただきます [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4373,7 +4373,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "拝啓見知らぬ旦那様、離婚していただきます [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4388,13 +4388,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "拝啓見知らぬ旦那様、離婚していただきます [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "non_traite",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2026-05-02",
-        "jours_ecoules": -8,
+        "jours_ecoules": -7,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": "2026-05-02",
@@ -4414,7 +4414,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "佐々木とピーちゃん [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4429,7 +4429,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "佐々木とピーちゃん [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4444,7 +4444,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "佐々木とピーちゃん [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4459,7 +4459,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "佐々木とピーちゃん [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4474,7 +4474,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "佐々木とピーちゃん [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4489,7 +4489,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ニセモノの錬金術師 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4504,7 +4504,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ニセモノの錬金術師 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4519,7 +4519,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ニセモノの錬金術師 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4534,7 +4534,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "ニセモノの錬金術師 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4549,13 +4549,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "ニセモノの錬金術師 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "mail_nwk",
         "label": "Mail NWK → offre éditeur JP",
         "date_declenchement": "2026-02-26",
-        "jours_ecoules": 57,
+        "jours_ecoules": 58,
         "nb_relances": 0,
         "etapes_faites": [
           "droits_nwk"
@@ -4577,7 +4577,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "となりの席のヤツがそういう目で見てくる [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4592,7 +4592,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "となりの席のヤツがそういう目で見てくる [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4607,7 +4607,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "となりの席のヤツがそういう目で見てくる [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4622,7 +4622,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "となりの席のヤツがそういう目で見てくる [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4637,13 +4637,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "となりの席のヤツがそういう目で見てくる [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "mail_nwk",
         "label": "Mail NWK → offre éditeur JP",
         "date_declenchement": "2026-02-26",
-        "jours_ecoules": 57,
+        "jours_ecoules": 58,
         "nb_relances": 0,
         "etapes_faites": [
           "droits_nwk"
@@ -4665,7 +4665,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ヒモクズ花くんは死にたがり [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4680,7 +4680,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ヒモクズ花くんは死にたがり [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4695,7 +4695,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "ヒモクズ花くんは死にたがり [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4710,13 +4710,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "ヒモクズ花くんは死にたがり [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2026-03-03",
-        "jours_ecoules": 52,
+        "jours_ecoules": 53,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": null,
@@ -4736,7 +4736,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "カグライ ～神楽と雷人～ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4751,7 +4751,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "カグライ ～神楽と雷人～ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4766,7 +4766,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "カグライ ～神楽と雷人～ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4781,13 +4781,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "カグライ ～神楽と雷人～ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2026-03-03",
-        "jours_ecoules": 52,
+        "jours_ecoules": 53,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": null,
@@ -4807,7 +4807,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ヤクザにお風呂で働かされてます。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4822,7 +4822,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ヤクザにお風呂で働かされてます。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4837,7 +4837,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "ヤクザにお風呂で働かされてます。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4852,13 +4852,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "ヤクザにお風呂で働かされてます。 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "non_traite",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2026-04-16",
-        "jours_ecoules": 8,
+        "jours_ecoules": 9,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": null,
@@ -4878,7 +4878,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "開花アパートメント [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4893,7 +4893,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "開花アパートメント [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4908,7 +4908,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "開花アパートメント [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4923,13 +4923,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "開花アパートメント [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "mail_nwk",
         "label": "Mail NWK → offre éditeur JP",
         "date_declenchement": "2026-02-26",
-        "jours_ecoules": 57,
+        "jours_ecoules": 58,
         "nb_relances": 0,
         "etapes_faites": [
           "droits_nwk"
@@ -4951,7 +4951,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "サーヴァント ビースト [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4966,7 +4966,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "サーヴァント ビースト [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4981,7 +4981,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "サーヴァント ビースト [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -4996,13 +4996,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "サーヴァント ビースト [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "draft_ad",
         "label": "Réception draft Ayants Droits",
         "date_declenchement": "2026-02-12",
-        "jours_ecoules": 71,
+        "jours_ecoules": 72,
         "nb_relances": 0,
         "etapes_faites": [
           "droits_nwk",
@@ -5025,7 +5025,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "誰が勇者を殺したか [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5040,7 +5040,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "誰が勇者を殺したか [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5055,7 +5055,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "誰が勇者を殺したか [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5070,13 +5070,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "誰が勇者を殺したか [LN]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "non_traite",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2026-05-29",
-        "jours_ecoules": -35,
+        "jours_ecoules": -34,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": "2026-05-29",
@@ -5096,7 +5096,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "近畿地方のある場所について [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5111,7 +5111,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "近畿地方のある場所について [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5126,13 +5126,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "近畿地方のある場所について [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "mail_nwk",
         "label": "Mail NWK → offre éditeur JP",
         "date_declenchement": "2026-02-26",
-        "jours_ecoules": 57,
+        "jours_ecoules": 58,
         "nb_relances": 0,
         "etapes_faites": [
           "droits_nwk"
@@ -5154,7 +5154,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "本なら売るほど [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5169,7 +5169,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "本なら売るほど [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5184,13 +5184,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "本なら売るほど [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "mail_nwk",
         "label": "Mail NWK → offre éditeur JP",
         "date_declenchement": "2026-02-26",
-        "jours_ecoules": 57,
+        "jours_ecoules": 58,
         "nb_relances": 0,
         "etapes_faites": [
           "droits_nwk"
@@ -5212,7 +5212,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "音盤紀行 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5227,7 +5227,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "音盤紀行 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5242,7 +5242,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "音盤紀行 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5257,7 +5257,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "アンダーク 新しい透明な力のすべて [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5272,7 +5272,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "アンダーク 新しい透明な力のすべて [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5287,7 +5287,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "アンダーク 新しい透明な力のすべて [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5302,7 +5302,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "成仏させてよ！ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5317,7 +5317,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "成仏させてよ！ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5332,7 +5332,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "成仏させてよ！ [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5347,7 +5347,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "ダンジョンバンド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5362,13 +5362,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "ダンジョンバンド [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "mail_nwk",
         "label": "Mail NWK → offre éditeur JP",
         "date_declenchement": "2026-02-26",
-        "jours_ecoules": 57,
+        "jours_ecoules": 58,
         "nb_relances": 0,
         "etapes_faites": [
           "droits_nwk"
@@ -5390,7 +5390,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ELDEN RING 遠き狭間の物語 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5405,7 +5405,7 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "ELDEN RING 遠き狭間の物語 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5420,13 +5420,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "頼くんとヨリを戻すわけには! [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2025-08-12",
-        "jours_ecoules": 255,
+        "jours_ecoules": 256,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": null,
@@ -5446,13 +5446,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "頼くんとヨリを戻すわけには! [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2026-01-13",
-        "jours_ecoules": 101,
+        "jours_ecoules": 102,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": null,
@@ -5472,7 +5472,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "泥の国 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5487,13 +5487,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "泥の国 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2025-06-26",
-        "jours_ecoules": 302,
+        "jours_ecoules": 303,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": null,
@@ -5513,13 +5513,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "今さらですが、幼なじみを好きになってしまいました [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2025-08-08",
-        "jours_ecoules": 259,
+        "jours_ecoules": 260,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": null,
@@ -5539,13 +5539,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "今さらですが、幼なじみを好きになってしまいました [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "mail_nwk",
         "label": "Mail NWK → offre éditeur JP",
         "date_declenchement": "2026-02-26",
-        "jours_ecoules": 57,
+        "jours_ecoules": 58,
         "nb_relances": 0,
         "etapes_faites": [
           "droits_nwk"
@@ -5567,7 +5567,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ラブ・バレット [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5582,13 +5582,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "ラブ・バレット [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2025-11-21",
-        "jours_ecoules": 154,
+        "jours_ecoules": 155,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": null,
@@ -5608,13 +5608,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "現象X 超常現象捜査録 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2025-06-13",
-        "jours_ecoules": 315,
+        "jours_ecoules": 316,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": null,
@@ -5634,13 +5634,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "現象X 超常現象捜査録 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2025-12-15",
-        "jours_ecoules": 130,
+        "jours_ecoules": 131,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": null,
@@ -5660,7 +5660,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "勇者刑に処す [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5675,7 +5675,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "勇者刑に処す [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5690,13 +5690,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "誰が勇者を殺したか [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2025-07-07",
-        "jours_ecoules": 291,
+        "jours_ecoules": 292,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": null,
@@ -5716,7 +5716,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ウィキッドスポット [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide"
     },
     {
@@ -5731,13 +5731,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "正しいナイフの使い方 [MANGA]",
-      "date_detection": "2026-04-24",
+      "date_detection": "2026-04-25",
       "statut": "valide",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2026-01-09",
-        "jours_ecoules": 105,
+        "jours_ecoules": 106,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": null,
