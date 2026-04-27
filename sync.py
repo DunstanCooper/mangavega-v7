@@ -502,23 +502,17 @@ def charger_series_config(db: 'DatabaseManager' = None):
                     if new_serie['url_suffix'] != nom:
                         logger.info(f"   🔍 Nom de recherche: {new_serie['url_suffix']}")
                     
-                    # Sauvegarder les traductions FR/EN si fournies
+                    # Sauvegarder la traduction FR si fournie
                     nom_fr = serie.get('nom_fr', '')
-                    nom_en = serie.get('nom_en', '')
-                    if nom_fr or nom_en:
-                        if db:
-                            db.sauvegarder_traduction_complete(
-                                nom_interne, 
-                                titre_francais=nom_fr or None, 
-                                titre_anglais=nom_en or None, 
-                                source='viewer', 
-                                est_officielle=True
-                            )
-                        if nom_fr:
-                            config.TRADUCTIONS_FR[nom_interne] = nom_fr
-                            logger.info(f"   🇫🇷 Traduction FR: {nom_fr}")
-                        if nom_en:
-                            logger.info(f"   🇬🇧 Traduction EN: {nom_en}")
+                    if nom_fr and db:
+                        db.sauvegarder_traduction_complete(
+                            nom_interne,
+                            titre_francais=nom_fr,
+                            source='viewer',
+                            est_officielle=1,
+                        )
+                        config.TRADUCTIONS_FR[nom_interne] = nom_fr
+                        logger.info(f"   🇫🇷 Traduction FR: {nom_fr}")
                     
                     # Définir le filtre basé sur le type
                     if type_serie == 'ln':

@@ -309,10 +309,10 @@ async def rechercher_traductions(session: aiohttp.ClientSession, titre_japonais:
     if titre_fr:
         logger.info(f"    📝 FR trouvé (manuel): {titre_fr}")
         db.sauvegarder_traduction_complete(
-            titre_japonais, 
+            titre_japonais,
             titre_francais=titre_fr,
             source=source_fr,
-            est_officielle=est_officielle
+            est_officielle=int(est_officielle),
         )
         return titre_fr, source_fr, est_officielle
     
@@ -340,7 +340,7 @@ async def rechercher_traductions(session: aiohttp.ClientSession, titre_japonais:
                     titre_japonais,
                     titre_francais=titre_fr,
                     source=source_fr,
-                    est_officielle=est_officielle
+                    est_officielle=int(est_officielle),
                 )
                 return titre_fr, source_fr, est_officielle
     
