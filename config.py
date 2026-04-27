@@ -53,9 +53,6 @@ EMAIL_DESTINATAIRE = os.environ.get('EMAIL_DESTINATAIRE', '')
 EMAIL_DESTINATAIRE_WORKFLOW = os.environ.get('EMAIL_DESTINATAIRE_WORKFLOW', '') or os.environ.get('EMAIL_DESTINATAIRE', '')
 EMAIL_EXPEDITEUR = os.environ.get('EMAIL_EXPEDITEUR', '')
 MOT_DE_PASSE_APP = os.environ.get('MOT_DE_PASSE_APP', '')
-IMAP_MOT_DE_PASSE = os.environ.get('IMAP_MOT_DE_PASSE', '')  # M365 pour brouillons IMAP
-IMAP_SERVER = 'outlook.office365.com'
-IMAP_PORT = 993
 SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORTS = [465, 587, 25, 2525]
 
@@ -68,10 +65,10 @@ GIST_API_URL = f"https://api.github.com/gists/{GIST_ID}"
 
 # Debug: afficher si le token est présent (sans révéler la valeur)
 if GIST_TOKEN:
-    print(f"🔑 GIST_TOKEN détecté ({len(GIST_TOKEN)} caractères)")
+    print(f"GIST_TOKEN detecte ({len(GIST_TOKEN)} caracteres)")
 else:
-    print("⚠️  GIST_TOKEN non défini - les modifications du Gist ne seront pas sauvegardées")
-    print("   Variables vérifiées: GIST_TOKEN, GH_TOKEN, GITHUB_TOKEN")
+    print("GIST_TOKEN non defini - les modifications du Gist ne seront pas sauvegardees")
+    print("Variables verifiees: GIST_TOKEN, GH_TOKEN, GITHUB_TOKEN")
 
 # ============================================================================
 # FORMATS PAPIER VALIDES

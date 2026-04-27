@@ -4,11 +4,12 @@
 MangaVega Tracker - Notifications email
 """
 
-import imaplib
 import os
 import smtplib
+from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email import encoders
 from datetime import datetime
 from typing import List, Dict
 
@@ -17,44 +18,6 @@ import config
 logger = config.logger
 
 BROUILLONS_DIR = os.path.join(os.path.dirname(__file__), 'brouillons')
-
-
-def _deposer_brouillon_workflow(msg) -> bool:
-    """
-    Tente de déposer le message comme brouillon dans M365 via IMAP APPEND.
-    Retourne True si succès, False sinon.
-    Nécessite IMAP_MOT_DE_PASSE dans .env.
-    """
-    if not config.IMAP_MOT_DE_PASSE:
-        return False
-    try:
-        imap = imaplib.IMAP4_SSL(config.IMAP_SERVER, config.IMAP_PORT)
-        imap.login(config.EMAIL_DESTINATAIRE_WORKFLOW, config.IMAP_MOT_DE_PASSE)
-        # M365 en français → "Brouillons", en anglais → "Drafts"
-        dossier = None
-        for nom in ['Brouillons', 'Drafts']:
-            res = imap.select(f'"{nom}"')
-            if res[0] == 'OK':
-                dossier = nom
-                break
-        if not dossier:
-            # Lister les dossiers pour trouver le bon nom
-            _, dossiers = imap.list()
-            for d in dossiers or []:
-                d_str = d.decode() if isinstance(d, bytes) else d
-                if 'draft' in d_str.lower() or 'brouillon' in d_str.lower():
-                    dossier = d_str.split('"/"')[-1].strip().strip('"')
-                    imap.select(f'"{dossier}"')
-                    break
-        if dossier:
-            imap.append(f'"{dossier}"', r'(\Draft)', None, msg.as_bytes())
-            logger.info(f"📥 Brouillon créé dans M365 ({dossier})")
-            imap.logout()
-            return True
-        imap.logout()
-    except Exception as e:
-        logger.warning(f"⚠️  IMAP M365 échoué ({e}) → fallback .eml")
-    return False
 
 
 def _sauvegarder_eml(msg, nom_fichier: str):
@@ -395,16 +358,40 @@ def envoyer_email_workflow(destinataire: str, volumes_nouveaux: List[Dict], acti
     date_fichier = datetime.now().strftime('%Y-%m-%d_%Hh%M')
     nom_fichier = f"workflow_nwk_{date_fichier}.eml"
 
-    msg = MIMEText("\n".join(lignes), 'plain', 'utf-8')
-    msg['Subject'] = sujet
-    msg['From'] = config.EMAIL_DESTINATAIRE_WORKFLOW
-    msg['To'] = destinataire
+    # 1. Construire le brouillon NWK (From = vega-livres, To = NWK)
+    brouillon = MIMEText("\n".join(lignes), 'plain', 'utf-8')
+    brouillon['Subject'] = sujet
+    brouillon['From'] = config.EMAIL_DESTINATAIRE_WORKFLOW
+    brouillon['To'] = destinataire
 
-    # 1. Essayer de créer un brouillon IMAP dans M365
-    if _deposer_brouillon_workflow(msg):
-        return
-    # 2. Fallback : sauvegarder en .eml
-    _sauvegarder_eml(msg, nom_fichier)
+    # 2. Sauvegarder le .eml en local (backup)
+    _sauvegarder_eml(brouillon, nom_fichier)
+
+    # 3. Envoyer le .eml en PJ via Gmail
+    chemin_eml = os.path.join(BROUILLONS_DIR, nom_fichier)
+    enveloppe = MIMEMultipart()
+    enveloppe['Subject'] = f"Brouillon NWK : {sujet}"
+    enveloppe['From'] = config.EMAIL_EXPEDITEUR
+    enveloppe['To'] = f"{config.EMAIL_DESTINATAIRE}, {config.EMAIL_DESTINATAIRE_WORKFLOW}"
+
+    resume = []
+    if nb_n:
+        resume.append(f"{nb_n} nouvelle(s) offre(s)")
+    if nb_r:
+        resume.append(f"{nb_r} relance(s)")
+
+    corps_html = f"""<p>Brouillon NWK joint ({', '.join(resume)}).</p>
+<p>Ouvrir la PJ <strong>{nom_fichier}</strong> dans Outlook pour modifier et envoyer.</p>"""
+    enveloppe.attach(MIMEText(corps_html, 'html', 'utf-8'))
+
+    with open(chemin_eml, 'rb') as f:
+        pj = MIMEBase('application', 'octet-stream')
+        pj.set_payload(f.read())
+        encoders.encode_base64(pj)
+        pj.add_header('Content-Disposition', f'attachment; filename="{nom_fichier}"')
+        enveloppe.attach(pj)
+
+    _envoyer_smtp(enveloppe, "brouillon NWK")
 
 
 def envoyer_email_relances_workflow(destinataire: str, actions_retard: List[Dict]):

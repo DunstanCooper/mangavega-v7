@@ -2,7 +2,7 @@
 
 > Ce fichier est le briefing complet pour Claude Code. Il contient TOUT le contexte
 > nécessaire pour reprendre le projet sans poser de questions au développeur.
-> Dernière mise à jour : 26 février 2026.
+> Dernière mise à jour : 27 février 2026.
 
 ---
 
@@ -10,9 +10,9 @@
 
 **MangaVega Tracker** est un tracker automatisé qui surveille les sorties de mangas et light novels sur Amazon Japon (amazon.co.jp), détecte les nouveaux volumes papier, et notifie l'utilisateur par email.
 
-Le projet a été **refactorisé de V6 à V7** en février 2026 : monolithe de 4 837 lignes découpé en 9 modules Python (environ 6 400 lignes total). Le viewer HTML (3 719 lignes) permet de consulter la collection et de piloter le script via une API Flask locale.
+Le projet a été **refactorisé de V6 à V7** en février 2026 : monolithe de 4 837 lignes découpé en 9 modules Python (environ 6 700 lignes total). Le viewer HTML (3 844 lignes) permet de consulter la collection et de piloter le script via une API Flask locale.
 
-En plus du suivi Amazon, le projet intègre désormais un **système de suivi éditorial** : pour chaque nouveau volume détecté, un workflow en 6 étapes est créé (mail d'ouverture → draft → réponse → contrat → signature → facture). Un email professionnel combiné (nouvelles sorties + relances) est déposé comme brouillon M365 via IMAP ou sauvegardé en .eml.
+En plus du suivi Amazon, le projet intègre désormais un **système de suivi éditorial** : pour chaque nouveau volume détecté, un workflow en 7 étapes est créé (droits NWK → mail offre → draft → réponse → contrat → signature → facture). La première étape `droits_nwk` est auto-pausée si le tome est en précommande (date JP future). Un email professionnel combiné (nouvelles sorties + relances) est déposé comme brouillon M365 via IMAP ou sauvegardé en .eml.
 
 **Propriétaire** : Dunstan Cooper
 **Repo** : https://github.com/DunstanCooper/mangavega-v7
@@ -51,17 +51,17 @@ mangavega-v7/
 +-- mangas_liste.json       # 55 series a suivre (nom JP, nom_fr, url Amazon)
 +-- manga_alerts.db         # BDD SQLite (NE PAS SUPPRIMER)
 +-- manga_collection.json   # Export JSON pour le viewer (regenere a chaque scan)
-+-- manga_collection_viewer.html  # Viewer web (3719 lignes)
++-- manga_collection_viewer.html  # Viewer web (3844 lignes)
 |
-+-- app.py (575 l.)         # Orchestrateur principal, CLI, main()
++-- app.py (580 l.)         # Orchestrateur principal, CLI, main()
 +-- config.py (235 l.)      # Constantes, .env, globals mutables
-+-- database.py (1283 l.)   # DatabaseManager, 10 tables, 50+ methodes
++-- database.py (1345 l.)   # DatabaseManager, 10 tables, 57 methodes
 +-- pipeline.py (1425 l.)   # Pipeline scraping Phase A-B-C, Featured, Bulk
 +-- scraper.py (761 l.)     # SessionWrapper, HTTP, extraction HTML Amazon
-+-- sync.py (672 l.)        # Gist R/W, Git push, corrections, traductions
++-- sync.py (694 l.)        # Gist R/W, Git push, corrections, traductions, suivi_supprimes
 +-- utils.py (647 l.)       # Fonctions pures : parsers tomes (14 patterns), dates, editeurs
-+-- notifications.py (525 l.) # Emails workflow editorial (brouillon IMAP M365 ou .eml)
-+-- api_server.py (273 l.)  # Flask API locale (5 endpoints : /, /status, /sync, /scan, /backup, /log)
++-- notifications.py (522 l.) # Emails workflow editorial (brouillon IMAP M365 ou .eml)
++-- api_server.py (329 l.)  # Flask API locale (7 endpoints : /, /status, /sync, /scan, /backup, /log, /test-email)
 |
 +-- mangavega_scan.bat      # Lanceur scan interactif (avec pause)
 +-- mangavega_scheduled.bat # Lanceur scan planificateur (sans pause)
@@ -83,7 +83,7 @@ mangavega-v7/
 
 ## 4. MODULES -- CE QUE FAIT CHAQUE FICHIER
 
-### app.py -- Orchestrateur (575 lignes)
+### app.py -- Orchestrateur (580 lignes)
 - Point d'entree main(), argument parsing (--serie, --list, --no-email, --no-push, --reverifier-traductions)
 - Charge config, initialise BDD, charge Gist, lance le pipeline pour chaque serie
 - Post-traitement : fusionne resultats, applique statuts manuels, genere JSON, envoie email, git push
@@ -101,24 +101,28 @@ mangavega-v7/
 - GIST_ID : 30cd62947f2ea6c07a044ab3546fb08f
 - **Nouvelles variables (26/02/2026)** :
   - `EMAIL_DESTINATAIRE_WORKFLOW` : adresse pro destinataire du workflow (e.morterol@vega-livres.fr)
-  - `IMAP_MOT_DE_PASSE` : mot de passe IMAP M365 (vide = fallback .eml)
-  - `IMAP_SERVER = 'outlook.office365.com'`
-  - `IMAP_PORT = 993`
 
-### database.py -- DatabaseManager (1283 lignes)
+### database.py -- DatabaseManager (1345 lignes)
 - **ATTENTION** : ce fichier a ete reconstruit depuis `__pycache__/database.cpython-313.pyc` le 26/02/2026 apres crash disque (ENOSPC). Le fichier .pyc a ete decompile et le code restaure manuellement.
-- Classe singleton, connexion thread-local, **10 tables** (voir section 5)
+- Classe singleton, connexion thread-local, **10 tables** (voir section 5), **57 methodes**
 - Methodes cles existantes : `sauvegarder_volume()`, `sauvegarder_featured()`, `get_asins_rejetes()`, `get_asins_valides()`, `set_statut_manuel()`
-- **Nouvelles methodes suivi_editorial (26/02/2026)** :
-  - `ETAPES_WORKFLOW = ['mail_nwk','draft_ad','reponse_nwk','contrat_ad','signature_nwk','facture']` (constante module)
-  - `creer_workflow_volume(asin, serie_jp, tome, today, editeur='')` — INSERT OR IGNORE l'etape mail_nwk dans suivi_editorial
+- **Constantes module suivi_editorial** :
+  - `ETAPES_WORKFLOW = ['droits_nwk','mail_nwk','draft_ad','reponse_nwk','contrat_ad','signature_nwk','facture']` (7 etapes)
+  - `LABELS_ETAPES = {'droits_nwk': 'Demander a NWK d acheter les droits', 'mail_nwk': 'Mail NWK → offre editeur JP', ...}`
+- **Methodes suivi_editorial** :
+  - `creer_workflow_volume(asin, serie_jp, tome, today, date_sortie_jp, editeur)` — INSERT OR IGNORE etape `droits_nwk` + auto-pause si date_sortie_jp > today
   - `get_etape_courante_workflow(asin)` → dict ou None — retourne l'etape courante non terminee
   - `marquer_etape_faite(asin, etape, date_completion)` — passe statut='fait', cree automatiquement l'etape suivante
   - `get_actions_en_retard(delai_jours=10)` → liste de dicts avec nom_fr et editeur (via JOIN sur table volumes)
-  - `get_workflows_a_notifier()` → volumes nouvellement en mail_nwk (email_ouverture_envoye=0)
+  - `get_workflows_a_notifier()` → volumes en `droits_nwk` non envoyes, pause expiree ou nulle
+  - `get_pauses_expirees()` → workflows dont pause_jusqu_au <= today
+  - `effacer_pause_workflow(asin, etape)` — supprime la pause
+  - `definir_pause_workflow(asin, etape, date)` — definit une pause manuelle
+  - `supprimer_workflow(asin)` — supprime toutes les etapes + insere tombstone `droits_nwk/supprime`
   - `incrementer_relances(asin, etape)` — incremente nb_relances
-  - `get_tous_workflows_actifs()` → dict {asin: {etape_courante, date_declenchement, jours_ecoules, etapes_faites, nb_relances, date_sortie_jp, editeur}}
-- **Bug corrige (26/02/2026)** : `get_workflows_a_notifier` utilisait `t.nom_fr` inexistant → corrige en `t.titre_francais`, JOIN sur `t.titre_japonais` au lieu de `t.serie_jp`
+  - `get_tous_workflows_actifs()` → dict {asin: {etape_courante, date_declenchement, jours_ecoules, etapes_faites, nb_relances, date_sortie_jp, editeur, pause_jusqu_au}}
+- **Migration auto dans init_db()** : insere `droits_nwk/fait` pour workflows existants qui ont deja `mail_nwk` mais pas `droits_nwk`
+- **Tombstone** : `supprimer_workflow()` insere une ligne `droits_nwk/supprime` pour que `INSERT OR IGNORE` dans `creer_workflow_volume` ne recree pas le workflow
 
 ### pipeline.py -- Pipeline de scraping (1425 lignes)
 - `rechercher_manga(serie, db, session)` : fonction principale
@@ -145,17 +149,12 @@ mangavega-v7/
   - Source "publisher" : cherche "From the Publisher"/"出版社より"
   - Source "frequently_bought" : cherche "Frequently bought together"/"よく一緒に購入"
 
-### sync.py -- Synchronisation (672 lignes)
+### sync.py -- Synchronisation (694 lignes)
 - `charger_gist_config()` : lit Gist → config.GIST_CORRECTIONS
 - `charger_corrections(db)` : importe Gist → table statuts_manuels en BDD
-  - **Nouveau (26/02/2026)** : importe aussi les completions suivi_editorial depuis `gist.suivi_editorial` :
-    ```python
-    gist_suivi = config.GIST_CORRECTIONS.get('suivi_editorial', {})
-    for asin, completions in gist_suivi.items():
-        for etape, date_completion in completions.items():
-            if date_completion:
-                db.marquer_etape_faite(asin, etape, date_completion)
-    ```
+  - Importe les completions suivi_editorial depuis `gist.suivi_editorial`
+  - Gere les cles `__pause` : valeur ISO = pause manuelle, `'repris'` = annulation pause via `db.effacer_pause_workflow()`
+  - Importe `gist.suivi_supprimes` : liste d'ASINs → `db.supprimer_workflow()` pour chacun
 - `sauvegarder_gist_config()` : ecrit corrections.json dans le Gist (met a jour date_seuil)
 - `git_push()` : git add + commit + push du manga_collection.json
 
@@ -165,29 +164,35 @@ mangavega-v7/
 - `normaliser_editeur(raw)` : uniformise noms (EDITEURS_ROMAJI, 64 mappings katakana→romaji)
 - `est_derive(titre)` : detecte artbooks, anthologies, novelisations
 
-### notifications.py -- Emails workflow editorial (525 lignes)
+### notifications.py -- Emails (522 lignes)
 
-Ce module a ete entierement reecrit le 26/02/2026. Il ne gere plus les anciens rapports HTML mais uniquement l'email professionnel du workflow editorial.
+Tous les emails passent par SMTP Gmail. Le brouillon NWK est envoye en PJ .eml.
 
-**Architecture des fonctions** :
-- `_editeur_romaji(editeur_jp)` : convertit un editeur JP en romaji via utils.EDITEURS_ROMAJI
-- `_type_serie(serie_jp)` : retourne ' (LN)' ou ' (Manga)' selon le nom de serie
-- `_grouper_par_editeur(items)` : groupe une liste de volumes par editeur romaji
-- `_format_date_fr(date_iso)` : convertit YYYY-MM-DD → DD/MM/YYYY
-- `_envoyer_smtp(msg, label)` : envoi SMTP multi-ports (essaie 465 → 587 → 25 → 2525)
-- `_deposer_brouillon_workflow(msg)` → bool : depose le message dans les Brouillons M365 via IMAP APPEND (Brouillons ou Drafts selon la locale)
-- `_sauvegarder_eml(msg, nom_fichier)` : fallback fichier .eml dans le dossier brouillons/
-- `envoyer_email_workflow(destinataire, volumes_nouveaux, actions_retard)` : EMAIL COMBINE
-  - Sujet dynamique : "Offres a demander" (seulement nouvelles) / "Relance offres" (seulement relances) / "Offres editoriales" (les deux)
-  - Corps plain-text professionnel, commence par "Bonjour Nicolas,"
-  - Groupe par editeur romaji
-  - Nouvelles sorties : `- Titre (LN/Manga) Tx, sortie le DD/MM — il vient de sortir et s'ajoute a la liste`
-  - Relances : `- Titre (Manga) Tx, sortie le DD/MM — je t'avais fait un mail sur ce tome le DATE`
-  - Essaie IMAP d'abord → fallback .eml (jamais d'envoi direct SMTP)
-  - From = EMAIL_DESTINATAIRE_WORKFLOW (adresse pro)
+**Fonctions publiques** :
+- `envoyer_email_rapport(destinataire, ...)` : rapport recapitulatif du scan (SMTP Gmail)
+- `envoyer_email(destinataire, nouvelles_publications)` : email HTML avec couvertures (SMTP Gmail)
+- `envoyer_email_workflow(destinataire, volumes_nouveaux, actions_retard)` : brouillon NWK envoye en PJ .eml via Gmail
+- `envoyer_email_fin_pause(destinataire, pauses_expirees)` : notification fin de pause (SMTP)
+- `envoyer_email_debut_workflow(destinataire, volumes)` : alias simplifie
 
-### api_server.py -- Flask API (273 lignes)
-- GET / : sert le viewer, GET /api/status, POST /api/sync, POST /api/scan, POST /api/backup, GET /api/log
+**Fonctions privees** :
+- `_envoyer_smtp(msg, label)` : envoi SMTP multi-ports (465 → 587 → 25 → 2525)
+- `_sauvegarder_eml(msg, nom_fichier)` : sauvegarde .eml local (backup dans brouillons/)
+
+**Email workflow (NWK)** :
+- Construit un brouillon plain-text (From = vega-livres, To = NWK)
+- Sauvegarde le .eml en local (backup)
+- Envoie via Gmail a EMAIL_DESTINATAIRE avec le .eml en piece jointe
+- L'utilisateur ouvre la PJ dans Outlook, modifie si besoin, et envoie a NWK
+
+### api_server.py -- Flask API (329 lignes)
+- GET / : sert le viewer HTML
+- GET /api/status : stats BDD en temps reel
+- POST /api/sync : applique corrections Gist → BDD
+- POST /api/scan : lance app.py en subprocess
+- POST /api/backup : sauvegarde BDD horodatee
+- POST /api/test-email : envoie un email de test workflow (volumes droits_nwk non pauses)
+- GET /api/log : tail du log en cours
 - Le subprocess charge le .env manuellement et force PYTHONIOENCODING=utf-8
 
 ---
@@ -215,15 +220,15 @@ Ce module a ete entierement reecrit le 26/02/2026. Il ne gere plus les anciens r
 **verifications_cache** (341 lignes) -- Cache pages produit (24h)
 - asin TEXT PK, date_verification TEXT, date_sortie TEXT, tome TEXT, titre TEXT, editeur TEXT
 
-**traductions** (55 lignes), **series_editeurs** (54 lignes), **alertes** (16 lignes), **volume_serie_override** (0 lignes)
+**traductions** (55 lignes), **series_editeurs** (54 lignes), **alertes** (16 lignes), **statuts_manuels_historique** (historique des changements de statut)
 
-**suivi_editorial** (nouvelle table, 26/02/2026) -- Workflow editorial par volume
+**suivi_editorial** -- Workflow editorial par volume
 ```sql
 CREATE TABLE IF NOT EXISTS suivi_editorial (
     asin TEXT NOT NULL,
     serie_jp TEXT NOT NULL,
     tome INTEGER,
-    etape TEXT NOT NULL,  -- 'mail_nwk','draft_ad','reponse_nwk','contrat_ad','signature_nwk','facture'
+    etape TEXT NOT NULL,  -- 'droits_nwk','mail_nwk','draft_ad','reponse_nwk','contrat_ad','signature_nwk','facture'
     statut TEXT DEFAULT 'en_attente',   -- 'en_attente', 'fait'
     date_declenchement TEXT NOT NULL,
     date_completion TEXT,
@@ -236,13 +241,18 @@ CREATE TABLE IF NOT EXISTS suivi_editorial (
 )
 ```
 
-Les 6 etapes du workflow (dans l'ordre) :
-1. `mail_nwk` : Email d'ouverture envoye a NWK (Nakawaki)
-2. `draft_ad` : Draft de l'AD (accord de distribution) prepare
-3. `reponse_nwk` : Reponse de NWK recue
-4. `contrat_ad` : Contrat AD envoye
-5. `signature_nwk` : Signature NWK recue
-6. `facture` : Facture emise
+Les 7 etapes du workflow (dans l'ordre) :
+1. `droits_nwk` : Demander a NWK d'acheter les droits (auto-pause si precommande)
+2. `mail_nwk` : Mail NWK → offre editeur JP
+3. `draft_ad` : Reception draft Ayants Droits
+4. `reponse_nwk` : Reponse NWK au draft
+5. `contrat_ad` : Reception contrat a signer
+6. `signature_nwk` : NWK signe + archive
+7. `facture` : Reception + paiement facture
+
+**Tables complementaires** :
+- `suivi_editorial_relances` : historique des relances par workflow
+- `suivi_editorial_pauses` : historique des pauses par workflow
 
 ### ATTENTION : colonne `serie` vs `serie_jp`
 La colonne s'appelle `serie` dans featured_history et featured_progression, mais `serie_jp` dans volumes. Meme donnee, noms differents. Ne pas confondre dans les requetes SQL.
@@ -291,10 +301,8 @@ Desactive pour les series existantes. Pourrait servir de fallback quand le Bulk 
 
 ## 7. AUTRES BUGS CONNUS
 
-- 12 volumes avec "Date inconnue", 33 avec tome = N/A (LN sans numero, derives)
 - 死亡遊戯で飯を食う : LN (MF文庫J) et manga (角川コミックス・エース) melanges dans la meme serie [MANGA]
 - Cache N/A : volumes avec tome N/A re-verifies a chaque scan
-- Mail : stats basees sur le scan en cours, pas le total BDD
 
 ---
 
@@ -325,6 +333,10 @@ Desactive pour les series existantes. Pourrait servir de fallback quand le Bulk 
 23. Boucle infinie pages Featured (accumulation 3 pages/run sans vrais resultats) → check bouton `s-pagination-next` absent ou classe `s-pagination-disabled` + fallback `page_num > 1 and len(items) < 8` (26/02/2026)
 24. database.py corrompu a 0 octets apres crash disque (ENOSPC) → reconstruit depuis `__pycache__/database.cpython-313.pyc` via decompilation manuelle (26/02/2026)
 25. python introuvable dans bash (stub Windows Store interceptait la commande) → cree `~/.bash_profile` avec chemin Anaconda env mangavega en priorite dans PATH (26/02/2026)
+26. Comparaison dates JP : "2026/1/16" > "2026-02-26" car `/` (ASCII 47) > `-` (ASCII 45) → ajout `normalizeDateISO()` dans le viewer (27/02/2026)
+27. Bouton "Reprendre" inoperant quand pause vient du JSON/BDD → marker `'repris'` dans suiviEditorial au lieu de delete (27/02/2026)
+28. Email fin-de-pause redondant pour `droits_nwk` auto-pause → filtre `pauses_manuelles` dans app.py (27/02/2026)
+29. Doublon `envoyer_email_debut_workflow` dans notifications.py (defini 2 fois, Python utilisait la derniere) → supprime l'alias mort (27/02/2026)
 
 ---
 
@@ -336,8 +348,8 @@ Desactive pour les series existantes. Pourrait servir de fallback quand le Bulk 
 - ADR-004 : Modules Python (pas microservices), couplage via config.py globals
 - ADR-005 : Flask localhost:5000 pour pilotage (mixed content HTTPS→HTTP OK car localhost exempte)
 - ADR-006 : HTML monofichier viewer (zero dependance, zero build)
-- ADR-007 : IMAP APPEND (pas SMTP envoi direct) pour les emails workflow — le brouillon est relu/corrige avant envoi manuel par l'utilisateur
-- ADR-008 : Fallback .eml si IMAP_MOT_DE_PASSE vide — permet de tester sans credentials M365
+- ADR-007 : Le brouillon NWK est envoye en PJ .eml via Gmail — l'utilisateur ouvre dans Outlook, modifie, envoie manuellement
+- ADR-008 : Sauvegarde .eml locale toujours effectuee (backup dans brouillons/)
 
 ---
 
@@ -374,7 +386,7 @@ Desactive pour les series existantes. Pourrait servir de fallback quand le Bulk 
 9. La veille Windows suspend le scan (duree gonflee)
 10. manga_collection.json NE DOIT PAS etre dans .gitignore
 11. database.py a ete reconstruit depuis .pyc — si un comportement semble etrange, verifier la fidelite de la reconstruction
-12. IMAP_MOT_DE_PASSE vide = fallback .eml, PAS d'erreur fatale — le workflow continue
+12. Le brouillon NWK est toujours sauvegarde en .eml local + envoye en PJ via Gmail
 13. Dans suivi_editorial : JOIN sur `t.titre_japonais` (colonne de la table volumes), pas sur `t.serie_jp` qui n'existe pas dans volumes
 
 ---
@@ -417,10 +429,12 @@ corrections.json : {
   date_seuil: "2026-02-08",
   suivi_editorial: {
     "ASIN": {
-      "mail_nwk": "2026-02-26",
-      "draft_ad": "2026-03-05"
+      "droits_nwk": "2026-02-26",
+      "mail_nwk": "2026-02-27",
+      "draft_ad__pause": "2026-03-15"  // ou "repris"
     }
-  }
+  },
+  suivi_supprimes: ["ASIN1", "ASIN2"]  // workflows a supprimer
 }
 
 series_config.json : { urls_supplementaires: {}, series_ajoutees: [] }
@@ -451,33 +465,38 @@ Le viewer ecrit (validations/rejets/completions editorial). Le script lit au dem
 
 ### Vue d'ensemble
 
-Le systeme de suivi editorial permet de gerer le processus d'acquisition des droits de traduction pour chaque nouveau volume detecte sur Amazon JP. Pour chaque nouveau tome, un workflow en 6 etapes est cree automatiquement.
+Le systeme de suivi editorial permet de gerer le processus d'acquisition des droits de traduction pour chaque nouveau volume detecte sur Amazon JP. Pour chaque nouveau tome, un workflow en 7 etapes est cree automatiquement.
 
-### Les 6 etapes du workflow
+### Les 7 etapes du workflow
 
 | Code etape | Nom complet | Description |
 |------------|-------------|-------------|
-| `mail_nwk` | Email d'ouverture | Premier contact envoye a NWK (Nakawaki, l'agent JP) |
-| `draft_ad` | Draft accord distribution | Preparation du projet d'accord de distribution |
-| `reponse_nwk` | Reponse NWK | Reception de la reponse de NWK |
-| `contrat_ad` | Contrat AD | Envoi du contrat d'accord de distribution signe |
-| `signature_nwk` | Signature NWK | Reception du contrat signe par NWK |
-| `facture` | Facture | Emission de la facture finale |
+| `droits_nwk` | Demander a NWK d'acheter les droits | Premiere etape, auto-pausee si precommande (date JP future) |
+| `mail_nwk` | Mail NWK → offre editeur JP | Premier contact envoye a NWK (Nakawaki, l'agent JP) |
+| `draft_ad` | Reception draft Ayants Droits | Preparation du projet d'accord de distribution |
+| `reponse_nwk` | Reponse NWK au draft | Reception de la reponse de NWK |
+| `contrat_ad` | Reception contrat a signer | Envoi du contrat d'accord de distribution signe |
+| `signature_nwk` | NWK signe + archive | Reception du contrat signe par NWK |
+| `facture` | Reception + paiement facture | Emission de la facture finale |
 
 ### Declenchement automatique
 
 A chaque scan, app.py :
 1. Detecte les nouveaux volumes papier (nouvelles entrees dans la table volumes)
-2. Appelle `db.creer_workflow_volume(asin, serie_jp, tome, today, editeur)` → INSERT OR IGNORE etape `mail_nwk`
-3. Appelle `db.get_workflows_a_notifier()` → volumes avec `email_ouverture_envoye=0`
+2. Appelle `db.creer_workflow_volume(asin, serie_jp, tome, today, date_sortie_jp, editeur)` → INSERT OR IGNORE etape `droits_nwk`
+   - Si `date_sortie_jp > today` : auto-pause jusqu'a la date de sortie (precommande)
+3. Appelle `db.get_workflows_a_notifier()` → volumes en `droits_nwk` avec pause expiree ou nulle
 4. Appelle `db.get_actions_en_retard(delai_jours=10)` → etapes dont `date_declenchement` depasse 10 jours sans completion
 5. Appelle `notifications.envoyer_email_workflow(...)` avec la liste des nouveautes et des relances
+6. Appelle `db.get_pauses_expirees()` → efface les pauses et notifie (sauf `droits_nwk` auto-pause)
 
 ### Email workflow (notifications.py)
 
-L'email est **toujours un brouillon** (jamais envoye directement) :
-- **Priorite 1** : IMAP APPEND vers M365 (dossier Brouillons ou Drafts) si `IMAP_MOT_DE_PASSE` defini
-- **Fallback** : sauvegarde .eml dans le dossier `brouillons/` si IMAP indisponible ou mot de passe vide
+L'email NWK est envoye en PJ .eml via Gmail :
+1. Le brouillon plain-text est construit (From = vega-livres, To = NWK)
+2. Sauvegarde .eml en local dans `brouillons/` (backup)
+3. Gmail envoie un email a Eloi avec le .eml en piece jointe
+4. Eloi ouvre la PJ dans Outlook, modifie si besoin, envoie a NWK
 
 Format de l'email :
 ```
@@ -513,29 +532,42 @@ Bonne journee,
 Dans l'onglet "Suivi editorial" du viewer :
 - Bouton "Fait" (mode admin) : enregistre `suiviEditorial[asin][etape] = date_aujourd_hui` dans le Gist
 - Bouton "Pause" : suspend le calcul du delai jusqu'a une date donnee (champ `pause_jusqu_au`)
+- Bouton "Reprendre" : ecrit `suiviEditorial[asin][etape + '__pause'] = 'repris'` (marker special)
 - Bouton "Relance" : reinitialise `date_declenchement` a aujourd'hui et incremente `nb_relances`
+- Bouton "Supprimer" (poubelle) : supprime le workflow, ecrit l'ASIN dans `gistCorrections.suivi_supprimes`
+- Tri par date JP : clic sur "Date JP" alterne asc/desc
 
 ### Progression via le Gist
 
-Le viewer ecrit les completions dans `corrections.json.suivi_editorial`. Au prochain scan, `sync.charger_corrections(db)` importe ces completions :
-```python
-gist_suivi = config.GIST_CORRECTIONS.get('suivi_editorial', {})
-for asin, completions in gist_suivi.items():
-    for etape, date_completion in completions.items():
-        if date_completion:
-            db.marquer_etape_faite(asin, etape, date_completion)
-```
+Le viewer ecrit les completions dans `corrections.json.suivi_editorial`. Au prochain scan, `sync.charger_corrections(db)` importe :
+- **Completions** : `etape = date_completion` → `db.marquer_etape_faite()`
+- **Pauses** : `etape__pause = date_iso` → `db.definir_pause_workflow()`
+- **Reprises** : `etape__pause = 'repris'` → `db.effacer_pause_workflow()`
+- **Suppressions** : `suivi_supprimes = [asin, ...]` → `db.supprimer_workflow()` (avec tombstone)
 
 `marquer_etape_faite()` : passe l'etape courante en `statut='fait'` ET cree automatiquement la prochaine etape dans `ETAPES_WORKFLOW` avec `date_declenchement = date_completion`.
 
+### Tombstone (anti-recreation)
+
+`supprimer_workflow(asin)` supprime toutes les lignes du workflow PUIS insere une ligne `droits_nwk/supprime`. Cela empeche `creer_workflow_volume()` (INSERT OR IGNORE) de recreer le workflow au scan suivant.
+
 ### Onglet viewer "Suivi editorial" (manga_collection_viewer.html)
 
-- 6eme onglet ajoute au viewer
+- 6eme onglet ajoute au viewer (3844 lignes total)
 - En-tete : compteurs (actifs / en retard / en pause / termines)
-- Table avec colonnes : Serie | Tome | Editeur | Date JP | Etape courante | Progression (6 pastilles colorees) | Depuis (jours) | Relances | Action
+- Table avec colonnes : Serie | Tome | Editeur | Date JP | Etape courante | Progression (7 pastilles colorees) | Depuis (jours) | Relances | Action
 - Pastilles de progression : grise (en attente), verte (fait), orange (en cours)
 - Bouton "Creer workflow" disponible aussi depuis l'onglet Volumes (pour les volumes existants sans workflow)
 - Donnees lues depuis `d.workflow` dans manga_collection.json, enrichies des completions locales Gist
+- **Fonctions cles viewer** :
+  - `normalizeDateISO(s)` : convertit "2026/1/16" → "2026-01-16" (fix comparaison dates)
+  - `formatDateJP(s)` : convertit vers "16/01/2026" (affichage francais)
+  - `sortEditorial(field)` : tri par colonne (date JP par defaut)
+  - `supprimerWorkflow(asin)` : suppression avec tombstone via Gist
+  - `reprendrePause(asin, etape)` : marker `'repris'` au lieu de delete
+- **Deux flux de donnees (Flow 1 / Flow 2)** :
+  - Flow 1 : volumes avec `d.workflow` dans le JSON (vient de la BDD via scan)
+  - Flow 2 : workflows locaux Gist sans donnees JSON (avant que le scan les importe)
 
 ### Export dans manga_collection.json
 
@@ -560,14 +592,22 @@ app.py exporte le workflow dans le JSON :
 
 ```
 EMAIL_DESTINATAIRE_WORKFLOW=e.morterol@vega-livres.fr
-IMAP_MOT_DE_PASSE=   # Vide = fallback .eml. Remplir avec le mdp app M365 pour IMAP APPEND
 ```
 
 ### Constante ETAPES_WORKFLOW
 
 Definie dans database.py au niveau module (accessible partout) :
 ```python
-ETAPES_WORKFLOW = ['mail_nwk', 'draft_ad', 'reponse_nwk', 'contrat_ad', 'signature_nwk', 'facture']
+ETAPES_WORKFLOW = ['droits_nwk', 'mail_nwk', 'draft_ad', 'reponse_nwk', 'contrat_ad', 'signature_nwk', 'facture']
+LABELS_ETAPES = {
+    'droits_nwk':    'Demander a NWK d acheter les droits',
+    'mail_nwk':      'Mail NWK → offre editeur JP',
+    'draft_ad':      'Reception draft Ayants Droits',
+    'reponse_nwk':   'Reponse NWK au draft',
+    'contrat_ad':    'Reception contrat a signer',
+    'signature_nwk': 'NWK signe + archive',
+    'facture':       'Reception + paiement facture',
+}
 ```
 
 ### Points d'attention
@@ -577,3 +617,6 @@ ETAPES_WORKFLOW = ['mail_nwk', 'draft_ad', 'reponse_nwk', 'contrat_ad', 'signatu
 - Le delai par defaut de relance est 10 jours (`delai_jours=10` dans `get_actions_en_retard`)
 - La colonne `email_ouverture_envoye` est mise a 1 apres le premier email, pour eviter les doublons au run suivant
 - `editeur` dans suivi_editorial est en romaji (ex: "Shueisha"), pas en japonais — utiliser `_editeur_romaji()` pour la conversion
+- **Auto-pause precommande** : si date_sortie_jp > today au moment de la creation, `pause_jusqu_au = date_sortie_jp`. Le jour J, la pause expire, l'email NWK est envoye. Pas d'email fin-de-pause pour ces auto-pauses.
+- **Tombstone** : un workflow supprime laisse une ligne `droits_nwk/supprime` qui empeche la recreation
+- **Dates JP** : stockees en "YYYY/M/D" ou "YYYY-MM-DD" dans la BDD. Le viewer normalise avec `normalizeDateISO()` avant toute comparaison
