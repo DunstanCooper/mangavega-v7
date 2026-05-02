@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-01T10:44:06.692110",
+  "generated_at": "2026-05-02T10:42:56.906887",
   "version": "7.0.0",
   "total_volumes": 20,
   "total_series": 6,
@@ -21,7 +21,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "君となら恋をしてみても [MANGA]",
-      "date_detection": "2026-05-01",
+      "date_detection": "2026-05-02",
       "statut": "non_traite"
     },
     {
@@ -36,7 +36,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "君となら恋をしてみても [MANGA]",
-      "date_detection": "2026-05-01",
+      "date_detection": "2026-05-02",
       "statut": "non_traite"
     },
     {
@@ -51,7 +51,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "君となら恋をしてみても [MANGA]",
-      "date_detection": "2026-05-01",
+      "date_detection": "2026-05-02",
       "statut": "non_traite"
     },
     {
@@ -66,7 +66,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "君となら恋をしてみても [MANGA]",
-      "date_detection": "2026-05-01",
+      "date_detection": "2026-05-02",
       "statut": "non_traite"
     },
     {
@@ -81,7 +81,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "君となら恋をしてみても [MANGA]",
-      "date_detection": "2026-05-01",
+      "date_detection": "2026-05-02",
       "statut": "non_traite"
     },
     {
@@ -96,7 +96,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "君となら恋をしてみても [MANGA]",
-      "date_detection": "2026-05-01",
+      "date_detection": "2026-05-02",
       "statut": "non_traite"
     },
     {
@@ -111,13 +111,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "君となら恋をしてみても [MANGA]",
-      "date_detection": "2026-05-01",
+      "date_detection": "2026-05-02",
       "statut": "non_traite",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2026-05-01",
-        "jours_ecoules": 0,
+        "jours_ecoules": 1,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": null,
@@ -137,7 +137,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "元婚約者から逃げるため吸血伯爵に恋人のフリをお願いしたら、なぜか溺愛モードになりました. [MANGA]",
-      "date_detection": "2026-05-01",
+      "date_detection": "2026-05-02",
       "statut": "non_traite"
     },
     {
@@ -152,7 +152,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "元婚約者から逃げるため吸血伯爵に恋人のフリをお願いしたら、なぜか溺愛モードになりました. [MANGA]",
-      "date_detection": "2026-05-01",
+      "date_detection": "2026-05-02",
       "statut": "non_traite"
     },
     {
@@ -167,7 +167,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "元婚約者から逃げるため吸血伯爵に恋人のフリをお願いしたら、なぜか溺愛モードになりました. [MANGA]",
-      "date_detection": "2026-05-01",
+      "date_detection": "2026-05-02",
       "statut": "non_traite"
     },
     {
@@ -182,7 +182,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "元婚約者から逃げるため吸血伯爵に恋人のフリをお願いしたら、なぜか溺愛モードになりました. [MANGA]",
-      "date_detection": "2026-05-01",
+      "date_detection": "2026-05-02",
       "statut": "non_traite"
     },
     {
@@ -197,7 +197,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "元婚約者から逃げるため吸血伯爵に恋人のフリをお願いしたら、なぜか溺愛モードになりました. [MANGA]",
-      "date_detection": "2026-05-01",
+      "date_detection": "2026-05-02",
       "statut": "non_traite"
     },
     {
@@ -212,7 +212,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "元婚約者から逃げるため吸血伯爵に恋人のフリをお願いしたら、なぜか溺愛モードになりました. [MANGA]",
-      "date_detection": "2026-05-01",
+      "date_detection": "2026-05-02",
       "statut": "non_traite"
     },
     {
@@ -227,7 +227,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "魔女と暮らす [MANGA]",
-      "date_detection": "2026-05-01",
+      "date_detection": "2026-05-02",
       "statut": "non_traite"
     },
     {
@@ -242,7 +242,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "魔女と暮らす [MANGA]",
-      "date_detection": "2026-05-01",
+      "date_detection": "2026-05-02",
       "statut": "non_traite"
     },
     {
@@ -257,7 +257,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "魔女と暮らす [MANGA]",
-      "date_detection": "2026-05-01",
+      "date_detection": "2026-05-02",
       "statut": "non_traite"
     },
     {
@@ -272,7 +272,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "ギベットルーム [MANGA]",
-      "date_detection": "2026-05-01",
+      "date_detection": "2026-05-02",
       "statut": "non_traite"
     },
     {
@@ -286,13 +286,13 @@
       "couverture": "https://m.media-amazon.com/images/I/01MKUOLsA5L._ML2_.gif",
       "est_nouveaute": false,
       "serie_recherchee": "ギベットルーム [MANGA]",
-      "date_detection": "2026-05-01",
+      "date_detection": "2026-05-02",
       "statut": "non_traite",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2026-06-17",
-        "jours_ecoules": -47,
+        "jours_ecoules": -46,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": "2026-06-17",
@@ -312,7 +312,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "極楽にはまだ早い 一 (ハルタコミックス) [MANGA]",
-      "date_detection": "2026-05-01",
+      "date_detection": "2026-05-02",
       "statut": "non_traite"
     },
     {
@@ -327,7 +327,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "きみは終末 [MANGA]",
-      "date_detection": "2026-05-01",
+      "date_detection": "2026-05-02",
       "statut": "non_traite"
     }
   ]
