@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-04T10:42:50.709559",
+  "generated_at": "2026-05-05T10:43:16.731763",
   "version": "7.0.0",
   "total_volumes": 20,
   "total_series": 6,
@@ -21,7 +21,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "君となら恋をしてみても [MANGA]",
-      "date_detection": "2026-05-04",
+      "date_detection": "2026-05-05",
       "statut": "non_traite"
     },
     {
@@ -36,7 +36,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "君となら恋をしてみても [MANGA]",
-      "date_detection": "2026-05-04",
+      "date_detection": "2026-05-05",
       "statut": "non_traite"
     },
     {
@@ -51,7 +51,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "君となら恋をしてみても [MANGA]",
-      "date_detection": "2026-05-04",
+      "date_detection": "2026-05-05",
       "statut": "non_traite"
     },
     {
@@ -66,7 +66,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "君となら恋をしてみても [MANGA]",
-      "date_detection": "2026-05-04",
+      "date_detection": "2026-05-05",
       "statut": "non_traite"
     },
     {
@@ -81,7 +81,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "君となら恋をしてみても [MANGA]",
-      "date_detection": "2026-05-04",
+      "date_detection": "2026-05-05",
       "statut": "non_traite"
     },
     {
@@ -93,16 +93,16 @@
       "url": "https://www.amazon.co.jp/dp/4592721713",
       "asin": "4592721713",
       "couverture": "",
-      "est_nouveaute": true,
-      "deja_alerte": false,
+      "est_nouveaute": false,
+      "deja_alerte": true,
       "serie_recherchee": "君となら恋をしてみても [MANGA]",
-      "date_detection": "2026-05-04",
+      "date_detection": "2026-05-05",
       "statut": "non_traite",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2025-09-05",
-        "jours_ecoules": 241,
+        "jours_ecoules": 242,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": null,
@@ -122,13 +122,13 @@
       "est_nouveaute": false,
       "deja_alerte": true,
       "serie_recherchee": "君となら恋をしてみても [MANGA]",
-      "date_detection": "2026-05-04",
+      "date_detection": "2026-05-05",
       "statut": "non_traite",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2026-05-01",
-        "jours_ecoules": 3,
+        "jours_ecoules": 4,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": null,
@@ -148,7 +148,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "元婚約者から逃げるため吸血伯爵に恋人のフリをお願いしたら、なぜか溺愛モードになりました. [MANGA]",
-      "date_detection": "2026-05-04",
+      "date_detection": "2026-05-05",
       "statut": "non_traite"
     },
     {
@@ -163,7 +163,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "元婚約者から逃げるため吸血伯爵に恋人のフリをお願いしたら、なぜか溺愛モードになりました. [MANGA]",
-      "date_detection": "2026-05-04",
+      "date_detection": "2026-05-05",
       "statut": "non_traite"
     },
     {
@@ -178,7 +178,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "元婚約者から逃げるため吸血伯爵に恋人のフリをお願いしたら、なぜか溺愛モードになりました. [MANGA]",
-      "date_detection": "2026-05-04",
+      "date_detection": "2026-05-05",
       "statut": "non_traite"
     },
     {
@@ -193,7 +193,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "元婚約者から逃げるため吸血伯爵に恋人のフリをお願いしたら、なぜか溺愛モードになりました. [MANGA]",
-      "date_detection": "2026-05-04",
+      "date_detection": "2026-05-05",
       "statut": "non_traite"
     },
     {
@@ -205,16 +205,16 @@
       "url": "https://www.amazon.co.jp/dp/4065398002",
       "asin": "4065398002",
       "couverture": "",
-      "est_nouveaute": true,
-      "deja_alerte": false,
+      "est_nouveaute": false,
+      "deja_alerte": true,
       "serie_recherchee": "元婚約者から逃げるため吸血伯爵に恋人のフリをお願いしたら、なぜか溺愛モードになりました. [MANGA]",
-      "date_detection": "2026-05-04",
+      "date_detection": "2026-05-05",
       "statut": "non_traite",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2025-06-30",
-        "jours_ecoules": 308,
+        "jours_ecoules": 309,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": null,
@@ -231,16 +231,16 @@
       "url": "https://www.amazon.co.jp/dp/4065415012",
       "asin": "4065415012",
       "couverture": "",
-      "est_nouveaute": true,
-      "deja_alerte": false,
+      "est_nouveaute": false,
+      "deja_alerte": true,
       "serie_recherchee": "元婚約者から逃げるため吸血伯爵に恋人のフリをお願いしたら、なぜか溺愛モードになりました. [MANGA]",
-      "date_detection": "2026-05-04",
+      "date_detection": "2026-05-05",
       "statut": "non_traite",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2025-11-28",
-        "jours_ecoules": 157,
+        "jours_ecoules": 158,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": null,
@@ -260,7 +260,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "魔女と暮らす [MANGA]",
-      "date_detection": "2026-05-04",
+      "date_detection": "2026-05-05",
       "statut": "non_traite"
     },
     {
@@ -275,7 +275,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "魔女と暮らす [MANGA]",
-      "date_detection": "2026-05-04",
+      "date_detection": "2026-05-05",
       "statut": "non_traite"
     },
     {
@@ -290,7 +290,7 @@
       "est_nouveaute": false,
       "deja_alerte": false,
       "serie_recherchee": "魔女と暮らす [MANGA]",
-      "date_detection": "2026-05-04",
+      "date_detection": "2026-05-05",
       "statut": "non_traite"
     },
     {
@@ -302,16 +302,16 @@
       "url": "https://www.amazon.co.jp/dp/4801989152",
       "asin": "4801989152",
       "couverture": "",
-      "est_nouveaute": true,
-      "deja_alerte": false,
+      "est_nouveaute": false,
+      "deja_alerte": true,
       "serie_recherchee": "ギベットルーム [MANGA]",
-      "date_detection": "2026-05-04",
+      "date_detection": "2026-05-05",
       "statut": "non_traite",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2026-03-17",
-        "jours_ecoules": 48,
+        "jours_ecoules": 49,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": null,
@@ -330,13 +330,13 @@
       "couverture": "https://m.media-amazon.com/images/I/01MKUOLsA5L._ML2_.gif",
       "est_nouveaute": false,
       "serie_recherchee": "ギベットルーム [MANGA]",
-      "date_detection": "2026-05-04",
+      "date_detection": "2026-05-05",
       "statut": "non_traite",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2026-06-17",
-        "jours_ecoules": -44,
+        "jours_ecoules": -43,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": "2026-06-17",
@@ -353,16 +353,16 @@
       "url": "https://www.amazon.co.jp/dp/4047385557",
       "asin": "4047385557",
       "couverture": "",
-      "est_nouveaute": true,
-      "deja_alerte": false,
+      "est_nouveaute": false,
+      "deja_alerte": true,
       "serie_recherchee": "極楽にはまだ早い 一 (ハルタコミックス) [MANGA]",
-      "date_detection": "2026-05-04",
+      "date_detection": "2026-05-05",
       "statut": "non_traite",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2025-12-15",
-        "jours_ecoules": 140,
+        "jours_ecoules": 141,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": null,
@@ -379,16 +379,16 @@
       "url": "https://www.amazon.co.jp/dp/4049169827",
       "asin": "4049169827",
       "couverture": "",
-      "est_nouveaute": true,
-      "deja_alerte": false,
+      "est_nouveaute": false,
+      "deja_alerte": true,
       "serie_recherchee": "きみは終末 [MANGA]",
-      "date_detection": "2026-05-04",
+      "date_detection": "2026-05-05",
       "statut": "non_traite",
       "workflow": {
         "etape_courante": "droits_nwk",
         "label": "Demander à NWK d’acheter les droits",
         "date_declenchement": "2026-02-27",
-        "jours_ecoules": 66,
+        "jours_ecoules": 67,
         "nb_relances": 0,
         "etapes_faites": [],
         "pause_jusqu_au": null,
